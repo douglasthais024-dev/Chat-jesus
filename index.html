@@ -3,634 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Mobile Pro - Firebase & UI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            200: '#bbf7d0',
-                            500: '#10B981', 
-                            600: '#059669',
-                            700: '#047857',
-                            900: '#064e3b',
-                        }
-                    },
-                    animation: {
-                        'pulse-glow': 'pulse-glow 2s infinite'
-                    }
-                }
-            }
-        }
-    </script>
+    <title>Chat Mobile Pro - Abas e Login</title>
     <style>
-        /* Scrollbar customizada e suave */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body, html { height: 100%; background-color: #e5ddd5; display: flex; justify-content: center; align-items: center; }
+        
+        .chat-container { width: 100%; max-width: 480px; height: 100%; background-color: #efeae2; display: flex; flex-direction: column; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
+        
+        /* Cabeçalho */
+        .chat-header { background-color: #008069; color: white; padding: 15px; display: flex; align-items: center; gap: 12px; z-index: 10; }
+        .avatar { width: 40px; height: 40px; background-color: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; }
+        .user-info { flex: 1; }
+        .user-info h2 { font-size: 16px; }
+        .user-info span { font-size: 12px; color: #d1f4cc; }
+        .btn-fullscreen { background: none; border: none; color: white; cursor: pointer; font-size: 22px; padding: 5px; }
 
-        /* Transição suave do painel lateral */
-        .drawer-transition {
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        /* Sistema de Abas (Tabs) */
+        .tab-bar { display: flex; background-color: #008069; border-top: 1px solid #006653; z-index: 10; }
+        .tab-btn { flex: 1; padding: 12px; background: none; border: none; color: #b3dfd7; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; border-bottom: 3px solid transparent; transition: all 0.2s; }
+        .tab-btn.active { color: white; border-bottom: 3px solid white; }
+        
+        .tab-content { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+        .tab-content.active { display: flex; }
 
-        /* Padrão clássico de fundo do chat com transição */
-        #messages-container {
-            background-color: #efeae2;
-            background-image: url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png");
-            background-blend-mode: overlay;
-            background-repeat: repeat;
-            opacity: 0.98;
-            transition: all 0.4s ease;
-        }
+        /* Formulário de Login */
+        .login-screen { padding: 30px 20px; display: flex; flex-direction: column; gap: 20px; background-color: white; margin: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .login-screen h3 { color: #008069; margin-bottom: 5px; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-size: 13px; color: #667781; font-weight: bold; }
+        .input-group input { padding: 12px; border: 1px solid #dee2e6; border-radius: 8px; outline: none; font-size: 15px; }
+        .input-group input:focus { border-color: #008069; }
+        .btn-action { background-color: #008069; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; transition: background 0.2s; text-align: center; }
+        .btn-action:active { background-color: #005e4d; }
+        .login-status { font-size: 13px; text-align: center; color: #008069; font-weight: bold; min-height: 18px; }
 
-        /* Waveform de Áudio Dinâmico */
-        @keyframes audioWave {
-            0%, 100% { height: 6px; }
-            50% { height: 22px; }
-        }
-        .wave-bar {
-            width: 3px;
-            background-color: #10B981;
-            border-radius: 9999px;
-            animation: audioWave 1.2s ease-in-out infinite;
-        }
-        .wave-bar:nth-child(2) { animation-delay: 0.15s; }
-        .wave-bar:nth-child(3) { animation-delay: 0.3s; }
-        .wave-bar:nth-child(4) { animation-delay: 0.45s; }
-        .wave-bar:nth-child(5) { animation-delay: 0.6s; }
+        /* Área do Chat */
+        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-color: rgba(239, 234, 226, 0.9); }
+        .message { max-width: 75%; padding: 8px 12px; border-radius: 8px; font-size: 15px; position: relative; word-wrap: break-word; animation: fadeIn 0.2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .message.sent { background-color: #d9fdd3; align-self: flex-end; border-top-right-radius: 0; }
+        .message.received { background-color: #ffffff; align-self: flex-start; border-top-left-radius: 0; }
+        .message-sender { font-size: 11px; color: #008069; font-weight: bold; display: block; margin-bottom: 2px; }
+        .message-time { font-size: 10px; color: #667781; display: block; text-align: right; margin-top: 4px; }
 
-        @keyframes pulse-glow {
-            0%, 100% { transform: scale(1); opacity: 0.2; }
-            50% { transform: scale(1.15); opacity: 0.4; }
-        }
+        /* Barra de Input */
+        .chat-input-area { background-color: #f0f2f5; padding: 10px 15px; display: flex; align-items: center; gap: 10px; }
+        .chat-input { flex: 1; padding: 12px; border: none; border-radius: 20px; outline: none; font-size: 15px; }
+        .btn-send { background-color: #008069; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .btn-send svg { width: 18px; height: 18px; fill: white; margin-left: 2px; }
     </style>
 </head>
-<body class="bg-slate-900 h-screen flex items-center justify-center font-sans antialiased p-0 sm:p-4 transition-colors duration-500">
+<body>
 
-    <div id="login-container" class="w-full h-full max-w-md bg-white rounded-none sm:rounded-[32px] shadow-2xl border border-slate-100 flex flex-col p-8 justify-center relative transition-all duration-300">
-        <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-                <i class="fa-solid fa-shield-halved text-brand-500 text-3xl animate-pulse"></i>
+    <div class="chat-container" id="appContainer">
+        <header class="chat-header">
+            <div class="avatar" id="roomAvatar">🛡️</div>
+            <div class="user-info">
+                <h2 id="roomTitle">Sala Ultra Blindada</h2>
+                <span id="status">Conectado e Seguro</span>
             </div>
-            <h2 class="text-2xl font-black text-slate-800 tracking-tight">Chat Mobile Pro</h2>
-            <p class="text-xs text-slate-400 mt-2 font-medium">Insira qualquer credencial para acessar o painel de demonstração.</p>
+            <button class="btn-fullscreen" id="fullscreenBtn" title="Tela Cheia">⛶</button>
+        </header>
+
+        <nav class="tab-bar">
+            <button class="tab-btn active" id="tabLoginBtn">Login / Perfil</button>
+            <button class="tab-btn" id="tabChatBtn">Chat Room</button>
+        </nav>
+
+        <div class="tab-content active" id="contentLogin">
+            <div class="login-screen">
+                <h3>Acessar Aplicativo</h3>
+                <p style="font-size: 13px; color: #667781; margin-bottom: 10px;">Insira suas credenciais para liberar o envio de mensagens.</p>
+                
+                <div class="input-group">
+                    <label>E-mail</label>
+                    <input type="email" id="loginEmail" placeholder="exemplo@email.com" autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <label>Senha</label>
+                    <input type="password" id="loginPassword" placeholder="Sua senha secreta">
+                </div>
+                
+                <button class="btn-action" id="enterChatBtn">Salvar e Entrar no Chat</button>
+                <div class="login-status" id="loginStatus"></div>
+            </div>
         </div>
 
-        <div class="space-y-4">
-            <div>
-                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">E-mail Corporativo</label>
-                <div class="relative flex items-center">
-                    <i class="fa-regular fa-envelope absolute left-4 text-slate-400 text-sm"></i>
-                    <input type="email" id="loginEmail" value="demo@empresa.com" placeholder="exemplo@email.com" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-2xl py-3.5 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all">
-                </div>
-            </div>
+        <div class="tab-content" id="contentChat">
+            <main class="chat-messages" id="chatMessages"></main>
 
-            <div>
-                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Senha Secreta</label>
-                <div class="relative flex items-center">
-                    <i class="fa-solid fa-lock absolute left-4 text-slate-400 text-sm"></i>
-                    <input type="password" id="loginPassword" value="123456" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-2xl py-3.5 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all">
-                </div>
-            </div>
-
-            <button id="enterChatBtn" onclick="login()" class="w-full py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-2xl font-bold shadow-lg shadow-brand-500/20 transition-all transform active:scale-[0.98] hover:shadow-brand-500/30 mt-2 flex items-center justify-center gap-2">
-                <span>Entrar no Chat</span>
-                <i class="fa-solid fa-arrow-right text-xs"></i>
-            </button>
-            <div id="loginStatus" class="text-center text-xs text-brand-600 font-bold min-h-[18px] transition-all"></div>
+            <footer class="chat-input-area">
+                <input type="text" id="messageInput" class="chat-input" placeholder="Digite uma mensagem..." autocomplete="off">
+                <button id="sendBtn" class="btn-send">
+                    <svg viewBox="0 0 24 24"><path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" /></svg>
+                </button>
+            </footer>
         </div>
     </div>
 
-    <div id="app-container" class="w-full h-full max-w-5xl md:h-[850px] bg-white rounded-none sm:rounded-[32px] shadow-2xl border border-slate-100 flex overflow-hidden relative hidden">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3qtVwG2HfFUzQw-l0VnqQ3r_dx_HwTPo",
+            authDomain: "chat-mobile-d4dea.firebaseapp.com",
+            projectId: "chat-mobile-d4dea",
+            storageBucket: "chat-mobile-d4dea.firebasestorage.app",
+            messagingSenderId: "492131615338",
+            appId: "1:492131615338:web:11162bcbcffd8016b84013"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const messagesCollection = collection(db, "messages");
+
+        // Elementos de Interface
+        const tabLoginBtn = document.getElementById('tabLoginBtn');
+        const tabChatBtn = document.getElementById('tabChatBtn');
+        const contentLogin = document.getElementById('contentLogin');
+        const contentChat = document.getElementById('contentChat');
         
-        <div id="call-modal" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex flex-col items-center justify-between p-12 text-white hidden transition-all duration-300">
-            <div class="text-center">
-                <span id="call-type-label" class="text-xs text-brand-500 uppercase tracking-widest font-bold">Chamada de voz</span>
-                <h2 id="call-contact-name" class="text-3xl font-black mt-2 tracking-tight">Ana Silva</h2>
-                <p id="call-status" class="text-sm text-slate-400 font-semibold mt-1">Chamando...</p>
-            </div>
+        const loginEmail = document.getElementById('loginEmail');
+        const enterChatBtn = document.getElementById('enterChatBtn');
+        const loginStatus = document.getElementById('loginStatus');
+        
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
 
-            <div class="relative w-56 h-56 flex items-center justify-center">
-                <div id="voice-pulse" class="absolute inset-0 bg-brand-500/20 rounded-full animate-pulse-glow"></div>
-                <img id="call-contact-photo" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" class="w-44 h-44 rounded-full object-cover border-4 border-slate-800 relative z-10 transition-all duration-500 shadow-2xl" alt="">
-                
-                <div id="video-container" class="absolute inset-0 rounded-full overflow-hidden bg-slate-900 border-2 border-slate-700 hidden z-20">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300" class="w-full h-full object-cover">
-                </div>
-            </div>
+        // Carrega e-mail salvo previamente se houver
+        if (localStorage.getItem('chat_user_email')) {
+            loginEmail.value = localStorage.getItem('chat_user_email');
+            loginStatus.textContent = "Logado como: " + localStorage.getItem('chat_user_email');
+        }
 
-            <div class="flex flex-col items-center gap-6 w-full max-w-xs z-30">
-                <div class="flex justify-around w-full bg-slate-900/60 p-3 rounded-3xl backdrop-blur">
-                    <button onclick="toggleMute()" class="w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition-all">
-                        <i id="mute-icon" class="fa-solid fa-microphone text-lg"></i>
-                    </button>
-                    <button onclick="toggleSpeaker()" class="w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition-all">
-                        <i id="speaker-icon" class="fa-solid fa-volume-high text-lg"></i>
-                    </button>
-                </div>
-                
-                <button onclick="encerrarChamada()" class="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg shadow-red-500/40 transition-transform transform hover:scale-110 active:scale-95">
-                    <i class="fa-solid fa-phone-slash text-xl"></i>
-                </button>
-            </div>
-        </div>
+        // Lógica de Alternância de Abas
+        function switchTab(target) {
+            if (target === 'login') {
+                tabLoginBtn.classList.add('active');
+                tabChatBtn.classList.remove('active');
+                contentLogin.classList.add('active');
+                contentChat.classList.remove('active');
+            } else if (target === 'chat') {
+                tabLoginBtn.classList.remove('active');
+                tabChatBtn.classList.add('active');
+                contentLogin.classList.remove('active');
+                contentChat.classList.add('active');
+                // Auto-scroll ao abrir a aba do chat
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
 
-        <div id="wallpaper-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-            <div class="bg-white rounded-[24px] w-full max-w-sm p-6 shadow-2xl border border-slate-100 mx-4">
-                <div class="flex justify-between items-center mb-5">
-                    <h3 class="text-base font-bold text-slate-800">Fundo da Conversa</h3>
-                    <button onclick="fecharModalWallpaper()" class="text-slate-400 hover:text-slate-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-all">
-                        <i class="fa-solid fa-xmark text-lg"></i>
-                    </button>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="setWallpaper('classic')" class="flex flex-col items-center gap-1.5 p-2 rounded-2xl border border-slate-150 hover:border-brand-500 transition-all bg-slate-50/50">
-                        <div class="w-full h-20 rounded-xl bg-[#efeae2] border border-slate-200 relative overflow-hidden" style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: 80px;"></div>
-                        <span class="text-[11px] font-bold text-slate-600">Clássico</span>
-                    </button>
-                    <button onclick="setWallpaper('slate')" class="flex flex-col items-center gap-1.5 p-2 rounded-2xl border border-slate-150 hover:border-brand-500 transition-all bg-slate-50/50">
-                        <div class="w-full h-20 rounded-xl bg-slate-800 border border-slate-700 relative"></div>
-                        <span class="text-[11px] font-bold text-slate-600">Cinza Escuro</span>
-                    </button>
-                    <button onclick="setWallpaper('emerald')" class="flex flex-col items-center gap-1.5 p-2 rounded-2xl border border-slate-150 hover:border-brand-500 transition-all bg-slate-50/50">
-                        <div class="w-full h-20 rounded-xl bg-emerald-900 border border-emerald-800 relative"></div>
-                        <span class="text-[11px] font-bold text-slate-600">Verde Imperial</span>
-                    </button>
-                    <button onclick="setWallpaper('indigo')" class="flex flex-col items-center gap-1.5 p-2 rounded-2xl border border-slate-150 hover:border-brand-500 transition-all bg-slate-50/50">
-                        <div class="w-full h-20 rounded-xl bg-indigo-900 border border-indigo-800 relative"></div>
-                        <span class="text-[11px] font-bold text-slate-600">Índigo Real</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+        tabLoginBtn.addEventListener('click', () => switchTab('login'));
+        tabChatBtn.addEventListener('click', () => switchTab('chat'));
 
-        <div id="sidebar" class="w-full md:w-[350px] h-full flex flex-col border-r border-slate-100 bg-white z-10 shrink-0">
-            <div class="p-6 pb-3 flex justify-between items-center">
-                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Mensagens</h1>
-                <div class="flex gap-2">
-                    <button class="text-brand-600 hover:text-brand-700 hover:bg-brand-100 transition-all text-[11px] font-bold flex items-center gap-1.5 bg-brand-50 px-3 py-2 rounded-full" onclick="simularRespostaAutomatica()">
-                        <i class="fa-solid fa-robot animate-pulse"></i> Simular Msg
-                    </button>
-                </div>
-            </div>
-
-            <div class="px-6 py-2">
-                <div class="relative flex items-center">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 text-slate-400 text-xs"></i>
-                    <input type="text" id="search-contacts" oninput="filtrarContatos()" placeholder="Pesquisar contatos..." class="w-full bg-slate-50 text-slate-800 text-xs rounded-full py-3 pl-11 pr-4 border border-transparent focus:bg-white focus:border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/10 transition-all">
-                </div>
-            </div>
-
-            <div id="contacts-list" class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
-                <div onclick="selecionarContato('Ana Silva', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', 'Online')" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 cursor-pointer transition-all border-b border-slate-50">
-                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" class="w-11 h-11 rounded-full object-cover">
-                    <div class="flex-1">
-                        <div class="flex justify-between items-center">
-                            <h4 class="font-bold text-xs text-slate-800">Ana Silva</h4>
-                            <span class="text-[10px] text-slate-400">10:18</span>
-                        </div>
-                        <p class="text-[11px] text-slate-400 truncate">Áudio recebido • 0:18</p>
-                    </div>
-                </div>
-                <div onclick="selecionarContato('Carlos Souza', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', 'Visto por último às 09:30')" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 cursor-pointer transition-all border-b border-slate-50">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" class="w-11 h-11 rounded-full object-cover">
-                    <div class="flex-1">
-                        <div class="flex justify-between items-center">
-                            <h4 class="font-bold text-xs text-slate-800">Carlos Souza</h4>
-                            <span class="text-[10px] text-slate-400">Ontem</span>
-                        </div>
-                        <p class="text-[11px] text-slate-400 truncate">Combinado! Até amanhã.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-4 border-t border-slate-100 flex justify-between items-center bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.02)]">
-                <button class="text-brand-500 hover:bg-brand-50 w-10 h-10 rounded-full flex items-center justify-center transition-all text-lg"><i class="fa-regular fa-comment-dots"></i></button>
-                <button class="text-slate-400 hover:text-slate-600 w-10 h-10 rounded-full flex items-center justify-center transition-all text-lg" onclick="toggleFullscreen()" title="Tela Cheia"><i class="fa-solid fa-expand"></i></button>
-                
-                <button class="w-12 h-12 rounded-full bg-brand-500 hover:bg-brand-600 text-white flex items-center justify-center shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30 transition-all transform hover:scale-105 active:scale-95" onclick="alert('Funcionalidade de criação de contatos desativada no front de demonstração.')">
-                    <i class="fa-solid fa-plus text-lg"></i>
-                </button>
-
-                <button class="text-slate-400 hover:text-red-500 w-10 h-10 rounded-full flex items-center justify-center transition-all text-lg" onclick="logout()" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></button>
-                
-                <div class="relative cursor-pointer group" title="Meu Perfil">
-                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-9 h-9 rounded-full object-cover border-2 border-slate-100 shadow-sm" alt="Meu Perfil">
-                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-brand-500 rounded-full border-2 border-white"></span>
-                </div>
-            </div>
-        </div>
-
-        <div id="chat-window" class="hidden md:flex flex-1 h-full flex-col bg-slate-50 relative overflow-hidden">
+        // Lógica de Validação do Login Local
+        enterChatBtn.addEventListener('click', () => {
+            const email = loginEmail.value.trim();
             
-            <div class="p-4 bg-white border-b border-slate-100 flex justify-between items-center z-10 shadow-sm">
-                <div class="flex items-center gap-3 select-none flex-1">
-                    <button class="md:hidden text-slate-500 hover:text-slate-700 mr-2 w-8 h-8 rounded-full hover:bg-slate-50 flex items-center justify-center" onclick="voltarParaLista()">
-                        <i class="fa-solid fa-arrow-left text-lg"></i>
-                    </button>
-                    <div class="relative">
-                        <img id="active-user-pic" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" class="w-11 h-11 rounded-full object-cover border border-slate-100" alt="Perfil">
-                        <span id="active-user-status-dot" class="absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full bg-brand-500"></span>
-                    </div>
-                    <div>
-                        <h2 id="active-user-name" class="font-bold text-slate-800 text-sm">Ana Silva</h2>
-                        <span id="active-user-status" class="text-xs text-brand-500">Online</span>
-                    </div>
-                </div>
-                
-                <div class="flex items-center gap-3 text-slate-400">
-                    <button onclick="abrirModalWallpaper()" class="w-10 h-10 rounded-full hover:bg-slate-100 hover:text-brand-500 transition-all text-md" title="Papel de Parede"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
-                    <button onclick="iniciarChamada('voz')" class="w-10 h-10 rounded-full hover:bg-slate-100 hover:text-brand-500 transition-all text-md" title="Ligação"><i class="fa-solid fa-phone"></i></button>
-                    <button onclick="iniciarChamada('video')" class="w-10 h-10 rounded-full hover:bg-slate-100 hover:text-brand-500 transition-all text-md" title="Chamada de Vídeo"><i class="fa-solid fa-video"></i></button>
-                </div>
-            </div>
-
-            <div id="messages-container" class="flex-1 overflow-y-auto p-6 space-y-4">
-                
-                <div class="mx-auto bg-emerald-50 text-emerald-800 text-xs px-3 py-1.5 rounded-lg shadow-sm max-w-[80%] text-center border border-emerald-100">
-                    <i class="fa-solid fa-lock text-[10px] mr-1"></i> As mensagens são criptografadas de ponta a ponta.
-                </div>
-
-                <div class="flex items-end space-x-2 max-w-[85%] self-start">
-                    <div class="bg-white text-gray-800 p-3 rounded-2xl rounded-bl-none shadow-sm text-sm relative">
-                        <p>Oi! Tudo bem? Conseguiu separar os arquivos que te pedi?</p>
-                        <span class="text-[10px] text-gray-400 block text-right mt-1">10:14</span>
-                    </div>
-                </div>
-
-                <div class="flex items-end space-x-2 max-w-[85%] self-end justify-end ml-auto">
-                    <div class="bg-brand-100 text-gray-800 p-3 rounded-2xl rounded-br-none shadow-sm text-sm relative">
-                        <p>Oi, Ana! Tudo ótimo por aqui. Já separei sim, vou te mandar agora mesmo.</p>
-                        <div class="flex items-center justify-end space-x-1 mt-1">
-                            <span class="text-[10px] text-slate-500">10:15</span>
-                            <i class="fa-solid fa-check-double text-[11px] text-sky-500"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="toast-notificacao" class="absolute top-20 left-1/2 -translate-x-1/2 bg-white border border-brand-100 shadow-xl px-5 py-3 rounded-full flex items-center gap-3 transform -translate-y-10 opacity-0 pointer-events-none transition-all duration-300 z-50">
-                <span class="w-2 h-2 rounded-full bg-brand-500 animate-ping"></span>
-                <p class="text-xs font-bold text-slate-800">Nova mensagem de <span id="toast-sender" class="text-brand-600 font-extrabold">Ana Silva</span>!</p>
-            </div>
-
-            <div class="p-4 bg-white border-t border-slate-100 flex items-center gap-3 z-10 relative">
-                
-                <div id="normal-input-container" class="flex items-center gap-2.5 flex-1 transition-all duration-200">
-                    <div class="relative group">
-                        <button onclick="toggleAnexos()" class="w-11 h-11 bg-slate-50 hover:bg-slate-150 text-slate-500 rounded-full flex items-center justify-center border border-slate-100 transition-all">
-                            <i class="fa-solid fa-paperclip text-md"></i>
-                        </button>
-                        <div id="menu-anexos" class="absolute bottom-14 left-0 bg-white shadow-2xl rounded-2xl p-2 border border-slate-100 flex flex-col gap-1 hidden w-44 z-20">
-                            <button onclick="enviarMidiaSimulada('imagem')" class="flex items-center gap-2.5 p-2.5 rounded-xl text-xs hover:bg-slate-50 text-slate-700 w-full transition-colors">
-                                <i class="fa-solid fa-image text-brand-500 w-5"></i> Foto ou Vídeo
-                            </button>
-                            <button onclick="enviarMidiaSimulada('documento')" class="flex items-center gap-2.5 p-2.5 rounded-xl text-xs hover:bg-slate-50 text-slate-700 w-full transition-colors">
-                                <i class="fa-solid fa-file text-blue-500 w-5"></i> Documento
-                            </button>
-                        </div>
-                    </div>
-
-                    <button onclick="toggleEmojiPicker()" class="w-11 h-11 bg-slate-50 hover:bg-slate-150 text-slate-500 rounded-full flex items-center justify-center border border-slate-100 transition-all">
-                        <i class="fa-regular fa-face-smile text-lg"></i>
-                    </button>
-
-                    <form id="chat-form" onsubmit="enviarMensagemTexto(event)" class="flex-1 flex items-center">
-                        <input type="text" id="mensagem-input" placeholder="Digite uma mensagem" class="w-full bg-slate-50 border border-transparent text-slate-800 text-sm rounded-2xl py-3 px-4 focus:bg-white focus:border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/15 transition-all">
-                        <button type="submit" class="w-11 h-11 bg-brand-500 hover:bg-brand-600 text-white rounded-full flex items-center justify-center transition-all ml-2 shrink-0 shadow-md">
-                            <i class="fa-solid fa-paper-plane text-xs"></i>
-                        </button>
-                    </form>
-
-                    <button onclick="enviarAudioMock()" class="w-11 h-11 bg-slate-50 hover:bg-slate-150 text-slate-500 rounded-full flex items-center justify-center border border-slate-100 transition-all shrink-0" title="Enviar Áudio">
-                        <i class="fa-solid fa-microphone text-md"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const loginContainer = document.getElementById('login-container');
-        const appContainer = document.getElementById('app-container');
-        const chatWindow = document.getElementById('chat-window');
-        const sidebar = document.getElementById('sidebar');
-        const messagesContainer = document.getElementById('messages-container');
-        const inputMensagem = document.getElementById('mensagem-input');
-        const menuAnexos = document.getElementById('menu-anexos');
-        const popupLigacao = document.getElementById('call-modal');
-        const toast = document.getElementById('toast-notificacao');
-
-        let contatoAtivoNome = "Ana Silva";
-
-        // Simula Login do Usuário
-        function login() {
-            const email = document.getElementById('loginEmail').value;
-            if(email) {
-                loginContainer.classList.add('hidden');
-                appContainer.classList.remove('hidden');
-                // Em telas maiores, mostra o chat por padrão
-                if (window.innerWidth >= 768) {
-                    selecionarContato('Ana Silva', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', 'Online');
-                }
+            // Validação casando com a sua Regra do Firebase (Tamanho do ID entre 5 e 50 caracteres)
+            if (!email || !email.includes('@')) {
+                alert("Por favor, insira um e-mail válido.");
+                return;
             }
-        }
+            if (email.length < 5 || email.length > 50) {
+                alert(`O e-mail digitado tem ${email.length} caracteres. Para respeitar as regras de segurança blindadas do banco, ele deve ter entre 5 e 50 caracteres.`);
+                return;
+            }
 
-        function logout() {
-            appContainer.classList.add('hidden');
-            loginContainer.classList.remove('hidden');
-        }
-
-        // Navegação de Contatos
-        function selecionarContato(nome, foto, status) {
-            contatoAtivoNome = nome;
-            document.getElementById('active-user-name').innerText = nome;
-            document.getElementById('active-user-pic').src = foto;
-            document.getElementById('active-user-status').innerText = status;
-
-            // Transição Mobile
-            sidebar.classList.add('hidden');
-            sidebar.classList.remove('w-full');
-            chatWindow.classList.remove('hidden');
-            chatWindow.classList.add('flex');
-
-            scrollParaBaixo();
-        }
-
-        function voltarParaLista() {
-            chatWindow.classList.add('hidden');
-            chatWindow.classList.remove('flex');
-            sidebar.classList.remove('hidden');
-            sidebar.classList.add('w-full');
-        }
-
-        // Scroll Automático
-        function scrollParaBaixo() {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // Enviar Texto
-        function enviarMensagemTexto(e) {
-            e.preventDefault();
-            const texto = inputMensagem.value.trim();
-            if (!texto) return;
-
-            const agora = obterHoraAtual();
-            const html = `
-                <div class="flex items-end space-x-2 max-w-[85%] self-end justify-end ml-auto">
-                    <div class="bg-brand-100 text-gray-800 p-3 rounded-2xl rounded-br-none shadow-sm text-sm relative">
-                        <p>${texto}</p>
-                        <div class="flex items-center justify-end space-x-1 mt-1">
-                            <span class="text-[10px] text-slate-500">${agora}</span>
-                            <i class="fa-solid fa-check text-[11px] text-gray-400"></i>
-                        </div>
-                    </div>
-                </div>
-            `;
-            messagesContainer.insertAdjacentHTML('beforeend', html);
-            inputMensagem.value = '';
-            scrollParaBaixo();
-
-            // Simulação de confirmação de entrega
-            const divEnviada = messagesContainer.lastElementChild;
-            const check = divEnviada.querySelector('i');
+            localStorage.setItem('chat_user_email', email);
+            loginStatus.textContent = "Conectado: " + email;
             
-            setTimeout(() => check.className = "fa-solid fa-check-double text-[11px] text-gray-400", 800);
-            setTimeout(() => {
-                check.className = "fa-solid fa-check-double text-[11px] text-sky-500";
-                simularRespostaAutomatica();
-            }, 2000);
+            // Redireciona o usuário direto para a aba do chat
+            switchTab('chat');
+        });
+
+        // Notificações do Sistema
+        if ("Notification" in window && Notification.permission !== "granted") {
+            Notification.requestPermission();
         }
 
-        // Menu de Anexos
-        function toggleAnexos() {
-            menuAnexos.classList.toggle('hidden');
-        }
-
-        // Enviar Mídias (Fotos / Documentos)
-        function enviarMidiaSimulada(tipo) {
-            menuAnexos.classList.add('hidden');
-            const agora = obterHoraAtual();
-            let html = '';
-
-            if (tipo === 'imagem') {
-                html = `
-                    <div class="flex items-end space-x-2 max-w-[75%] self-end justify-end ml-auto">
-                        <div class="bg-brand-100 p-1.5 rounded-2xl rounded-br-none shadow-sm text-sm">
-                            <img src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=400" class="rounded-xl max-w-full object-cover max-h-48" alt="Foto">
-                            <p class="px-1 pt-1 text-xs text-gray-600">Enviando foto...</p>
-                            <div class="flex items-center justify-end space-x-1 mt-1 px-1">
-                                <span class="text-[10px] text-slate-500">${agora}</span>
-                                <i class="fa-solid fa-check-double text-[11px] text-sky-500"></i>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else if (tipo === 'documento') {
-                html = `
-                    <div class="flex items-end space-x-2 max-w-[85%] self-end justify-end ml-auto">
-                        <div class="bg-brand-100 p-2 rounded-2xl rounded-br-none shadow-sm text-sm flex flex-col min-w-[220px]">
-                            <div class="bg-emerald-200/50 rounded-lg p-3 flex items-center justify-between space-x-3">
-                                <div class="flex items-center space-x-2">
-                                    <i class="fa-solid fa-file-pdf text-red-500 text-2xl"></i>
-                                    <div class="text-left">
-                                        <p class="font-semibold text-xs text-gray-700 truncate max-w-[120px]">Relatorio_Mensal.pdf</p>
-                                        <span class="text-[10px] text-slate-500">1.2 MB • PDF</span>
-                                    </div>
-                                </div>
-                                <i class="fa-solid fa-arrow-down text-xs text-gray-600"></i>
-                            </div>
-                            <div class="flex items-center justify-end space-x-1 mt-1 mr-1">
-                                <span class="text-[10px] text-slate-500">${agora}</span>
-                                <i class="fa-solid fa-check-double text-[11px] text-sky-500"></i>
-                            </div>
-                        </div>
-                    </div>
-                `;
+        function triggerNotification(text, senderId) {
+            const currentEmail = localStorage.getItem('chat_user_email') || '';
+            if (document.hidden && senderId !== currentEmail && Notification.permission === "granted") {
+                new Notification(`Mensagem de ${senderId.split('@')[0]}`, {
+                    body: text,
+                    icon: 'https://cdn-icons-png.flaticon.com/512/4712/4712038.png'
+                });
             }
-            messagesContainer.insertAdjacentHTML('beforeend', html);
-            scrollParaBaixo();
         }
 
-        // Enviar Mensagem de Áudio
-        function enviarAudioMock() {
-            const agora = obterHoraAtual();
-            const html = `
-                <div class="flex items-end space-x-2 max-w-[85%] self-end justify-end ml-auto">
-                    <div class="bg-brand-100 p-3 rounded-2xl rounded-br-none shadow-sm text-sm w-[260px]">
-                        <div class="flex items-center space-x-3">
-                            <button class="w-8 h-8 bg-brand-500 text-white rounded-full flex items-center justify-center hover:scale-105 transition">
-                                <i class="fa-solid fa-play ml-0.5"></i>
-                            </button>
-                            <div class="flex-1 flex items-center space-x-0.5">
-                                <span class="h-4 w-1 bg-brand-500 rounded-full"></span>
-                                <span class="h-6 w-1 bg-brand-500 rounded-full"></span>
-                                <span class="h-2 w-1 bg-brand-500/40 rounded-full"></span>
-                                <span class="h-5 w-1 bg-brand-500 rounded-full"></span>
-                                <span class="h-7 w-1 bg-brand-500 rounded-full"></span>
-                                <span class="h-3 w-1 bg-brand-500/40 rounded-full"></span>
-                            </div>
-                            <span class="text-xs font-semibold text-slate-600">0:07</span>
-                        </div>
-                        <div class="flex items-center justify-end space-x-1 mt-1">
-                            <span class="text-[10px] text-slate-500">${agora}</span>
-                            <i class="fa-solid fa-check-double text-[11px] text-sky-500"></i>
-                        </div>
-                    </div>
-                </div>
-            `;
-            messagesContainer.insertAdjacentHTML('beforeend', html);
-            scrollParaBaixo();
-        }
-
-        // Controles de Chamada
-        function iniciarChamada(tipo) {
-            document.getElementById('call-contact-name').innerText = contatoAtivoNome;
-            document.getElementById('call-contact-photo').src = document.getElementById('active-user-pic').src;
-            
-            const label = document.getElementById('call-type-label');
-            const videoContainer = document.getElementById('video-container');
-
-            if(tipo === 'video') {
-                label.innerText = 'Chamada de Vídeo';
-                videoContainer.classList.remove('hidden');
-            } else {
-                label.innerText = 'Chamada de voz';
-                videoContainer.classList.add('hidden');
-            }
-
-            popupLigacao.classList.remove('hidden');
-        }
-
-        function encerrarChamada() {
-            popupLigacao.classList.add('hidden');
-        }
-
-        // Configuração de Papel de Parede
-        function abrirModalWallpaper() {
-            document.getElementById('wallpaper-modal').classList.remove('hidden');
-        }
-        function fecharModalWallpaper() {
-            document.getElementById('wallpaper-modal').classList.add('hidden');
-        }
-        function setWallpaper(tipo) {
-            if (tipo === 'classic') {
-                messagesContainer.style.backgroundColor = '#efeae2';
-                messagesContainer.style.backgroundImage = "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')";
-            } else if (tipo === 'slate') {
-                messagesContainer.style.backgroundColor = '#1e293b';
-                messagesContainer.style.backgroundImage = 'none';
-            } else if (tipo === 'emerald') {
-                messagesContainer.style.backgroundColor = '#064e3b';
-                messagesContainer.style.backgroundImage = 'none';
-            } else if (tipo === 'indigo') {
-                messagesContainer.style.backgroundColor = '#312e81';
-                messagesContainer.style.backgroundImage = 'none';
-            }
-            fecharModalWallpaper();
-        }
-
-        // Ferramentas Auxiliares
-        function toggleEmojiPicker() {
-            const emojis = ["😅", "👍", "🔥", "❤️", "🚀", "😂", "👀", "💻"];
-            const aleatorio = emojis[Math.floor(Math.random() * emojis.length)];
-            inputMensagem.value += aleatorio;
-            inputMensagem.focus();
-        }
-
-        function toggleFullscreen() {
+        // Controle de Tela Cheia
+        fullscreenBtn.addEventListener('click', () => {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else if (document.exitFullscreen) {
+                document.documentElement.requestFullscreen().catch(err => alert(`Erro: ${err.message}`));
+            } else {
                 document.exitFullscreen();
             }
+        });
+
+        // ENVIAR MENSAGEM: Casando 100% com as regras do Firestore
+        async function sendMessage() {
+            const currentEmail = localStorage.getItem('chat_user_email');
+            
+            if (!currentEmail) {
+                alert("Você precisa fazer login na primeira aba antes de enviar mensagens!");
+                switchTab('login');
+                return;
+            }
+
+            const text = messageInput.value.trim();
+            if (!text || text.length > 1000) return;
+
+            messageInput.value = '';
+
+            try {
+                await addDoc(messagesCollection, {
+                    content: text,
+                    senderId: currentEmail, // Seu e-mail agora serve de remetente oficial
+                    isImage: false,
+                    timestamp: serverTimestamp()
+                });
+            } catch (error) {
+                console.error("Mensagem bloqueada pelas regras estruturais:", error);
+                alert("Erro ao enviar. Verifique o tamanho do e-mail ou do texto com base nas regras do banco.");
+            }
         }
 
-        function obterHoraAtual() {
-            const data = new Date();
-            return `${String(data.getHours()).padStart(2, '0')}:${String(data.getMinutes()).padStart(2, '0')}`;
-        }
+        // ESCUTAR MENSAGENS EM TEMPO REAL
+        const q = query(messagesCollection, orderBy("timestamp", "asc"));
 
-        // Filtro de Contatos na Lista
-        function filtrarContatos() {
-            const query = document.getElementById('search-contacts').value.toLowerCase();
-            const contatos = document.querySelectorAll('#contacts-list > div');
-            contatos.forEach(c => {
-                const nome = c.querySelector('h4').innerText.toLowerCase();
-                if (nome.includes(query)) {
-                    c.style.display = 'flex';
-                } else {
-                    c.style.display = 'none';
-                }
-            });
-        }
+        onSnapshot(q, (snapshot) => {
+            chatMessages.innerHTML = '';
+            const currentEmail = localStorage.getItem('chat_user_email') || '';
+            
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                if(!data.timestamp) return; 
 
-        // Simulação de Resposta e Notificações (Toast)
-        function simularRespostaAutomatica() {
-            const respostas = [
-                "Perfeito! Vou analisar aqui e te retorno.",
-                "Muito obrigado pelo envio rápido!",
-                "Excelente! Tudo certo.",
-                "Acabei de receber. Obrigado!"
-            ];
-            const resposta = respostas[Math.floor(Math.random() * respostas.length)];
-            const agora = obterHoraAtual();
+                const messageDiv = document.createElement('div');
+                const isMyMessage = data.senderId === currentEmail;
+                messageDiv.classList.add('message', isMyMessage ? 'sent' : 'received');
 
-            setTimeout(() => {
-                const html = `
-                    <div class="flex items-end space-x-2 max-w-[85%] self-start">
-                        <div class="bg-white text-gray-800 p-3 rounded-2xl rounded-bl-none shadow-sm text-sm relative">
-                            <p>${resposta}</p>
-                            <span class="text-[10px] text-gray-400 block text-right mt-1">${agora}</span>
-                        </div>
-                    </div>
-                `;
-                messagesContainer.insertAdjacentHTML('beforeend', html);
-                scrollParaBaixo();
+                const messageDate = data.timestamp.toDate();
+                const timeStr = messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                // Se a mensagem for de outra pessoa, mostra o e-mail dela em cima do balão
+                const senderTag = !isMyMessage ? `<span class="message-sender">${data.senderId.split('@')[0]}</span>` : '';
+
+                messageDiv.innerHTML = `${senderTag}${data.content} <span class="message-time">${timeStr}</span>`;
+                chatMessages.appendChild(messageDiv);
                 
-                // Dispara Toast
-                document.getElementById('toast-sender').innerText = contatoAtivoNome;
-                toast.classList.remove('opacity-0', '-translate-y-10');
-                toast.classList.add('opacity-100', 'translate-y-0');
+                triggerNotification(data.content, data.senderId);
+            });
 
-                setTimeout(() => {
-                    toast.classList.remove('opacity-100', 'translate-y-0');
-                    toast.classList.add('opacity-0', '-translate-y-10');
-                }, 3000);
+            // Rola para baixo se a aba do chat estiver visível
+            if (contentChat.classList.contains('active')) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
 
-            }, 1500);
-        }
-
-        // Funções adicionais de Controle de Chamada
-        function toggleMute() {
-            const icon = document.getElementById('mute-icon');
-            icon.classList.toggle('fa-microphone');
-            icon.classList.toggle('fa-microphone-slash');
-        }
-
-        function toggleSpeaker() {
-            const icon = document.getElementById('speaker-icon');
-            icon.classList.toggle('fa-volume-high');
-            icon.classList.toggle('fa-volume-off');
-        }
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
     </script>
 </body>
 </html>
