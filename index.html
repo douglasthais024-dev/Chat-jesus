@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -14,10 +15,15 @@
                         brand: {
                             50: '#f0fdf4',
                             100: '#dcfce7',
+                            200: '#bbf7d0',
                             500: '#10B981', 
                             600: '#059669',
+                            700: '#047857',
                             900: '#064e3b',
                         }
+                    },
+                    animation: {
+                        'pulse-glow': 'pulse-glow 2s infinite'
                     }
                 }
             }
@@ -27,6 +33,7 @@
         /* Scrollbar customizada e suave */
         ::-webkit-scrollbar {
             width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
             background: transparent;
@@ -41,68 +48,89 @@
 
         /* Transição suave do painel lateral */
         .drawer-transition {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Padrão clássico de fundo do chat */
+        /* Padrão clássico de fundo do chat com transição */
         #messages-container {
             background-color: #efeae2;
             background-image: url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png");
             background-blend-mode: overlay;
             background-repeat: repeat;
             opacity: 0.98;
-            transition: background 0.3s ease, background-color 0.3s ease;
+            transition: all 0.4s ease;
+        }
+
+        /* Waveform de Áudio Dinâmico */
+        @keyframes audioWave {
+            0%, 100% { height: 6px; }
+            50% { height: 22px; }
+        }
+        .wave-bar {
+            width: 3px;
+            background-color: #ef4444;
+            border-radius: 9999px;
+            animation: audioWave 1.2s ease-in-out infinite;
+        }
+        .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.6s; }
+
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); opacity: 0.2; }
+            50% { transform: scale(1.15); opacity: 0.4; }
         }
     </style>
 </head>
-<body class="bg-slate-100 h-screen flex items-center justify-center font-sans antialiased p-0 sm:p-4">
+<body class="bg-slate-900/10 h-screen flex items-center justify-center font-sans antialiased p-0 sm:p-4 transition-colors duration-500">
 
-    <div id="login-container" class="w-full h-full max-w-md bg-white rounded-none sm:rounded-[40px] shadow-2xl border border-slate-100 flex flex-col p-8 justify-center relative hidden">
+    <div id="login-container" class="w-full h-full max-w-md bg-white rounded-none sm:rounded-[32px] shadow-2xl border border-slate-100 flex flex-col p-8 justify-center relative hidden transition-all duration-300">
         <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div class="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
                 <i class="fa-solid fa-shield-halved text-brand-500 text-3xl animate-pulse"></i>
             </div>
-            <h2 class="text-2xl font-bold text-slate-800">Chat Mobile Pro</h2>
-            <p class="text-xs text-slate-500 mt-1">Insira suas credenciais blindadas para acessar o painel criptografado.</p>
+            <h2 class="text-2xl font-black text-slate-800 tracking-tight">Chat Mobile Pro</h2>
+            <p class="text-xs text-slate-400 mt-2 font-medium">Insira suas credenciais para acessar o painel de mensagens.</p>
         </div>
 
         <div class="space-y-4">
             <div>
-                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">E-mail</label>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">E-mail Corporativo</label>
                 <div class="relative flex items-center">
-                    <i class="fa-regular fa-envelope absolute left-4 text-slate-400"></i>
-                    <input type="email" id="loginEmail" placeholder="exemplo@email.com" autocomplete="email" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-2xl py-3.5 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-brand-500/30 transition-all">
+                    <i class="fa-regular fa-envelope absolute left-4 text-slate-400 text-sm"></i>
+                    <input type="email" id="loginEmail" placeholder="exemplo@email.com" autocomplete="email" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-2xl py-3.5 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all">
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Senha Secreta</label>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Senha Secreta</label>
                 <div class="relative flex items-center">
-                    <i class="fa-solid fa-lock absolute left-4 text-slate-400"></i>
-                    <input type="password" id="loginPassword" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-2xl py-3.5 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-brand-500/30 transition-all">
+                    <i class="fa-solid fa-lock absolute left-4 text-slate-400 text-sm"></i>
+                    <input type="password" id="loginPassword" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-2xl py-3.5 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all">
                 </div>
             </div>
 
-            <button id="enterChatBtn" class="w-full py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-2xl font-bold shadow-lg shadow-brand-500/20 transition-all transform active:scale-[0.98] mt-2">
-                Salvar e Entrar no Chat
+            <button id="enterChatBtn" class="w-full py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-2xl font-bold shadow-lg shadow-brand-500/20 transition-all transform active:scale-[0.98] hover:shadow-brand-500/30 mt-2 flex items-center justify-center gap-2">
+                <span>Entrar no Chat</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
             </button>
-            <div id="loginStatus" class="text-center text-xs text-brand-600 font-bold min-h-[18px]"></div>
+            <div id="loginStatus" class="text-center text-xs text-brand-600 font-bold min-h-[18px] transition-all"></div>
         </div>
     </div>
 
-    <div id="app-container" class="w-full h-full max-w-5xl md:h-[850px] bg-white rounded-none sm:rounded-[40px] shadow-2xl border border-slate-100 flex overflow-hidden relative hidden">
+    <div id="app-container" class="w-full h-full max-w-5xl md:h-[850px] bg-white rounded-none sm:rounded-[32px] shadow-2xl border border-slate-100 flex overflow-hidden relative hidden">
         
-        <!-- MODAL DE CHAMADAS -->
-        <div id="call-modal" class="absolute inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-between p-12 text-white hidden transition-all duration-300">
+        <div id="call-modal" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex flex-col items-center justify-between p-12 text-white hidden transition-all duration-300">
             <div class="text-center">
                 <span id="call-type-label" class="text-xs text-brand-500 uppercase tracking-widest font-bold">Chamada de voz</span>
-                <h2 id="call-contact-name" class="text-2xl font-bold mt-2">Nome do Contato</h2>
-                <p id="call-status" class="text-sm text-slate-400 font-medium mt-1">Chamando...</p>
+                <h2 id="call-contact-name" class="text-3xl font-black mt-2 tracking-tight">Nome do Contato</h2>
+                <p id="call-status" class="text-sm text-slate-400 font-semibold mt-1">Chamando...</p>
             </div>
 
-            <div class="relative w-48 h-48 flex items-center justify-center">
-                <div id="voice-pulse" class="absolute inset-0 bg-brand-500/20 rounded-full duration-1000"></div>
-                <img id="call-contact-photo" src="" class="w-40 h-40 rounded-full object-cover border-4 border-slate-800 relative z-10 transition-transform duration-500" alt="">
+            <div class="relative w-56 h-56 flex items-center justify-center">
+                <div id="voice-pulse" class="absolute inset-0 bg-brand-500/20 rounded-full animate-pulse-glow"></div>
+                <img id="call-contact-photo" src="" class="w-44 h-44 rounded-full object-cover border-4 border-slate-800 relative z-10 transition-all duration-500 shadow-2xl" alt="">
                 
                 <div id="video-container" class="absolute inset-0 rounded-3xl overflow-hidden bg-slate-900 border-2 border-slate-700 hidden z-20">
                     <video id="local-video" class="w-full h-full object-cover hidden" autoplay muted playsinline></video>
@@ -114,7 +142,7 @@
             </div>
 
             <div class="flex flex-col items-center gap-6 w-full max-w-xs z-30">
-                <div class="flex justify-around w-full">
+                <div class="flex justify-around w-full bg-slate-900/60 p-3 rounded-3xl backdrop-blur">
                     <button id="btn-mute" onclick="toggleMute()" class="w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition-all">
                         <i id="mute-icon" class="fa-solid fa-microphone text-lg"></i>
                     </button>
@@ -126,49 +154,47 @@
                     </button>
                 </div>
                 
-                <button onclick="encerrarChamada()" class="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg shadow-red-500/30 transition-transform transform hover:scale-110">
+                <button onclick="encerrarChamada()" class="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg shadow-red-500/40 transition-transform transform hover:scale-110 active:scale-95">
                     <i class="fa-solid fa-phone-slash text-xl"></i>
                 </button>
             </div>
         </div>
 
-        <!-- MODAL DE PAPEL DE PAREDE -->
         <div id="wallpaper-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-            <div class="bg-white rounded-[32px] w-full max-w-sm p-6 shadow-2xl border border-slate-100 mx-4">
+            <div class="bg-white rounded-[24px] w-full max-w-sm p-6 shadow-2xl border border-slate-100 mx-4">
                 <div class="flex justify-between items-center mb-5">
-                    <h3 class="text-base font-bold text-slate-800">Papel de Parede do Chat</h3>
-                    <button onclick="fecharModalWallpaper()" class="text-slate-400 hover:text-slate-600">
+                    <h3 class="text-base font-bold text-slate-800">Fundo da Conversa</h3>
+                    <button onclick="fecharModalWallpaper()" class="text-slate-400 hover:text-slate-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-all">
                         <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-3">
-                    <button onclick="setWallpaper('classic')" class="flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border border-slate-100 hover:border-brand-500 transition-all bg-slate-50">
+                    <button onclick="setWallpaper('classic')" class="flex flex-col items-center gap-1.5 p-2 rounded-2xl border border-slate-150 hover:border-brand-500 transition-all bg-slate-50/50">
                         <div class="w-full h-20 rounded-xl bg-[#efeae2] border border-slate-200 relative overflow-hidden" style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: 80px;"></div>
                         <span class="text-[11px] font-bold text-slate-600">Clássico</span>
                     </button>
-                    <button onclick="setWallpaper('dark')" class="flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border border-slate-100 hover:border-brand-500 transition-all bg-slate-50">
+                    <button onclick="setWallpaper('dark')" class="flex flex-col items-center gap-1.5 p-2 rounded-2xl border border-slate-150 hover:border-brand-500 transition-all bg-slate-50/50">
                         <div class="w-full h-20 rounded-xl bg-slate-900 border border-slate-700 relative"></div>
                         <span class="text-[11px] font-bold text-slate-600">Slate Escuro</span>
                     </button>
-                    <button onclick="setWallpaper('emerald')" class="flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border border-slate-100 hover:border-brand-500 transition-all bg-slate-50">
+                    <button onclick="setWallpaper('emerald')" class="flex flex-col items-center gap-1.5 p-2 rounded-2xl border border-slate-150 hover:border-brand-500 transition-all bg-slate-50/50">
                         <div class="w-full h-20 rounded-xl bg-emerald-950 border border-emerald-900 relative"></div>
                         <span class="text-[11px] font-bold text-slate-600">Verde Imperial</span>
                     </button>
-                    <button onclick="setWallpaper('cyber')" class="flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border border-slate-100 hover:border-brand-500 transition-all bg-slate-50">
+                    <button onclick="setWallpaper('cyber')" class="flex flex-col items-center gap-1.5 p-2 rounded-2xl border border-slate-150 hover:border-brand-500 transition-all bg-slate-50/50">
                         <div class="w-full h-20 rounded-xl bg-gradient-to-tr from-indigo-950 via-purple-950 to-pink-950 border border-purple-800 relative"></div>
-                        <span class="text-[11px] font-bold text-slate-600">Gradiente Cyber</span>
+                        <span class="text-[11px] font-bold text-slate-600">Cyber Gradient</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- SIDEBAR DE CONTATOS -->
         <div id="sidebar" class="w-full md:w-[380px] h-full flex flex-col border-r border-slate-100 bg-white z-10 shrink-0">
-            <div class="p-6 pb-2 flex justify-between items-center">
-                <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Chat Mobile</h1>
+            <div class="p-6 pb-3 flex justify-between items-center">
+                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Mensagens</h1>
                 <div class="flex gap-4">
-                    <button class="text-brand-500 hover:text-brand-600 transition-colors text-xs font-semibold flex items-center gap-1 bg-brand-50 px-3 py-1.5 rounded-full" onclick="simularMensagemRecebida()">
+                    <button class="text-brand-600 hover:text-brand-700 hover:bg-brand-100 transition-all text-[11px] font-bold flex items-center gap-1.5 bg-brand-50 px-3 py-2 rounded-full" onclick="simularMensagemRecebida()">
                         <i class="fa-solid fa-robot animate-pulse"></i> Simular Msg
                     </button>
                 </div>
@@ -176,38 +202,40 @@
 
             <div class="px-6 py-2">
                 <div class="relative flex items-center">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 text-slate-400 text-sm"></i>
-                    <input type="text" id="search-contacts" placeholder="Pesquisar contatos..." class="w-full bg-slate-100 text-slate-800 text-xs rounded-full py-2.5 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-brand-500/30 transition-all">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 text-slate-400 text-xs"></i>
+                    <input type="text" id="search-contacts" placeholder="Pesquisar contatos..." class="w-full bg-slate-50 text-slate-800 text-xs rounded-full py-3 pl-11 pr-4 border border-transparent focus:bg-white focus:border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/10 transition-all">
                 </div>
             </div>
 
             <div id="contacts-list" class="flex-1 overflow-y-auto px-4 py-2 space-y-1"></div>
 
-            <div class="p-6 border-t border-slate-100 flex justify-between items-center bg-white">
-                <button class="text-brand-500 text-xl"><i class="fa-regular fa-comment-dots"></i></button>
-                <button class="text-slate-400 hover:text-slate-600 text-xl" onclick="toggleFullscreen()" title="Tela Cheia"><i class="fa-solid fa-expand"></i></button>
-                <button class="w-12 h-12 rounded-full bg-brand-500 hover:bg-brand-600 text-white flex items-center justify-center shadow-lg shadow-brand-500/30 transition-transform transform hover:scale-105" onclick="alert('Criação de novos contatos indisponível nesta versão de teste.')">
+            <div class="p-4 border-t border-slate-100 flex justify-between items-center bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.02)]">
+                <button class="text-brand-500 hover:bg-brand-50 w-10 h-10 rounded-full flex items-center justify-center transition-all text-lg"><i class="fa-regular fa-comment-dots"></i></button>
+                <button class="text-slate-400 hover:text-slate-600 w-10 h-10 rounded-full flex items-center justify-center transition-all text-lg" onclick="toggleFullscreen()" title="Tela Cheia"><i class="fa-solid fa-expand"></i></button>
+                
+                <button class="w-12 h-12 rounded-full bg-brand-500 hover:bg-brand-600 text-white flex items-center justify-center shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30 transition-all transform hover:scale-105 active:scale-95" onclick="alert('Criação de novos contatos indisponível nesta versão de teste.')">
                     <i class="fa-solid fa-plus text-lg"></i>
                 </button>
-                <button class="text-slate-400 hover:text-slate-600 text-xl" onclick="logout()" title="Fazer Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+
+                <button class="text-slate-400 hover:text-red-500 w-10 h-10 rounded-full flex items-center justify-center transition-all text-lg" onclick="logout()" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></button>
+                
                 <div class="relative cursor-pointer group" onclick="abrirMyProfileDrawer()" title="Meu Perfil (Clique para Editar)">
-                    <img id="my-avatar-profile" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-8 h-8 rounded-full object-cover border border-slate-200 hover:scale-105 transition-transform" alt="Meu Perfil">
-                    <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-brand-500 rounded-full border-2 border-white"></span>
+                    <img id="my-avatar-profile" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" class="w-9 h-9 rounded-full object-cover border-2 border-slate-100 hover:border-brand-500 hover:scale-105 transition-all shadow-sm" alt="Meu Perfil">
+                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-brand-500 rounded-full border-2 border-white"></span>
                 </div>
             </div>
         </div>
 
-        <!-- JANELA DE CONVERSA -->
         <div id="chat-window" class="hidden md:flex flex-1 h-full flex-col bg-slate-50 relative overflow-hidden">
             
             <div class="p-4 bg-white border-b border-slate-100 flex justify-between items-center z-10 shadow-sm">
                 <div class="flex items-center gap-3 cursor-pointer group select-none flex-1" onclick="abrirProfileDrawer()">
-                    <button class="md:hidden text-slate-600 mr-2" onclick="voltarParaLista(); event.stopPropagation();">
+                    <button class="md:hidden text-slate-500 hover:text-slate-700 mr-2 w-8 h-8 rounded-full hover:bg-slate-50 flex items-center justify-center" onclick="voltarParaLista(); event.stopPropagation();">
                         <i class="fa-solid fa-arrow-left text-lg"></i>
                     </button>
                     <div class="relative">
-                        <div id="active-user-avatar-placeholder" class="w-11 h-11 rounded-full bg-brand-500 text-white flex items-center justify-center text-xl hidden">🛡️</div>
-                        <img id="active-user-pic" src="" class="w-11 h-11 rounded-full object-cover group-hover:scale-105 transition-transform" alt="Perfil">
+                        <div id="active-user-avatar-placeholder" class="w-11 h-11 rounded-full bg-brand-500 text-white flex items-center justify-center text-xl hidden shadow-md">🛡️</div>
+                        <img id="active-user-pic" src="" class="w-11 h-11 rounded-full object-cover border border-slate-100 group-hover:scale-105 transition-transform" alt="Perfil">
                         <span id="active-user-status-dot" class="absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full bg-brand-500"></span>
                     </div>
                     <div>
@@ -216,75 +244,92 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-4 text-slate-500">
-                    <button onclick="abrirModalWallpaper()" class="hover:text-brand-500 transition-colors text-lg" title="Papel de Parede"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
-                    <button onclick="iniciarChamada('voz')" class="hover:text-brand-500 transition-colors text-lg"><i class="fa-solid fa-phone"></i></button>
-                    <button onclick="iniciarChamada('video')" class="hover:text-brand-500 transition-colors text-lg"><i class="fa-solid fa-video"></i></button>
-                    <button class="hover:text-slate-800 transition-colors" onclick="abrirProfileDrawer()"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                <div class="flex items-center gap-3 text-slate-400">
+                    <button onclick="abrirModalWallpaper()" class="w-10 h-10 rounded-full hover:bg-slate-100 hover:text-brand-500 transition-all text-md" title="Papel de Parede"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+                    <button onclick="iniciarChamada('voz')" class="w-10 h-10 rounded-full hover:bg-slate-100 hover:text-brand-500 transition-all text-md"><i class="fa-solid fa-phone"></i></button>
+                    <button onclick="iniciarChamada('video')" class="w-10 h-10 rounded-full hover:bg-slate-100 hover:text-brand-500 transition-all text-md"><i class="fa-solid fa-video"></i></button>
+                    <button class="w-10 h-10 rounded-full hover:bg-slate-100 hover:text-slate-800 transition-all text-md" onclick="abrirProfileDrawer()"><i class="fa-solid fa-ellipsis-vertical"></i></button>
                 </div>
             </div>
 
-            <!-- CONTAINER DE MENSAGENS -->
             <div id="messages-container" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
 
             <div id="toast-notificacao" class="absolute top-20 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur border border-brand-100 shadow-xl px-5 py-3 rounded-full flex items-center gap-3 transform -translate-y-10 opacity-0 pointer-events-none transition-all duration-300 z-50">
                 <span class="w-2 h-2 rounded-full bg-brand-500 animate-ping"></span>
-                <p class="text-xs font-bold text-slate-800">Nova mensagem de <span id="toast-sender">...</span>!</p>
+                <p class="text-xs font-bold text-slate-800">Nova mensagem de <span id="toast-sender" class="text-brand-600 font-extrabold">...</span>!</p>
             </div>
 
-            <!-- INPUT E GRAVADOR DE ÁUDIO -->
             <div class="p-4 bg-white border-t border-slate-100 flex items-center gap-3 z-10 relative">
                 
-                <div id="normal-input-container" class="flex items-center gap-3 flex-1 transition-all duration-200">
+                <div id="normal-input-container" class="flex items-center gap-2.5 flex-1 transition-all duration-200">
                     <div class="relative group">
-                        <button class="w-11 h-11 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center transition-all">
-                            <i class="fa-solid fa-paperclip text-lg"></i>
+                        <button class="w-11 h-11 bg-slate-50 hover:bg-slate-150 text-slate-500 rounded-full flex items-center justify-center border border-slate-100 transition-all">
+                            <i class="fa-solid fa-paperclip text-md"></i>
                         </button>
-                        <div class="absolute bottom-14 left-0 bg-white shadow-xl rounded-2xl p-2 border border-slate-100 flex flex-col gap-1 hidden group-hover:block w-40 z-20">
-                            <button onclick="enviarMidiaSimulada('imagem')" class="flex items-center gap-2 p-2 rounded-xl text-xs hover:bg-slate-50 text-slate-700 w-full"><i class="fa-solid fa-image text-brand-500 w-5"></i> Foto ou Vídeo</button>
-                            <button onclick="enviarMidiaSimulada('documento')" class="flex items-center gap-2 p-2 rounded-xl text-xs hover:bg-slate-50 text-slate-700 w-full"><i class="fa-solid fa-file text-blue-500 w-5"></i> Documento</button>
-                            <button onclick="iniciarGravacaoAudio()" class="flex items-center gap-2 p-2 rounded-xl text-xs hover:bg-slate-50 text-slate-700 w-full"><i class="fa-solid fa-microphone text-red-500 w-5"></i> Gravar Áudio</button>
+                        <div class="absolute bottom-14 left-0 bg-white shadow-2xl rounded-2xl p-2 border border-slate-100 flex flex-col gap-1 hidden group-hover:block w-44 z-20">
+                            <button onclick="enviarMidiaSimulada('imagem')" class="flex items-center gap-2.5 p-2.5 rounded-xl text-xs hover:bg-slate-50 text-slate-700 w-full transition-colors"><i class="fa-solid fa-image text-brand-500 w-5"></i> Foto ou Vídeo</button>
+                            <button onclick="enviarMidiaSimulada('documento')" class="flex items-center gap-2.5 p-2.5 rounded-xl text-xs hover:bg-slate-50 text-slate-700 w-full transition-colors"><i class="fa-solid fa-file text-blue-500 w-5"></i> Documento</button>
+                            <button onclick="iniciarGravacaoAudio()" class="flex items-center gap-2.5 p-2.5 rounded-xl text-xs hover:bg-slate-50 text-slate-700 w-full transition-colors"><i class="fa-solid fa-microphone text-red-500 w-5"></i> Gravar Áudio</button>
                         </div>
                     </div>
 
-                    <input type="text" id="mensagem-input" placeholder="Escreva sua mensagem..." class="flex-1 bg-slate-100 text-slate-800 rounded-full py-3 px-6 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50 transition-all" autocomplete="off">
+                    <div class="relative group">
+                        <button class="w-11 h-11 bg-slate-50 hover:bg-slate-150 text-slate-500 rounded-full flex items-center justify-center border border-slate-100 transition-all">
+                            <i class="fa-regular fa-face-smile text-lg"></i>
+                        </button>
+                        <div class="absolute bottom-14 left-0 bg-white shadow-2xl rounded-2xl p-2.5 border border-slate-100 grid grid-cols-4 gap-2.5 hidden group-hover:grid w-40 z-20">
+                            <button onclick="inserirEmoji('😀')" class="text-lg hover:scale-125 transition-transform">😀</button>
+                            <button onclick="inserirEmoji('😂')" class="text-lg hover:scale-125 transition-transform">😂</button>
+                            <button onclick="inserirEmoji('👍')" class="text-lg hover:scale-125 transition-transform">👍</button>
+                            <button onclick="inserirEmoji('🔥')" class="text-lg hover:scale-125 transition-transform">🔥</button>
+                            <button onclick="inserirEmoji('🎉')" class="text-lg hover:scale-125 transition-transform">🎉</button>
+                            <button onclick="inserirEmoji('🚀')" class="text-lg hover:scale-125 transition-transform">🚀</button>
+                            <button onclick="inserirEmoji('❤️')" class="text-lg hover:scale-125 transition-transform">❤️</button>
+                            <button onclick="inserirEmoji('👀')" class="text-lg hover:scale-125 transition-transform">👀</button>
+                        </div>
+                    </div>
+
+                    <input type="text" id="mensagem-input" placeholder="Escreva sua mensagem..." class="flex-1 bg-slate-50 text-slate-800 rounded-full py-3.5 px-6 text-sm border border-transparent focus:bg-white focus:border-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all" autocomplete="off">
                 </div>
 
-                <div id="recording-input-container" class="flex-1 items-center justify-between bg-red-50 border border-red-100 rounded-full py-2 px-5 hidden animate-pulse">
+                <div id="recording-input-container" class="flex-1 items-center justify-between bg-red-50 border border-red-100 rounded-full py-2 px-5 hidden transition-all">
                     <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-circle text-red-500 text-[10px] animate-ping"></i>
-                        <span class="text-xs font-bold text-red-600">GRAVANDO ÁUDIO: <span id="record-timer">00:00</span></span>
+                        <div id="wave-container" class="flex gap-0.5 items-center justify-center">
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                        </div>
+                        <span class="text-xs font-bold text-red-600 tracking-wider">GRAVANDO ÁUDIO: <span id="record-timer" class="font-mono">00:00</span></span>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <button onclick="cancelarGravacaoAudio()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center transition-all" title="Cancelar gravação">
-                            <i class="fa-solid fa-trash-can text-sm"></i>
+                    <div class="flex items-center gap-2">
+                        <button onclick="cancelarGravacaoAudio()" class="w-9 h-9 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center transition-all" title="Descartar">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
-                        <button onclick="pararEEnviarGravacaoAudio()" class="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-all" title="Enviar áudio gravado">
-                            <i class="fa-solid fa-check text-sm"></i>
+                        <button onclick="pararEEnviarGravacaoAudio()" class="w-9 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-all shadow-md shadow-red-500/20" title="Enviar">
+                            <i class="fa-solid fa-check text-xs"></i>
                         </button>
                     </div>
                 </div>
 
-                <button id="send-main-btn" onclick="enviarBotaoPrincipal()" class="w-11 h-11 bg-brand-500 hover:bg-brand-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-brand-500/20 transition-all shrink-0">
+                <button id="send-main-btn" onclick="enviarBotaoPrincipal()" class="w-11 h-11 bg-brand-500 hover:bg-brand-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30 transition-all shrink-0">
                     <i id="action-icon" class="fa-solid fa-microphone text-lg"></i>
                 </button>
             </div>
 
-            <!-- DRAWER LATERAL DE PERFIL DO CONTATO (EDITÁVEL) -->
             <div id="profile-drawer" class="absolute top-0 right-0 h-full w-full sm:w-[360px] bg-white border-l border-slate-100 shadow-2xl z-40 drawer-transition translate-x-full flex flex-col hidden">
-                <div class="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50">
+                <div class="p-5 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
                     <h3 class="text-sm font-bold text-slate-800">Dados do Contato</h3>
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2">
                         <button id="btn-edit-contact" onclick="toggleEditContact()" class="text-xs font-bold text-brand-600 hover:text-brand-700 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg transition-all">Editar</button>
-                        <button onclick="fecharProfileDrawer()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                        <button onclick="fecharProfileDrawer()" class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-250 transition-all">
                             <i class="fa-solid fa-xmark text-lg"></i>
                         </button>
                     </div>
                 </div>
                 
                 <div class="flex-1 overflow-y-auto p-6 flex flex-col items-center text-center space-y-6">
-                    
-                    <!-- MODO VISUALIZAÇÃO -->
                     <div id="contact-view-mode" class="w-full flex flex-col items-center space-y-6">
                         <div class="relative">
                             <div id="drawer-avatar-placeholder" class="w-24 h-24 rounded-full bg-brand-500 text-white flex items-center justify-center text-4xl hidden shadow-lg shadow-brand-500/20">🛡️</div>
@@ -293,28 +338,28 @@
                         </div>
                         
                         <div>
-                            <h4 id="drawer-name" class="text-lg font-bold text-slate-800">Nome do Contato</h4>
-                            <p id="drawer-status-text" class="text-xs font-semibold text-brand-500 mt-0.5">Online</p>
+                            <h4 id="drawer-name" class="text-lg font-black text-slate-800 tracking-tight">Nome do Contato</h4>
+                            <p id="drawer-status-text" class="text-xs font-bold text-brand-500 mt-1">Online</p>
                         </div>
 
                         <hr class="w-full border-slate-100">
 
                         <div class="w-full space-y-4 text-left">
                             <div>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Recado / Status</span>
-                                <p id="drawer-bio" class="text-xs text-slate-600 bg-slate-50 p-3 rounded-2xl leading-relaxed font-medium">Sem recado.</p>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Recado / Bio</span>
+                                <p id="drawer-bio" class="text-xs text-slate-600 bg-slate-50 p-3.5 rounded-2xl leading-relaxed font-medium">Sem recado.</p>
                             </div>
 
                             <div>
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Telefone</span>
-                                <p id="drawer-phone" class="text-xs text-slate-700 bg-slate-50 px-3 py-2.5 rounded-xl font-bold flex items-center gap-2">
+                                <p id="drawer-phone" class="text-xs text-slate-700 bg-slate-50 px-3 py-3 rounded-xl font-bold flex items-center gap-2">
                                     <i class="fa-solid fa-phone text-slate-400 text-xs"></i> <span>Não informado</span>
                                 </p>
                             </div>
 
                             <div>
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">E-mail</span>
-                                <p id="drawer-email" class="text-xs text-slate-700 bg-slate-50 px-3 py-2.5 rounded-xl font-bold flex items-center gap-2 truncate">
+                                <p id="drawer-email" class="text-xs text-slate-700 bg-slate-50 px-3 py-3 rounded-xl font-bold flex items-center gap-2 truncate">
                                     <i class="fa-solid fa-envelope text-slate-400 text-xs"></i> <span class="truncate">Não informado</span>
                                 </p>
                             </div>
@@ -324,15 +369,14 @@
 
                         <div class="w-full flex gap-3">
                             <button onclick="iniciarChamada('voz'); fecharProfileDrawer();" class="flex-1 py-3 bg-brand-50 hover:bg-brand-100 text-brand-600 font-bold rounded-2xl text-xs transition-all flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-phone"></i> Voz
+                                <i class="fa-solid fa-phone text-xs"></i> Chamada de Voz
                             </button>
                             <button onclick="iniciarChamada('video'); fecharProfileDrawer();" class="flex-1 py-3 bg-brand-50 hover:bg-brand-100 text-brand-600 font-bold rounded-2xl text-xs transition-all flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-video"></i> Vídeo
+                                <i class="fa-solid fa-video text-xs"></i> Vídeo
                             </button>
                         </div>
                     </div>
 
-                    <!-- MODO EDIÇÃO DO CONTATO (OCULTO POR PADRÃO) -->
                     <div id="contact-edit-mode" class="w-full text-left space-y-4 hidden">
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Nome do Contato</label>
@@ -358,22 +402,20 @@
                             <i class="fa-solid fa-floppy-disk"></i> Salvar Perfil
                         </button>
                     </div>
-
                 </div>
             </div>
 
-            <!-- DRAWER LATERAL DE EDIÇÃO DO SEU PRÓPRIO PERFIL -->
             <div id="my-profile-drawer" class="absolute top-0 left-0 h-full w-full sm:w-[360px] bg-white border-r border-slate-100 shadow-2xl z-40 drawer-transition -translate-x-full flex flex-col hidden">
-                <div class="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50">
+                <div class="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
                     <h3 class="text-sm font-bold text-slate-800">Meu Perfil Criptografado</h3>
-                    <button onclick="fecharMyProfileDrawer()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <button onclick="fecharMyProfileDrawer()" class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition-all">
                         <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
                 <div class="flex-1 overflow-y-auto p-6 flex flex-col space-y-4">
                     <div class="flex flex-col items-center text-center space-y-3 mb-4">
                         <img id="my-drawer-avatar-preview" src="" class="w-20 h-20 rounded-full object-cover border-4 border-slate-100 shadow-md" alt="Preview">
-                        <h4 id="my-drawer-name-title" class="text-base font-bold text-slate-800">Seu Nome</h4>
+                        <h4 id="my-drawer-name-title" class="text-base font-black text-slate-800">Seu Nome</h4>
                     </div>
                     
                     <div>
@@ -420,7 +462,7 @@
         const db = getFirestore(app);
         const messagesCollection = collection(db, "messages");
 
-        // LISTA PADRÃO DE CONTATOS (CASO NÃO EXISTA NO LOCALSTORAGE)
+        // LISTA DE CONTATOS PADRÃO
         const contatosPadrao = [
             {
                 id: "firebase_blindado",
@@ -651,7 +693,6 @@
                 loginContainer.classList.add('hidden');
                 appContainer.classList.remove('hidden');
                 
-                // Renderiza informações básicas do seu perfil no rodapé
                 document.getElementById('my-avatar-profile').src = meuPerfil.foto;
 
                 renderContatos();
@@ -694,7 +735,7 @@
             }
         }
 
-        // COMPORTAMENTO RESPONSIVO E SELEÇÃO DE CONTATO
+        // SELEÇÃO DE CONTATO
         window.selecionarContato = function(id) {
             contatoAtivoId = id;
             const contato = contatos.find(c => c.id === id);
@@ -727,20 +768,22 @@
             const listContainer = document.getElementById('contacts-list');
             listContainer.innerHTML = '';
             const filtro = searchInput.value.toLowerCase();
+            let visiveis = 0;
 
             contatos.forEach(c => {
                 if (filtro && !c.nome.toLowerCase().includes(filtro)) return;
+                visiveis++;
 
                 const isSelected = c.id === contatoAtivoId;
                 const item = document.createElement('div');
-                item.className = `flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all duration-200 select-none ${
-                    isSelected ? 'bg-brand-50 border border-brand-100 shadow-sm' : 'hover:bg-slate-50 border border-transparent'
+                item.className = `flex items-center gap-3.5 p-3.5 rounded-2xl cursor-pointer transition-all duration-300 select-none ${
+                    isSelected ? 'bg-brand-50 border border-brand-100/55 shadow-[0_4px_12px_rgba(16,185,129,0.08)]' : 'hover:bg-slate-50 border border-transparent'
                 }`;
                 item.onclick = () => selecionarContato(c.id);
 
                 let avatarHtml = '';
                 if (c.isFirebase) {
-                    avatarHtml = `<div class="w-11 h-11 rounded-full bg-brand-500 text-white flex items-center justify-center text-xl shrink-0 shadow-md shadow-brand-500/20">🛡️</div>`;
+                    avatarHtml = `<div class="w-11 h-11 rounded-full bg-brand-500 text-white flex items-center justify-center text-xl shrink-0 shadow-md shadow-brand-500/10">🛡️</div>`;
                 } else {
                     avatarHtml = `
                         <div class="relative shrink-0">
@@ -750,23 +793,33 @@
                     `;
                 }
 
-                const badge = c.nLidas > 0 ? `<span class="bg-brand-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shrink-0">${c.nLidas}</span>` : '';
+                const badge = c.nLidas > 0 ? `<span class="bg-brand-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shrink-0 animate-bounce">${c.nLidas}</span>` : '';
 
                 item.innerHTML = `
                     ${avatarHtml}
                     <div class="flex-1 min-w-0">
                         <div class="flex justify-between items-baseline mb-0.5">
-                            <h4 class="font-bold text-slate-800 text-sm truncate ${isSelected ? 'text-brand-900' : ''}">${c.nome}</h4>
-                            <span class="text-[10px] text-slate-400 font-medium">${c.hora}</span>
+                            <h4 class="font-extrabold text-slate-800 text-sm truncate ${isSelected ? 'text-brand-900' : ''}">${c.nome}</h4>
+                            <span class="text-[10px] text-slate-400 font-semibold">${c.hora}</span>
                         </div>
                         <div class="flex justify-between items-center gap-2">
-                            <p class="text-xs text-slate-500 truncate flex-1">${c.ultimaMsg}</p>
+                            <p class="text-xs text-slate-400 truncate flex-1 font-medium">${c.ultimaMsg}</p>
                             ${badge}
                         </div>
                     </div>
                 `;
                 listContainer.appendChild(item);
             });
+
+            if (visiveis === 0) {
+                listContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-10 text-center px-4">
+                        <i class="fa-solid fa-magnifying-glass text-slate-300 text-3xl mb-3"></i>
+                        <h5 class="text-sm font-bold text-slate-700">Contato não encontrado</h5>
+                        <p class="text-[11px] text-slate-450 mt-1 max-w-[200px]">Tente digitar o nome completo ou remova os filtros.</p>
+                    </div>
+                `;
+            }
         }
 
         // RENDERIZAÇÃO DOS BALÕES DE MENSAGEM
@@ -793,11 +846,11 @@
 
             if (contato.online) {
                 statusEl.textContent = 'Online';
-                statusEl.className = 'text-xs text-brand-500 font-medium';
+                statusEl.className = 'text-xs text-brand-500 font-bold';
                 statusDot.className = 'absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full bg-brand-500';
             } else {
                 statusEl.textContent = 'Offline';
-                statusEl.className = 'text-xs text-slate-400 font-medium';
+                statusEl.className = 'text-xs text-slate-400 font-semibold';
                 statusDot.className = 'absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full bg-slate-300';
             }
 
@@ -807,59 +860,59 @@
                 msgWrapper.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} w-full animate-fade-in`;
 
                 const bubble = document.createElement('div');
-                bubble.className = `max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm text-sm relative group transition-all duration-200 ${
+                bubble.className = `max-w-[75%] rounded-3xl px-4.5 py-3 shadow-sm text-sm relative group transition-all duration-200 ${
                     isMe ? 'bg-brand-500 text-white rounded-tr-none' : 'bg-white text-slate-800 rounded-tl-none border border-slate-100'
                 }`;
 
                 let senderLabel = '';
                 if (!isMe && contato.isFirebase && msg.senderId) {
                     const nick = msg.senderId.split('@')[0];
-                    senderLabel = `<span class="block text-xs font-bold mb-1 text-brand-600">${nick}</span>`;
+                    senderLabel = `<span class="block text-[11px] font-black mb-1.5 text-brand-600">${nick}</span>`;
                 }
 
                 let bodyHtml = '';
                 if (msg.tipo === 'texto') {
-                    bodyHtml = `<p class="leading-relaxed break-words">${msg.texto}</p>`;
+                    bodyHtml = `<p class="leading-relaxed break-words font-medium">${msg.texto}</p>`;
                 } else if (msg.tipo === 'imagem') {
                     bodyHtml = `
-                        <div class="rounded-xl overflow-hidden mb-1 max-w-full">
-                            <img src="${msg.url}" class="max-h-60 object-cover w-full cursor-pointer hover:opacity-95 transition-opacity" alt="Anexo">
+                        <div class="rounded-2xl overflow-hidden mb-1.5 max-w-full shadow-sm border border-black/5 bg-slate-100">
+                            <img src="${msg.url}" class="max-h-64 object-cover w-full cursor-pointer hover:opacity-95 transition-all" alt="Anexo">
                         </div>
-                        ${msg.legenda ? `<p class="text-xs mt-1 opacity-90 leading-relaxed">${msg.legenda}</p>` : ''}
+                        ${msg.legenda ? `<p class="text-xs mt-1.5 opacity-90 leading-relaxed font-semibold">${msg.legenda}</p>` : ''}
                     `;
                 } else if (msg.tipo === 'audio') {
                     const audioElemId = `bubble-audio-${contato.id}-${idx}`;
                     bodyHtml = `
-                        <div class="flex items-center gap-3 py-1 min-w-[200px]">
+                        <div class="flex items-center gap-3.5 py-1 min-w-[220px]">
                             ${msg.url ? `<audio id="${audioElemId}" src="${msg.url}" class="hidden" onended="onAudioEnded('${audioElemId}')" ontimeupdate="onAudioProgress('${audioElemId}')"></audio>` : ''}
-                            <button onclick="playPauseBubbleAudio('${audioElemId}', ${!!msg.url})" class="w-8 h-8 rounded-full ${isMe ? 'bg-brand-600 hover:bg-brand-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'} flex items-center justify-center shrink-0 transition-colors">
+                            <button onclick="playPauseBubbleAudio('${audioElemId}', ${!!msg.url})" class="w-9 h-9 rounded-full ${isMe ? 'bg-brand-600 hover:bg-brand-700 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'} flex items-center justify-center shrink-0 transition-all">
                                 <i id="icon-${audioElemId}" class="fa-solid fa-play text-xs pl-0.5"></i>
                             </button>
                             <div class="flex-1">
-                                <div class="h-1 w-full bg-slate-200/50 rounded-full overflow-hidden relative">
+                                <div class="h-1.5 w-full bg-slate-200/50 rounded-full overflow-hidden relative">
                                     <div id="bar-${audioElemId}" class="h-full bg-brand-500 w-0 rounded-full transition-all duration-100"></div>
                                 </div>
                             </div>
-                            <span class="text-[10px] ${isMe ? 'text-brand-100' : 'text-slate-400'}" id="timer-${audioElemId}">${msg.duracao || '0:15'}</span>
+                            <span class="text-[10px] font-bold ${isMe ? 'text-brand-100' : 'text-slate-400'}" id="timer-${audioElemId}">${msg.duracao || '0:15'}</span>
                         </div>
                     `;
                 } else if (msg.tipo === 'documento') {
                     bodyHtml = `
-                        <div class="flex items-center gap-3 p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-700 min-w-[200px]">
+                        <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700 min-w-[220px]">
                             <i class="fa-solid fa-file-pdf text-red-500 text-2xl"></i>
                             <div class="flex-1 overflow-hidden">
                                 <p class="text-xs font-bold truncate">${msg.nome}</p>
                                 <span class="text-[10px] text-slate-400">${msg.tamanho}</span>
                             </div>
-                            <button class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-download"></i></button>
+                            <button class="text-slate-400 hover:text-slate-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 transition-all"><i class="fa-solid fa-download text-xs"></i></button>
                         </div>
                     `;
                 }
 
                 const timeHtml = `
-                    <div class="text-[9px] text-right mt-1.5 opacity-70 select-none flex items-center justify-end gap-1">
+                    <div class="text-[9px] text-right mt-1.5 opacity-70 select-none flex items-center justify-end gap-1 font-semibold">
                         <span>${msg.hora}</span>
-                        ${isMe ? '<i class="fa-solid fa-check-double text-sky-400"></i>' : ''}
+                        ${isMe ? '<i class="fa-solid fa-check-double text-sky-300 text-[10px]"></i>' : ''}
                     </div>
                 `;
 
@@ -869,6 +922,13 @@
             });
 
             containerMensagens.scrollTop = containerMensagens.scrollHeight;
+        }
+
+        // INSERE EMOJI NO INPUT
+        window.inserirEmoji = function(emoji) {
+            inputMsg.value += emoji;
+            inputMsg.focus();
+            atualizarIconeInput();
         }
 
         // PLAYER DE ÁUDIO DE MOCK E GRAVAÇÃO REAL
@@ -923,7 +983,7 @@
             if (progressBar) progressBar.style.width = "0%";
         }
 
-        // GRAVAÇÃO DE ÁUDIO DO MICROFONE (REAL COM WEB AUDIO/MEDIA RECORDER)
+        // GRAVAÇÃO DE ÁUDIO DO MICROFONE (REAL COM WEB AUDIO)
         window.iniciarGravacaoAudio = async function() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1064,7 +1124,7 @@
             fecharModalWallpaper();
         }
 
-        // GERENCIAMENTO DO SEU PRÓPRIO PERFIL (ESQUERDA DRAWER)
+        // MEU PERFIL (DRAWER ESQUERDA)
         window.abrirMyProfileDrawer = function() {
             const drawer = document.getElementById('my-profile-drawer');
             
@@ -1104,21 +1164,19 @@
             meuPerfil.bio = novaBio;
 
             localStorage.setItem('my_profile', JSON.stringify(meuPerfil));
-
-            // Atualiza componente visual do rodapé da lista
             document.getElementById('my-avatar-profile').src = meuPerfil.foto;
 
             fecharMyProfileDrawer();
             alert("Perfil salvo com sucesso!");
         }
 
-        // GERENCIAMENTO DO PAINEL E EDIÇÃO DO PERFIL DOS CONTATOS (DIREITA DRAWER)
+        // PERFIL DO CONTATO (DRAWER DIREITA)
         window.abrirProfileDrawer = function() {
             const contato = contatos.find(c => c.id === contatoAtivoId);
             if (!contato) return;
 
             isEditingContact = false;
-            switchContactDrawerMode(); // Inicia em modo leitura sempre
+            switchContactDrawerMode();
 
             const drawer = document.getElementById('profile-drawer');
             const avatarPlace = document.getElementById('drawer-avatar-placeholder');
@@ -1133,7 +1191,7 @@
             if (contato.isFirebase) {
                 avatarImg.classList.add('hidden');
                 avatarPlace.classList.remove('hidden');
-                document.getElementById('btn-edit-contact').classList.add('hidden'); // Firebase não é editável localmente
+                document.getElementById('btn-edit-contact').classList.add('hidden');
             } else {
                 avatarImg.src = contato.foto || 'https://images.unsplash.com/photo-1614680376593-902f74fa0d41?w=150';
                 avatarImg.classList.remove('hidden');
@@ -1226,10 +1284,10 @@
 
             isEditingContact = false;
             switchContactDrawerMode();
-            abrirProfileDrawer(); // Atualiza a renderização de visualização
+            abrirProfileDrawer();
         }
 
-        // DISPARO E PROCESSAMENTO DE ENVIO DE MENSAGENS
+        // ENVIAR MENSAGENS
         window.enviarBotaoPrincipal = function() {
             const texto = inputMsg.value.trim();
             if (texto) {
@@ -1254,7 +1312,7 @@
                     return;
                 }
                 if (texto.length > 1000) {
-                    alert("A mensagem excede o limite estrito de 1000 caracteres.");
+                    alert("A mensagem excede o limite de 1000 caracteres.");
                     return;
                 }
 
@@ -1269,7 +1327,7 @@
                     atualizarIconeInput();
                 } catch (e) {
                     console.error("Mensagem recusada:", e);
-                    alert("Erro ao enviar. Certifique-se de que atende as validações do Firebase.");
+                    alert("Erro ao enviar. Verifique as regras do Firebase.");
                 }
             } else {
                 const agora = new Date();
@@ -1347,7 +1405,7 @@
             }
         }
 
-        // SIMULADOR DE RESPOSTAS AUTOMÁTICAS
+        // AUTOMACÃO E SIMULAÇÃO DE RESPOSTAS
         const respostasFicticias = [
             "Excelente, estarei de olho!",
             "Tudo resolvido por aqui. E com você?",
@@ -1362,7 +1420,7 @@
             if (!activeContact) return;
 
             if (activeContact.isFirebase) {
-                alert("A Sala Ultra Blindada está integrada ao Firebase real! Abra o app em outra janela anônima para testar o envio em tempo real.");
+                alert("A Sala Ultra Blindada está integrada ao Firebase real! Abra em outra janela anônima para testar o envio em tempo real.");
                 return;
             }
 
@@ -1388,7 +1446,7 @@
             renderMensagens();
         }
 
-        // SISTEMAS DE NOTIFICAÇÃO (TOAST & SISTEMA OPERACIONAL)
+        // TOASTS E NOTIFICAÇÕES
         function mostrarToast(remetente) {
             const toast = document.getElementById('toast-notificacao');
             document.getElementById('toast-sender').textContent = remetente;
@@ -1415,7 +1473,7 @@
             }
         }
 
-        // COMPORTAMENTO DINÂMICO DOS BOTÕES E INPUTS
+        // DINÂMICA DE INPUTS E BOTÕES
         function atualizarIconeInput() {
             if (inputMsg.value.trim().length > 0) {
                 actionIcon.className = "fa-solid fa-paper-plane text-lg";
@@ -1434,7 +1492,7 @@
 
         searchInput.addEventListener('input', renderContatos);
 
-        // MONITORAMENTO DO FIREBASE CLOUD DATABASE
+        // MONITORAMENTO DE DADOS DO FIREBASE
         const q = query(messagesCollection, orderBy("timestamp", "asc"));
         onSnapshot(q, (snapshot) => {
             const firebaseMsgs = [];
@@ -1469,7 +1527,6 @@
                 }
                 renderContatos();
 
-                // Notificar sobre novas mensagens na nuvem se vierem de outro remetente
                 if (firebaseMsgs.length > 0) {
                     const lastMsg = firebaseMsgs[firebaseMsgs.length - 1];
                     const userEmail = localStorage.getItem('chat_user_email');
@@ -1485,7 +1542,7 @@
             }
         });
 
-        // SIMULADOR SENSORIAL DE CHAMADAS DE VOZ/VÍDEO
+        // SIMULADOR DE CHAMADAS
         window.iniciarChamada = function(tipo) {
             const contato = contatos.find(c => c.id === contatoAtivoId);
             if (!contato) return;
@@ -1511,7 +1568,7 @@
             atualizarBotoesChamada();
 
             iniciarTomChamando();
-            voicePulse.classList.add('animate-ping');
+            voicePulse.classList.add('animate-pulse-glow');
 
             callTimer = setTimeout(async () => {
                 pararTomChamando();
@@ -1533,7 +1590,7 @@
                         mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                         localVideo.srcObject = mediaStream;
                     } catch (e) {
-                        console.warn("Câmera não permitida ou inexistente.");
+                        console.warn("Câmera indisponível.");
                         document.getElementById('video-placeholder').classList.remove('hidden');
                     }
                 }
@@ -1609,7 +1666,7 @@
             const btnSpk = document.getElementById('btn-speaker');
 
             if (isMuted) {
-                btnMute.className = "w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center transition-all";
+                btnMute.className = "w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center transition-all shadow-md shadow-red-550/20";
                 document.getElementById('mute-icon').className = "fa-solid fa-microphone-slash text-lg";
             } else {
                 btnMute.className = "w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition-all";
@@ -1617,7 +1674,7 @@
             }
 
             if (isVideoActive) {
-                btnVid.className = "w-12 h-12 rounded-full bg-brand-500 text-white flex items-center justify-center transition-all";
+                btnVid.className = "w-12 h-12 rounded-full bg-brand-500 text-white flex items-center justify-center transition-all shadow-md shadow-brand-550/20";
                 document.getElementById('video-icon').className = "fa-solid fa-video text-lg";
             } else {
                 btnVid.className = "w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition-all";
@@ -1625,11 +1682,11 @@
             }
 
             btnSpk.className = isSpeaker 
-                ? "w-12 h-12 rounded-full bg-brand-500 text-white flex items-center justify-center transition-all"
+                ? "w-12 h-12 rounded-full bg-brand-500 text-white flex items-center justify-center transition-all shadow-md shadow-brand-550/20"
                 : "w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition-all";
         }
 
-        // TELA CHEIA (FULLSCREEN)
+        // FULLSCREEN
         window.toggleFullscreen = function() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(e => alert(`Falha ao entrar em tela cheia: ${e.message}`));
