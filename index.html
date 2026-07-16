@@ -7,35 +7,33 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            /* Palette Vercel / Linear inspired */
-            --bg-black: #09090b;
-            --bg-card: #121215;
-            --bg-card-hover: #18181c;
-            --bg-panel: #151518;
-            --primary: #10b981; /* Emerald Tech */
-            --primary-glow: rgba(16, 185, 129, 0.15);
-            --border-subtle: rgba(255, 255, 255, 0.06);
-            --border-active: rgba(255, 255, 255, 0.12);
+            --bg-black: #050507;
+            --bg-card: #0c0c0e;
+            --bg-card-hover: #141417;
+            --bg-panel: #111113;
+            --primary: #10b981; 
+            --primary-glow: rgba(16, 185, 129, 0.12);
+            --border-subtle: rgba(255, 255, 255, 0.04);
+            --border-active: rgba(255, 255, 255, 0.1);
             --text-main: #f4f4f5;
             --text-secondary: #a1a1aa;
-            --text-muted: #52525b;
-            --shadow-premium: 0 16px 40px -10px rgba(0, 0, 0, 0.7);
+            --text-muted: #4b4b52;
+            --shadow-premium: 0 24px 50px -12px rgba(0, 0, 0, 0.8);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: #030303;
+            background-color: #020203;
             background-image: 
-                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(24, 24, 28, 0.6) 0px, transparent 50%);
-            height: 100vh;
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.03) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(20, 20, 25, 0.8) 0px, transparent 50%);
             height: 100dvh;
             display: flex;
             justify-content: center;
@@ -44,7 +42,6 @@
             color: var(--text-main);
         }
 
-        /* Container Principal */
         .app-container {
             position: relative;
             width: 100%;
@@ -53,48 +50,46 @@
             background-color: var(--bg-black);
             display: flex;
             overflow: hidden;
-            border-radius: 0;
-            border: none;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         @media (min-width: 481px) {
             .app-container {
-                height: 85vh;
-                border-radius: 24px;
+                height: 88vh;
+                border-radius: 28px;
                 border: 1px solid var(--border-subtle);
-                box-shadow: var(--shadow-premium), 0 0 0 1px rgba(255,255,255,0.02);
+                box-shadow: var(--shadow-premium), 0 0 0 1px rgba(255,255,255,0.01);
             }
         }
 
-        /* Container de Notificações Toast no Topo */
+        /* Notificação Push Estilo OS */
         .toast-container {
             position: absolute;
             top: 16px;
             left: 16px;
             right: 16px;
-            z-index: 999;
+            z-index: 9999;
             pointer-events: none;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
         .toast-notification {
-            background: rgba(18, 18, 21, 0.85);
+            background: rgba(12, 12, 14, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-active);
-            border-radius: 14px;
-            padding: 14px 18px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-            transform: translateY(-40px) scale(0.95);
+            gap: 14px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            transform: translateY(-50px) scale(0.9);
             opacity: 0;
             pointer-events: auto;
-            cursor: pointer;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -103,7 +98,22 @@
             opacity: 1;
         }
 
-        /* ================= SIDEBAR (Lista de Conversas) ================= */
+        .toast-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--bg-card-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-active);
+            color: var(--primary);
+        }
+
+        .toast-body { flex: 1; min-width: 0; }
+        .toast-title { font-size: 13px; font-weight: 600; color: var(--text-main); }
+        .toast-text { font-size: 12px; color: var(--text-secondary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin-top: 2px; }
+
         .sidebar {
             flex: 100%;
             min-width: 100%;
@@ -113,16 +123,13 @@
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .app-container.chat-open .sidebar {
-            transform: translateX(-100%);
-        }
+        .app-container.chat-open .sidebar { transform: translateX(-100%); }
 
-        /* Cabeçalhos Modernos */
         .header {
-            height: 76px;
-            background: rgba(9, 9, 11, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            height: 80px;
+            background: rgba(5, 5, 7, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -131,184 +138,67 @@
             z-index: 10;
         }
 
-        .header-left-side {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            overflow: hidden;
-        }
-
-        .header-title {
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: -0.3px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .header-title i {
-            color: var(--primary);
-            font-size: 14px;
-        }
-
-        .header-icons {
-            display: flex;
-            gap: 14px;
-            color: var(--text-secondary);
-            font-size: 15px;
-            align-items: center;
-        }
-
+        .header-left-side { display: flex; align-items: center; gap: 14px; overflow: hidden; }
+        .header-title { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; display: flex; align-items: center; gap: 8px; }
+        .header-title i { color: var(--primary); }
+        
+        .header-icons { display: flex; gap: 12px; color: var(--text-secondary); align-items: center; }
         .header-icons i {
             cursor: pointer;
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            border: 1px solid transparent;
             transition: all 0.2s ease;
         }
-
-        .header-icons i:hover {
-            color: var(--text-main);
-            background-color: var(--bg-card);
-            border-color: var(--border-subtle);
-        }
+        .header-icons i:hover { color: var(--text-main); background-color: var(--bg-card); }
 
         .mobile-back-btn {
-            font-size: 15px;
+            font-size: 16px;
             color: var(--text-secondary);
             cursor: pointer;
             padding: 8px;
-            margin-right: 4px;
             border-radius: 50%;
-            transition: background 0.2s;
             display: none;
         }
+        .app-container.chat-open .mobile-back-btn { display: block; }
 
-        .app-container.chat-open .mobile-back-btn {
-            display: block;
-        }
-
-        /* Campo de Pesquisa */
-        .search-container {
-            padding: 12px 20px 20px 20px;
-            background-color: var(--bg-black);
-        }
-
+        .search-container { padding: 12px 20px 20px 20px; }
         .search-box {
             background-color: var(--bg-card);
             border: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
-            padding: 10px 14px;
-            border-radius: 12px;
-            gap: 10px;
-            transition: all 0.2s ease;
+            padding: 12px 16px;
+            border-radius: 14px;
+            gap: 12px;
         }
+        .search-box input { border: none; background: transparent; width: 100%; outline: none; font-size: 14px; color: var(--text-main); }
+        .search-box input::placeholder { color: var(--text-muted); }
 
-        .search-box:focus-within {
-            border-color: var(--text-muted);
-            box-shadow: 0 0 0 1px var(--text-muted);
-        }
-
-        .search-box input {
-            border: none;
-            background: transparent;
-            width: 100%;
-            outline: none;
-            font-size: 13.5px;
-            color: var(--text-main);
-        }
-
-        .search-box input::placeholder {
-            color: var(--text-muted);
-        }
-
-        /* Lista de Chats */
-        .chat-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 16px;
-        }
-
+        .chat-list { flex: 1; overflow-y: auto; padding: 0 16px; }
         .chat-item {
             display: flex;
-            padding: 16px;
-            margin-bottom: 8px;
-            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 10px;
+            border-radius: 20px;
             background-color: var(--bg-card);
             border: 1px solid var(--border-subtle);
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.2s ease;
         }
+        .chat-item:hover { background-color: var(--bg-card-hover); border-color: var(--border-active); }
+        .chat-item.active { background-color: var(--bg-card-hover); border-color: rgba(255, 255, 255, 0.15); }
+        
+        .chat-info { flex: 1; overflow: hidden; }
+        .chat-info-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .email-display { font-size: 14.5px; font-weight: 500; display: flex; align-items: center; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+        .email-domain { color: var(--text-secondary); opacity: 0.5; font-weight: 400; }
+        .chat-time { font-size: 11px; color: var(--text-muted); }
+        .chat-msg-preview { font-size: 13px; color: var(--text-secondary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; flex: 1; opacity: 0.75; }
 
-        .chat-item:hover {
-            background-color: var(--bg-card-hover);
-            border-color: var(--border-active);
-            transform: translateY(-1px);
-        }
-
-        .chat-item.active {
-            background-color: var(--bg-card-hover);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.02);
-        }
-
-        .chat-info {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .chat-info-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-
-        /* Formatação de E-mail */
-        .email-display {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-main);
-            letter-spacing: -0.2px;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .email-domain {
-            color: var(--text-secondary);
-            font-weight: 400;
-            opacity: 0.6;
-        }
-
-        .chat-time {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-left: 8px;
-            flex-shrink: 0;
-        }
-
-        .chat-msg-preview {
-            font-size: 13px;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            opacity: 0.8;
-            flex: 1;
-        }
-
-        /* Badge de mensagens não lidas */
         .unread-badge {
             background-color: var(--primary);
             color: #022c22;
@@ -316,64 +206,13 @@
             font-weight: 700;
             min-width: 18px;
             height: 18px;
-            border-radius: 9px;
+            border-radius: 50%;
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 0 6px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
-        /* Estado Vazio Interativo */
-        #emptyState {
-            text-align: center;
-            padding: 60px 24px;
-            color: var(--text-secondary);
-            font-size: 13.5px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .empty-icon-box {
-            width: 56px;
-            height: 56px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            font-size: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            margin-bottom: 8px;
-        }
-
-        .empty-btn {
-            background-color: var(--text-main);
-            color: var(--bg-black);
-            border: none;
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .empty-btn:hover {
-            transform: translateY(-1px);
-            opacity: 0.9;
-        }
-
-        /* ================= ÁREA DE CONVERSA (CHAT) ================= */
+        /* ================= CONVERSA ================= */
         .chat-area {
             flex: 100%;
             min-width: 100%;
@@ -388,221 +227,122 @@
             z-index: 10;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .app-container.chat-open .chat-area { right: 0; }
 
-        .app-container.chat-open .chat-area {
-            right: 0;
-        }
-
-        /* Janela de Mensagens */
         .chat-window {
             flex: 1;
             padding: 24px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            background-color: var(--bg-black);
-            -webkit-overflow-scrolling: touch;
+            gap: 18px;
         }
 
-        /* Temas Premium */
-        .wp-classic { background: radial-gradient(circle at top, #0e0e11, #09090b); }
-        .wp-dark { background: #09090b; background-image: radial-gradient(rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 24px 24px; }
-        .wp-sunset { background: linear-gradient(180deg, #110515 0%, #09090b 100%); }
-        .wp-forest { background: linear-gradient(180deg, #03120d 0%, #09090b 100%); }
-        .wp-neon { background: radial-gradient(circle at center, #071018, #09090b); }
+        .wp-classic { background: radial-gradient(circle at top, #0b0b0d, #050507); }
+        .wp-dark { background: #050507; background-image: radial-gradient(rgba(255,255,255,0.01) 1px, transparent 1px); background-size: 20px 20px; }
+        .wp-sunset { background: linear-gradient(180deg, #120310 0%, #050507 100%); }
+        .wp-forest { background: linear-gradient(180deg, #020f0a 0%, #050507 100%); }
+        .wp-neon { background: radial-gradient(circle at center, #040910, #050507); }
 
-        /* Mensagens */
         .message {
             max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 16px;
-            font-size: 14px;
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: 14.5px;
             line-height: 1.5;
-            position: relative;
-            word-wrap: break-word;
             display: flex;
             flex-direction: column;
-            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(16px) scale(0.96); }
+            from { opacity: 0; transform: translateY(12px) scale(0.97); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .message .time {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 6px;
-            align-self: flex-end;
-        }
+        .message .time { font-size: 10px; color: var(--text-muted); margin-top: 6px; align-self: flex-end; }
+        .msg-received { background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg-sent { background: #ffffff; color: #000000; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg-sent .time { color: rgba(0, 0, 0, 0.45); }
 
-        .msg-received {
-            background: var(--bg-card);
+        .img-attachment {
+            max-width: 100%;
+            max-height: 220px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 4px;
             border: 1px solid var(--border-subtle);
-            color: var(--text-main);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
         }
 
-        .msg-sent {
-            background: #ffffff;
-            color: #000000;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-            box-shadow: 0 4px 14px rgba(255, 255, 255, 0.05);
-        }
-
-        .msg-sent .time {
-            color: rgba(0, 0, 0, 0.5);
-        }
-
-        /* Estilos do Card de Anexo (Documento) */
         .doc-attachment {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: rgba(255,255,255,0.06);
-            padding: 10px 14px;
-            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            padding: 12px 16px;
+            border-radius: 14px;
             margin-bottom: 4px;
             border: 1px solid var(--border-subtle);
-            color: var(--text-main);
-            min-width: 180px;
-            transition: background 0.2s;
+            min-width: 220px;
+            cursor: pointer;
         }
+        .doc-info { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+        .doc-title { font-size: 13.5px; font-weight: 500; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+        .doc-size { font-size: 11px; color: var(--text-secondary); margin-top: 2px; opacity: 0.7; }
 
-        .doc-attachment:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .doc-info {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex: 1;
-        }
-
-        .doc-title {
-            font-size: 13px;
-            font-weight: 500;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
-        .doc-size {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
-
-        /* Ícone de download dinâmico */
-        .download-link-btn {
-            color: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            transition: background 0.2s;
-            margin-left: auto;
-        }
-
-        .download-link-btn:hover {
-            background: rgba(255,255,255,0.12);
-        }
-
-        /* Adaptação do anexo quando a bolha for branca (mensagem enviada) */
-        .msg-sent .doc-attachment {
-            background: rgba(0, 0, 0, 0.05);
-            border-color: rgba(0, 0, 0, 0.1);
-            color: #000000;
-        }
-        .msg-sent .doc-attachment:hover {
-            background: rgba(0, 0, 0, 0.08);
-        }
-        .msg-sent .doc-attachment .doc-title { color: #000000; }
-        .msg-sent .doc-attachment .doc-size { color: rgba(0,0,0,0.5); }
+        .msg-sent .doc-attachment { background: rgba(0, 0, 0, 0.04); border-color: rgba(0, 0, 0, 0.08); color: #000000; }
         .msg-sent .doc-attachment i { color: #000000; }
-        .msg-sent .download-link-btn:hover {
-            background: rgba(0, 0, 0, 0.08);
-        }
 
-        /* Modal de Visualização de Mídia (Lightbox) */
+        /* ================= BARRA DE PREVIEW PREMIUM ================= */
+        .preview-bar {
+            display: none;
+            background: rgba(12, 12, 14, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-active);
+            border-radius: 16px;
+            margin: 0 20px -8px 20px;
+            padding: 12px 16px;
+            align-items: center;
+            gap: 14px;
+            animation: previewFade 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 5;
+        }
+        .preview-bar.active { display: flex; }
+        @keyframes previewFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .preview-visual-box { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border-subtle); background: var(--bg-black); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 20px; }
+        .preview-details { flex: 1; min-width: 0; }
+        .preview-name { font-size: 13px; font-weight: 500; color: var(--text-main); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+        .preview-size { font-size: 11px; color: var(--text-secondary); margin-top: 2px; opacity: 0.6; }
+        
+        .btn-cancel-preview { background: transparent; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .btn-cancel-preview:hover { background: rgba(255,255,255,0.05); color: #f43f5e; }
+
+        /* Modal Lightbox */
         .media-modal {
             display: none;
             position: fixed;
             z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(9, 9, 11, 0.96);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(5, 5, 7, 0.98);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            align-items: center; justify-content: center; flex-direction: column; padding: 20px;
         }
+        .media-modal-content { display: none; max-width: 95%; max-height: 75vh; border-radius: 20px; border: 1px solid var(--border-active); }
+        .modal-text-preview { display: none; width: 100%; max-width: 500px; max-height: 60vh; background: var(--bg-card); border: 1px solid var(--border-active); padding: 24px; border-radius: 20px; font-family: monospace; font-size: 13px; overflow-y: auto; white-space: pre-wrap; }
+        .modal-iframe-preview { display: none; width: 100%; max-width: 620px; height: 72vh; border: 1px solid var(--border-active); border-radius: 20px; background: #ffffff; }
+        
+        .close-modal { position: absolute; top: 24px; right: 28px; color: var(--text-secondary); font-size: 28px; cursor: pointer; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.04); border-radius: 50%; }
+        #captionModal { margin-top: 18px; color: var(--text-secondary); font-size: 14px; font-weight: 500; }
 
-        .media-modal-content {
-            margin: auto;
-            display: block;
-            max-width: 90%;
-            max-height: 75vh;
-            border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-            border: 1px solid var(--border-active);
-            animation: zoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes zoomIn {
-            from { transform: scale(0.92); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 24px;
-            right: 28px;
-            color: var(--text-secondary);
-            font-size: 32px;
-            font-weight: bold;
-            transition: color 0.2s;
-            cursor: pointer;
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.03);
-            border-radius: 50%;
-            border: 1px solid var(--border-subtle);
-        }
-
-        .close-modal:hover {
-            color: var(--text-main);
-            background: rgba(255,255,255,0.08);
-        }
-
-        #captionModal {
-            margin-top: 16px;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 13.5px;
-            font-weight: 500;
-        }
-
-        /* Rodapé de Envio */
         .chat-footer {
-            background: rgba(9, 9, 11, 0.85);
+            background: rgba(5, 5, 7, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            padding: 16px 20px;
+            padding: 20px;
             display: flex;
             align-items: flex-end;
             gap: 12px;
@@ -610,596 +350,465 @@
             position: relative;
         }
 
-        .footer-icons {
-            color: var(--text-secondary);
-            font-size: 17px;
-            cursor: pointer;
-            display: flex;
-            gap: 14px;
-            padding-bottom: 10px;
-        }
+        .footer-icons { color: var(--text-secondary); font-size: 18px; cursor: pointer; display: flex; gap: 14px; padding-bottom: 10px; }
+        .footer-icons i { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; }
+        .footer-icons i:hover { color: var(--text-main); background-color: var(--bg-card); }
 
-        .footer-icons i {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.2s;
-        }
-
-        .footer-icons i:hover {
-            color: var(--text-main);
-            background-color: var(--bg-card);
-        }
-
-        .input-wrapper {
-            flex: 1;
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 14px;
-            padding: 4px 14px;
-            display: flex;
-            align-items: flex-end;
-            min-height: 40px;
-            max-height: 140px;
-            transition: all 0.2s ease;
-        }
-
-        .input-wrapper:focus-within {
-            border-color: var(--border-active);
-        }
-
-        .chat-input {
-            width: 100%;
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 13.5px;
-            color: white;
-            resize: none;
-            padding: 8px 0;
-            line-height: 1.4;
-        }
+        .input-wrapper { flex: 1; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 6px 16px; display: flex; align-items: flex-end; min-height: 44px; max-height: 140px; }
+        .chat-input { width: 100%; border: none; outline: none; background: transparent; font-size: 14px; color: white; resize: none; padding: 8px 0; line-height: 1.4; }
         .chat-input::placeholder { color: var(--text-muted); }
 
-        .btn-send {
-            background-color: white;
-            color: black;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 14px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
+        .btn-send { background-color: white; color: black; border: none; width: 44px; height: 44px; border-radius: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
 
-        .btn-send:active { transform: scale(0.95); }
-
-        /* Painel de Emojis */
+        /* Painel Flexível de Emojis */
         .emoji-panel {
             position: absolute;
-            bottom: 80px;
-            left: 20px;
-            background: var(--bg-panel);
+            bottom: 86px; left: 20px;
+            background: rgba(12, 12, 14, 0.96);
+            backdrop-filter: blur(30px);
             border: 1px solid var(--border-active);
-            border-radius: 18px;
-            padding: 14px;
-            display: none;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
-            box-shadow: var(--shadow-premium);
-            z-index: 100;
-            width: 260px;
-            max-height: 220px;
-            overflow-y: auto;
-        }
-
-        .emoji-panel.show { display: grid; }
-
-        .emoji-panel::-webkit-scrollbar { width: 4px; }
-        .emoji-panel::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 10px; }
-
-        .emoji-item {
-            font-size: 18px;
-            cursor: pointer;
-            text-align: center;
-            transition: transform 0.1s ease;
-            user-select: none;
-        }
-
-        .emoji-item:hover { transform: scale(1.2); }
-
-        /* Painel de Temas */
-        .wallpaper-panel {
-            position: absolute;
-            top: 75px;
-            right: 20px;
-            background: var(--bg-panel);
-            border: 1px solid var(--border-active);
-            border-radius: 16px;
-            padding: 8px;
+            border-radius: 20px;
+            padding: 16px;
+            width: 320px;
+            height: 280px;
             display: none;
             flex-direction: column;
-            gap: 4px;
+            gap: 12px;
+            z-index: 100;
             box-shadow: var(--shadow-premium);
-            z-index: 101;
-            width: 155px;
         }
-
-        .wallpaper-panel.show { display: flex; }
-
-        .wp-option {
-            padding: 10px 12px;
-            font-size: 13px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background 0.2s;
-            color: var(--text-main);
-        }
-
-        .wp-option:hover { background-color: var(--bg-card-hover); }
-
-        .wp-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
+        .emoji-panel.show { display: flex; }
+        .emoji-header-tabs { display: flex; gap: 10px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px; overflow-x: auto; scrollbar-width: none; }
+        .emoji-header-tabs::-webkit-scrollbar { display: none; }
+        .emoji-tab { font-size: 12.5px; padding: 6px 10px; cursor: pointer; border-radius: 8px; color: var(--text-secondary); white-space: nowrap; }
+        .emoji-tab.active { background: rgba(255, 255, 255, 0.08); color: var(--primary); font-weight: 500; }
+        
+        .emoji-grid-container { flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; padding-right: 4px; }
+        .emoji-item { font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 10px; height: 40px; transition: all 0.15s ease; }
+        .emoji-item:hover { background: rgba(255, 255, 255, 0.08); transform: scale(1.18); }
     </style>
 </head>
 <body>
 
-    <div class="app-container" id="app">
-        
+    <div class="app-container" id="appContainer">
         <div class="toast-container" id="toastContainer"></div>
+        <input type="file" id="fileInput" style="display: none;" onchange="processFileSelection(this)">
 
         <div class="sidebar">
             <div class="header">
                 <div class="header-left-side">
-                    <span class="header-title">
-                        <i class="fa-solid fa-bolt"></i> Workspace 💬🚀✨
-                    </span>
+                    <span class="header-title"><i class="fa-solid fa-gem"></i> Obsidian Support</span>
                 </div>
-                <div class="header-icons">
-                    <i class="fa-solid fa-plus" id="newChatBtn" title="Nova Conversa ➕" onclick="promptNewChat()"></i>
-                    <i class="fa-solid fa-sliders" title="Ajustes ⚙️" onclick="showToast('Ajustes do Workspace')"></i>
-                </div>
+                <div class="header-icons"><i class="fa-solid fa-circle-nodes" id="statusIcon"></i></div>
             </div>
 
             <div class="search-container">
                 <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted); font-size: 12px;"></i>
-                    <input type="text" id="searchInput" placeholder="Filtrar por e-mail ou domínio... 🔍📧✨" oninput="filterChats()">
+                    <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted); font-size: 14px;"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar canal de suporte...">
                 </div>
             </div>
 
-            <div class="chat-list" id="chatList">
-                <div id="emptyState">
-                    <div class="empty-icon-box">
-                        <i class="fa-regular fa-comment-dots"></i> 👋😄
-                    </div>
-                    <div style="font-weight: 500; font-size: 14px; color: var(--text-main);">Sua caixa está vazia! 😭💔💤</div>
-                    <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; max-width: 220px; margin: 0 auto;">
-                        Crie um canal altamente criptografado e seguro agora mesmo! 🔒🛡️💼🚀
-                    </div>
-                    <button class="empty-btn" id="emptyActionBtn" onclick="promptNewChat()">
-                        ✨ Iniciar Conversa 💬🚀
-                    </button>
-                </div>
-            </div>
+            <div class="chat-list" id="chatList"></div>
         </div>
 
         <div class="chat-area">
             <div class="header">
                 <div class="header-left-side">
-                    <i class="fa-solid fa-arrow-left mobile-back-btn" id="backBtn" onclick="toggleChat(false)"></i>
-                    <div>
-                        <h2 class="header-title" id="currentChatUser">Nenhum chat selecionado</h2>
-                        <span style="font-size: 11px; color: var(--primary);" id="chatStatus">• Online</span>
-                    </div>
+                    <i class="fa-solid fa-arrow-left mobile-back-btn" onclick="closeChat()"></i>
+                    <div><div class="email-display" id="activeChatEmail"></div></div>
                 </div>
                 <div class="header-icons">
-                    <i class="fa-solid fa-palette" onclick="toggleWallpaperPanel()" title="Alterar Tema"></i>
-                    <i class="fa-solid fa-ellipsis-vertical" onclick="showToast('Mais opções')"></i>
+                    <i class="fa-solid fa-palette" onclick="cycleTheme()" title="Trocar Fundo"></i>
+                    <i class="fa-solid fa-shield-halved" onclick="showInfoToast()" title="Criptografia Ilimitada"></i>
                 </div>
             </div>
 
             <div class="chat-window wp-classic" id="chatWindow"></div>
 
+            <div class="preview-bar" id="previewBar">
+                <div id="previewVisual"></div>
+                <div class="preview-details">
+                    <div class="preview-name" id="previewName">arquivo.png</div>
+                    <div class="preview-size" id="previewSize">0 Bytes</div>
+                </div>
+                <button class="btn-cancel-preview" onclick="cancelAttachment()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
             <div class="chat-footer">
                 <div class="footer-icons">
-                    <i class="fa-regular fa-face-smile" onclick="toggleEmojiPanel()" title="Inserir Emoji"></i>
-                    <i class="fa-regular fa-image" onclick="triggerInput('photoInput')" title="Enviar Foto 📸"></i>
-                    <i class="fa-regular fa-file-lines" onclick="triggerInput('docInput')" title="Enviar Documento 📄"></i>
+                    <i class="fa-regular fa-face-smile" id="emojiToggleBtn" onclick="toggleEmojiPanel(event)"></i>
+                    <i class="fa-solid fa-paperclip" onclick="triggerFileInput()"></i>
                 </div>
-
-                <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="handleFileUpload(this, 'image')">
-                <input type="file" id="docInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip" style="display: none;" onchange="handleFileUpload(this, 'document')">
-
                 <div class="input-wrapper">
-                    <textarea class="chat-input" id="messageInput" rows="1" placeholder="Digite uma mensagem..." onkeydown="handleKeyPress(event)"></textarea>
+                    <textarea class="chat-input" id="chatInput" placeholder="Sua resposta premium..." rows="1" oninput="autoGrow(this)"></textarea>
                 </div>
-                <button class="btn-send" onclick="sendMessage()">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
+                <button class="btn-send" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
 
                 <div class="emoji-panel" id="emojiPanel">
-                    <span class="emoji-item" onclick="insertEmoji('😊')">😊</span>
-                    <span class="emoji-item" onclick="insertEmoji('😂')">😂</span>
-                    <span class="emoji-item" onclick="insertEmoji('😍')">😍</span>
-                    <span class="emoji-item" onclick="insertEmoji('👍')">👍</span>
-                    <span class="emoji-item" onclick="insertEmoji('🔥')">🔥</span>
-                    <span class="emoji-item" onclick="insertEmoji('✨')">✨</span>
-                    <span class="emoji-item" onclick="insertEmoji('🚀')">🚀</span>
-                    <span class="emoji-item" onclick="insertEmoji('💎')">💎</span>
-                    <span class="emoji-item" onclick="insertEmoji('💻')">💻</span>
-                    <span class="emoji-item" onclick="insertEmoji('🎉')">🎉</span>
-                    <span class="emoji-item" onclick="insertEmoji('🔒')">🔒</span>
-                    <span class="emoji-item" onclick="insertEmoji('🎯')">🎯</span>
-                </div>
-
-                <div class="wallpaper-panel" id="wallpaperPanel">
-                    <div class="wp-option" onclick="setWallpaper('wp-classic')">
-                        <div class="wp-dot" style="background: radial-gradient(circle, #0e0e11, #09090b);"></div> Classic
-                    </div>
-                    <div class="wp-option" onclick="setWallpaper('wp-dark')">
-                        <div class="wp-dot" style="background: #09090b;"></div> Matrix Dark
-                    </div>
-                    <div class="wp-option" onclick="setWallpaper('wp-sunset')">
-                        <div class="wp-dot" style="background: linear-gradient(#110515, #09090b);"></div> Sunset Glow
-                    </div>
-                    <div class="wp-option" onclick="setWallpaper('wp-forest')">
-                        <div class="wp-dot" style="background: linear-gradient(#03120d, #09090b);"></div> Forest Bio
-                    </div>
-                    <div class="wp-option" onclick="setWallpaper('wp-neon')">
-                        <div class="wp-dot" style="background: radial-gradient(#071018, #09090b);"></div> Cyber Neon
-                    </div>
+                    <div class="emoji-header-tabs" id="emojiTabs"></div>
+                    <div class="emoji-grid-container" id="emojiGrid"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="mediaModal" class="media-modal" onclick="closeMediaModal()">
-        <span class="close-modal">&times;</span>
-        <img class="media-modal-content" id="imgModalTarget">
+    <div class="media-modal" id="mediaModal">
+        <span class="close-modal" onclick="closeMediaModal()">&times;</span>
+        <img class="media-modal-content" id="modalImg">
+        <div class="modal-text-preview" id="modalText"></div>
+        <iframe class="modal-iframe-preview" id="modalIframe"></iframe>
         <div id="captionModal"></div>
     </div>
 
     <script>
-        // Memória do Chat
-        const chatData = {};
-        let activeChat = '';
+        let pendingAttachment = null;
 
-        // Dispara os seletores ocultos de arquivo
-        function triggerInput(id) {
-            if (!activeChat) {
-                showToast("Por favor, selecione ou crie um chat primeiro!");
-                return;
+        // Base de Dados Mock
+        const defaultDatabase = {
+            "suporte@obsidian.com": {
+                name: "suporte", domain: "@obsidian.com", lastTime: "Agora", unread: 0,
+                messages: [
+                    { sender: "received", text: "💎 Acesso ilimitado e verificação prévia liberados nesta sessão.", time: "11:00" }
+                ]
+            },
+            "engenharia@obsidian.com": {
+                name: "engenharia", domain: "@obsidian.com", lastTime: "Ontem", unread: 0,
+                messages: [
+                    { sender: "received", text: "Logs da infraestrutura processados com sucesso.", time: "Ontem" }
+                ]
             }
-            document.getElementById(id).click();
+        };
+
+        let chatDatabase = JSON.parse(localStorage.getItem("obsidian_chat_db")) || defaultDatabase;
+
+        function saveDatabaseToStorage() {
+            try { localStorage.setItem("obsidian_chat_db", JSON.stringify(chatDatabase)); } catch (e) {}
         }
 
-        // Processa o upload de fotos e documentos localmente
-        function handleFileUpload(input, type) {
+        // Banco de Emojis Totalmente Aberto e Completo
+        const emojisData = {
+            "Rostos": ["😀","😃","😄","😁","😆","😅","😂","🤣","😊","😇","🙂","🙃","😉","😌","😍","🥰","😘","😗","😙","😚","😋","😛","😝","😜","🤪","🤨","🧐","🤓","😎","🤩","🥳","😏","😒","😞","😔","😟","😕","🙁","☹️","😣","😖","😫","😩","🥺","😢","😭","😤","😠","😡","🤬","🤯","😳","🥵","🥶","😱","😨","😰","😥","😓","🤗","🤔","🤭","🤫","🤥","😶","😐","😑","😬","🙄","😯","😦","😧","😮","😲","🥱","😴","🤤","😪","😵","🤐","🥴","🤢","🤮","🤧","😷","🤒","🤕"],
+            "Gestos": ["👋","🤚","🖐️","✋","🖖","👌","🤌","🤏","✌️","🤞","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝️","👍","👎","✊","👊","🤛","🤜","👏","🙌","👐","🤲","🤝","🙏","✍️","💅","🤳","💪","🦾"],
+            "Tech / SaaS": ["💎","💻","🖥️","⚡","🚀","🔥","💾","📡","🔑","🛡️","🔒","🔓","⚙️","📈","📉","📊","📁","📂","🌐","🛠️","💡","🧠","🎯","📌","🏁","📦","🔔","⚠️"],
+            "Corações": ["❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","💔","❤️‍🔥","❤️‍🩹","❣️","💕","💞","💓","💗","💖","💘","💝","💟"]
+        };
+
+        let activeChatKey = "suporte@obsidian.com";
+        const themes = ["wp-classic", "wp-dark", "wp-sunset", "wp-forest", "wp-neon"];
+        let currentThemeIndex = 0;
+
+        window.onload = () => {
+            renderChatList();
+            selectChat(activeChatKey);
+            setupEmojiTabs();
+
+            document.addEventListener("click", (e) => {
+                const panel = document.getElementById("emojiPanel");
+                const btn = document.getElementById("emojiToggleBtn");
+                if (panel.classList.contains("show") && !panel.contains(e.target) && e.target !== btn) {
+                    panel.classList.remove("show");
+                }
+            });
+        };
+
+        function renderChatList(filter = "") {
+            const listContainer = document.getElementById("chatList");
+            listContainer.innerHTML = "";
+
+            for (const key in chatDatabase) {
+                if (key.toLowerCase().includes(filter.toLowerCase())) {
+                    const chat = chatDatabase[key];
+                    const lastMsg = chat.messages[chat.messages.length - 1];
+                    let lastText = lastMsg ? lastMsg.text : "Sem mensagens";
+                    if (lastMsg?.isImage) lastText = "📷 Foto recebida";
+                    if (lastMsg?.isPdf) lastText = "📄 PDF recebido";
+
+                    const activeClass = key === activeChatKey ? "active" : "";
+                    const badgeStyle = chat.unread > 0 ? "display: flex;" : "display: none;";
+
+                    listContainer.innerHTML += `
+                        <div class="chat-item ${activeClass}" onclick="selectChat('${key}')">
+                            <div class="chat-info">
+                                <div class="chat-info-top">
+                                    <div class="email-display">${chat.name}<span class="email-domain">${chat.domain}</span></div>
+                                    <span class="chat-time">${chat.lastTime}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                                    <span class="chat-msg-preview">${lastText}</span>
+                                    <span class="unread-badge" style="${badgeStyle}">${chat.unread}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function selectChat(key) {
+            activeChatKey = key;
+            chatDatabase[key].unread = 0;
+            saveDatabaseToStorage();
+            document.getElementById("activeChatEmail").innerHTML = `${chatDatabase[key].name}<span class="email-domain">${chatDatabase[key].domain}</span>`;
+            document.getElementById("appContainer").classList.add("chat-open");
+            renderChatList(document.getElementById("searchInput").value);
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const chatWin = document.getElementById("chatWindow");
+            chatWin.innerHTML = "";
+            
+            chatDatabase[activeChatKey].messages.forEach((msg, idx) => {
+                let msgContent = "";
+                if (msg.isImage) {
+                    msgContent = `<img src="${msg.content}" class="img-attachment" onclick="openMediaModal('${msg.content}', '${msg.text}', 'image')" alt="imagem">`;
+                } else if (msg.isFile || msg.isPdf) {
+                    let icon = msg.isPdf ? "fa-file-pdf" : "fa-file-lines";
+                    msgContent = `
+                        <div class="doc-attachment" onclick="openFilePreview(${idx})">
+                            <i class="fa-solid ${icon}" style="font-size: 24px; color: var(--primary);"></i>
+                            <div class="doc-info">
+                                <div class="doc-title">${msg.text}</div>
+                                <div class="doc-size">${msg.size}</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    msgContent = `<div>${msg.text}</div>`;
+                }
+
+                chatWin.innerHTML += `
+                    <div class="message msg-${msg.sender}">
+                        ${msgContent}
+                        <span class="time">${msg.time}</span>
+                    </div>
+                `;
+            });
+            scrollChatToBottom();
+        }
+
+        function triggerFileInput() { document.getElementById("fileInput").click(); }
+
+        // MÓDULO DE VER ANTES DE ENVIAR (SELEÇÃO)
+        function processFileSelection(input) {
             const file = input.files[0];
             if (!file) return;
 
             const reader = new FileReader();
-            
+            const isImage = file.type.startsWith("image/");
+            const isPdf = file.type === "application/pdf";
+            const isText = file.type.startsWith("text/") || file.name.endsWith(".json") || file.name.endsWith(".js") || file.name.endsWith(".css");
+
             reader.onload = function(e) {
-                const now = new Date();
-                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
-                let fileMessage = {
-                    sender: 'sent',
-                    type: type,
-                    time: timeString,
-                    fileData: e.target.result, // Base64 do arquivo
-                    fileName: file.name,
-                    fileSize: formatBytes(file.size)
+                pendingAttachment = {
+                    text: file.name,
+                    size: bytesToSize(file.size),
+                    content: e.target.result, 
+                    isFile: !isImage,
+                    isImage: isImage,
+                    isPdf: isPdf,
+                    isText: isText
                 };
 
-                // Registra e exibe no chat
-                if (!chatData[activeChat]) chatData[activeChat] = [];
-                chatData[activeChat].push(fileMessage);
-                
-                loadMessages(activeChat);
-                updateSidebarPreview(activeChat, type === 'image' ? '📸 Foto enviada' : `📄 Documento: ${file.name}`);
-                
-                showToast(type === 'image' ? "Foto enviada!" : "Documento enviado!");
+                const previewBar = document.getElementById("previewBar");
+                const previewVisual = document.getElementById("previewVisual");
+                document.getElementById("previewName").innerText = file.name;
+                document.getElementById("previewSize").innerText = bytesToSize(file.size);
+
+                if (isImage) {
+                    previewVisual.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`;
+                } else {
+                    previewVisual.innerHTML = `<i class="fa-solid ${isPdf ? 'fa-file-pdf' : 'fa-file-lines'}"></i>`;
+                }
+
+                previewBar.classList.add("active");
+                input.value = "";
             };
 
-            reader.readAsDataURL(file);
-            input.value = ''; // Limpa o input para novos uploads
+            if (isText && !isImage && !isPdf) {
+                reader.readAsText(file);
+            } else {
+                reader.readAsDataURL(file);
+            }
         }
 
-        // Auxiliar para formatação amigável do peso do arquivo
-        function formatBytes(bytes) {
+        function cancelAttachment() {
+            pendingAttachment = null;
+            document.getElementById("previewBar").classList.remove("active");
+        }
+
+        function bytesToSize(bytes) {
             if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + ['Bytes', 'KB', 'MB', 'GB'][i];
         }
 
-        // Converte base64 bruto para Blob seguro (permite visualização direta no navegador)
-        function base64ToBlob(base64Data, contentType) {
-            const parts = base64Data.split(',');
-            const byteString = atob(parts[1]);
-            const mimeString = contentType || parts[0].split(':')[1].split(';')[0];
-            const ab = new ArrayBuffer(byteString.length);
-            const ia = new Uint8Array(ab);
-            for (let i = 0; i < byteString.length; i++) {
-                ia[i] = byteString.charCodeAt(i);
-            }
-            return new Blob([ab], {type: mimeString});
-        }
-
-        // Executa a visualização apropriada do arquivo dependendo do tipo
-        function openFile(email, index) {
-            const msg = chatData[email][index];
-            if (!msg || !msg.fileData) return;
-
-            const fileData = msg.fileData;
-            const fileName = msg.fileName;
-            const mimeType = fileData.split(';')[0].split(':')[1];
-
-            if (mimeType.startsWith('image/')) {
-                showImageModal(fileData, fileName);
-            } else {
-                try {
-                    const blob = base64ToBlob(fileData, mimeType);
-                    const blobUrl = URL.createObjectURL(blob);
-                    window.open(blobUrl, '_blank');
-                } catch (e) {
-                    // Fallback em iframe seguro para navegadores alternativos
-                    const newWindow = window.open();
-                    newWindow.document.write(`<iframe src="${fileData}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
-                }
-            }
-        }
-
-        // Abre o lightbox para exibição da imagem
-        function showImageModal(fileData, fileName) {
-            const modal = document.getElementById('mediaModal');
-            const modalImg = document.getElementById('imgModalTarget');
-            const caption = document.getElementById('captionModal');
-            
-            modal.style.display = "flex";
-            modalImg.src = fileData;
-            caption.innerText = fileName || "Visualização de Imagem";
-        }
-
-        // Fecha o lightbox
-        function closeMediaModal() {
-            document.getElementById('mediaModal').style.display = "none";
-        }
-
-        // Cria novos chats dinamicamente para remover o estado vazio
-        function promptNewChat() {
-            const email = prompt("Digite o e-mail ou o canal do workspace:");
-            if (!email) return;
-            if (!email.includes('@')) {
-                showToast("Por favor, insira um e-mail válido!");
-                return;
-            }
-
-            if (chatData[email]) {
-                showToast("Este chat já existe!");
-                return;
-            }
-
-            chatData[email] = [
-                { sender: 'received', type: 'text', text: `Bem-vindo ao canal criptografado de ${email}! 👋🔒`, time: 'Agora' }
-            ];
-
-            updateChatList();
-            selectChatByEmail(email);
-        }
-
-        // Reconstrói a lista na barra lateral
-        function updateChatList() {
-            const list = document.getElementById('chatList');
-            const keys = Object.keys(chatData);
-
-            if (keys.length === 0) {
-                document.getElementById('emptyState').style.display = 'flex';
-                return;
-            }
-
-            document.getElementById('emptyState').style.display = 'none';
-            
-            // Remove itens antigos, mantendo apenas o empty state oculto
-            const currentItems = list.querySelectorAll('.chat-item');
-            currentItems.forEach(i => i.remove());
-
-            keys.forEach(email => {
-                const parts = email.split('@');
-                const user = parts[0];
-                const domain = parts[1] ? '@' + parts[1] : '';
-
-                const lastMsg = chatData[email][chatData[email].length - 1];
-                let previewText = lastMsg.text || 'Arquivo recebido';
-                if (lastMsg.type === 'image') previewText = '📸 Imagem enviada';
-                if (lastMsg.type === 'document') previewText = `📄 ${lastMsg.fileName}`;
-
-                const item = document.createElement('div');
-                item.className = `chat-item ${activeChat === email ? 'active' : ''}`;
-                item.setAttribute('onclick', `selectChatByEmail('${email}')`);
-                item.innerHTML = `
-                    <div class="chat-info">
-                        <div class="chat-info-top">
-                            <span class="email-display">${user}<span class="email-domain">${domain}</span></span>
-                            <span class="chat-time">${lastMsg.time}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="chat-msg-preview">${previewText}</span>
-                        </div>
-                    </div>
-                `;
-                list.appendChild(item);
-            });
-        }
-
-        function selectChatByEmail(email) {
-            activeChat = email;
-            document.getElementById('currentChatUser').innerText = email;
-            
-            updateChatList();
-            loadMessages(email);
-            toggleChat(true);
-        }
-
-        // Renderiza as mensagens na janela ativa
-        function loadMessages(email) {
-            const win = document.getElementById('chatWindow');
-            win.innerHTML = '';
-
-            const messages = chatData[email] || [];
-            messages.forEach((msg, index) => {
-                const msgDiv = document.createElement('div');
-                msgDiv.className = `message msg-${msg.sender}`;
-
-                if (msg.type === 'image') {
-                    // Renderiza foto com click para visualização fullscreen
-                    msgDiv.innerHTML = `
-                        <img src="${msg.fileData}" onclick="openFile('${email}', ${index})" style="max-width: 100%; border-radius: 10px; margin-bottom: 4px; border: 1px solid var(--border-subtle); cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.9" onmouseout="this.style.opacity=1">
-                        <span class="time">${msg.time}</span>
-                    `;
-                } else if (msg.type === 'document') {
-                    // Renderiza o card do documento de forma interativa com click para abrir
-                    msgDiv.innerHTML = `
-                        <div class="doc-attachment" style="cursor: pointer;" onclick="openFile('${email}', ${index})" title="Clique para abrir/visualizar este documento">
-                            <i class="fa-regular fa-file" style="font-size: 24px; color: var(--primary);"></i>
-                            <div class="doc-info">
-                                <div class="doc-title">${msg.fileName}</div>
-                                <div class="doc-size">${msg.fileSize}</div>
-                            </div>
-                            <a href="${msg.fileData}" download="${msg.fileName}" onclick="event.stopPropagation();" class="download-link-btn" title="Baixar arquivo">
-                                <i class="fa-solid fa-download" style="font-size: 14px;"></i>
-                            </a>
-                        </div>
-                        <span class="time">${msg.time}</span>
-                    `;
-                } else {
-                    // Renderiza texto padrão
-                    msgDiv.innerHTML = `${msg.text} <span class="time">${msg.time}</span>`;
-                }
-
-                win.appendChild(msgDiv);
-            });
-
-            win.scrollTop = win.scrollHeight;
-        }
-
-        // Envia Mensagem de Texto
+        // ENVIAR DEFINITIVAMENTE
         function sendMessage() {
-            const input = document.getElementById('messageInput');
+            const input = document.getElementById("chatInput");
             const text = input.value.trim();
-            if (!text || !activeChat) return;
+            
+            if (!text && !pendingAttachment) return;
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-            const now = new Date();
-            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            chatData[activeChat].push({
-                sender: 'sent',
-                type: 'text',
-                text: text,
-                time: timeString
-            });
-
-            loadMessages(activeChat);
-            updateSidebarPreview(activeChat, text);
-
-            input.value = '';
-            input.style.height = 'auto';
-            document.getElementById('emojiPanel').classList.remove('show');
-        }
-
-        // Atualiza a prévia da barra lateral dinamicamente
-        function updateSidebarPreview(email, text) {
-            updateChatList();
-        }
-
-        function handleKeyPress(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
+            if (pendingAttachment) {
+                chatDatabase[activeChatKey].messages.push({
+                    sender: "sent", text: pendingAttachment.text, size: pendingAttachment.size,
+                    content: pendingAttachment.content, time: timeStr, isFile: pendingAttachment.isFile,
+                    isImage: pendingAttachment.isImage, isPdf: pendingAttachment.isPdf, isText: pendingAttachment.isText
+                });
+                cancelAttachment();
             }
-        }
 
-        function filterChats() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const items = document.querySelectorAll('.chat-item');
-            
-            items.forEach(item => {
-                const text = item.innerText.toLowerCase();
-                item.style.display = text.includes(query) ? 'flex' : 'none';
-            });
-        }
-
-        function toggleChat(open) {
-            const app = document.getElementById('app');
-            if (open) {
-                app.classList.add('chat-open');
-            } else {
-                app.classList.remove('chat-open');
+            if (text) {
+                chatDatabase[activeChatKey].messages.push({ sender: "sent", text: text, time: timeStr });
             }
-        }
 
-        function toggleEmojiPanel() {
-            const panel = document.getElementById('emojiPanel');
-            panel.classList.toggle('show');
-            document.getElementById('wallpaperPanel').classList.remove('show');
-        }
+            chatDatabase[activeChatKey].lastTime = timeStr;
+            saveDatabaseToStorage();
 
-        function insertEmoji(emoji) {
-            const input = document.getElementById('messageInput');
-            input.value += emoji;
-            input.focus();
-        }
-
-        function toggleWallpaperPanel() {
-            const panel = document.getElementById('wallpaperPanel');
-            panel.classList.toggle('show');
-            document.getElementById('emojiPanel').classList.remove('show');
-        }
-
-        function setWallpaper(themeClass) {
-            const win = document.getElementById('chatWindow');
-            win.className = `chat-window ${themeClass}`;
-            document.getElementById('wallpaperPanel').classList.remove('show');
-            showToast(`Tema alterado com sucesso!`);
-        }
-
-        function showToast(text) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'toast-notification show';
-            toast.innerHTML = `<i class="fa-solid fa-bolt" style="color: var(--primary);"></i> <span>${text}</span>`;
+            input.value = "";
+            input.style.height = "auto";
             
-            container.appendChild(toast);
+            renderMessages();
+            renderChatList(document.getElementById("searchInput").value);
             
+            // DISPARA RESPOSTA COM NOTÍCIA DE NOVA MENSAGEM
+            simulateIncomingResponse();
+        }
+
+        // MAQUINA DE SIMULAÇÃO REATIVA (RECEBER COISAS DIFERENTES)
+        function simulateIncomingResponse() {
             setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(-20px) scale(0.9)';
-                setTimeout(() => toast.remove(), 400);
-            }, 3000);
+                const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const currentChat = chatDatabase[activeChatKey];
+
+                // Alterna dinamicamente entre texto ou arquivo recebido na simulação para testar
+                const r = Math.random();
+                let incomingMsg = { sender: "received", time: timeStr };
+
+                if (r > 0.6) {
+                    incomingMsg.text = "Relatório_Obsidian_Completo.pdf";
+                    incomingMsg.size = "4.2 MB";
+                    incomingMsg.isPdf = true;
+                    incomingMsg.isFile = true;
+                    incomingMsg.content = "data:application/pdf;base64,JVBERi0xLjQKJdPr6kwKMSAwIG9iagogIDw8IC9UeXBlIC9DYXRhbG9nIC9QYWdlcyAyIDAgUiA+PgplbmRvYmoKMiAwIG9iagogIDw8IC9UeXBlIC9QYWdlcyAvQ291bnQgMSAvS2lkcyBbIDMgMCBSIF0gPj4KZW5kb2JqCjMgMCBvYmoKICA8PCAvVHlwZSAvUGFnZSAvUGFyZW50IDIgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUgODQyIF0gPj4KZW5kb2JqCnRyYWlsZXIKICA8PCAvU2l6ZSA0IC9Sb290IDEgMCBSID4+CiUlRU9GCg==";
+                } else {
+                    incomingMsg.text = "⚡ Resposta do Suporte Obsidian Core: Dados coletados em tempo real na nuvem corporativa sem restrições.";
+                }
+
+                currentChat.messages.push(incomingMsg);
+                currentChat.lastTime = timeStr;
+                saveDatabaseToStorage();
+                renderMessages();
+                renderChatList(document.getElementById("searchInput").value);
+
+                // Mostra a notificação estilizada
+                showPushNotification(currentChat.name, incomingMsg.text);
+            }, 1400);
         }
 
-        // Ajuste inteligente de expansão do input de texto
-        const tx = document.getElementById('messageInput');
-        tx.addEventListener("input", function() {
-            this.style.height = "auto";
-            this.style.height = (this.scrollHeight - 4) + "px";
+        // VISUALIZADOR NATIVO PREMIUM
+        function openFilePreview(index) {
+            const msg = chatDatabase[activeChatKey].messages[index];
+            if (msg.isText) openMediaModal(msg.content, msg.text, 'text');
+            else if (msg.isPdf || msg.isImage) openMediaModal(msg.content, msg.text, msg.isPdf ? 'pdf' : 'image');
+        }
+
+        function openMediaModal(content, filename, type) {
+            const modal = document.getElementById("mediaModal");
+            const modalImg = document.getElementById("modalImg");
+            const modalText = document.getElementById("modalText");
+            const modalIframe = document.getElementById("modalIframe");
+            const caption = document.getElementById("captionModal");
+
+            modal.style.display = "flex";
+            caption.innerText = filename;
+
+            modalImg.style.display = "none"; modalText.style.display = "none"; modalIframe.style.display = "none";
+
+            if (type === 'image') { modalImg.style.display = "block"; modalImg.src = content; }
+            else if (type === 'text') { modalText.style.display = "block"; modalText.textContent = content; }
+            else if (type === 'pdf') { modalIframe.style.display = "block"; modalIframe.src = content; }
+        }
+
+        function closeMediaModal() {
+            document.getElementById("mediaModal").style.display = "none";
+            document.getElementById("modalIframe").src = "";
+        }
+
+        // Estrutura de Abas de Emojis
+        function setupEmojiTabs() {
+            const tabsContainer = document.getElementById("emojiTabs");
+            tabsContainer.innerHTML = "";
+            let first = true;
+
+            for (const category in emojisData) {
+                const activeClass = first ? "active" : "";
+                tabsContainer.innerHTML += `<div class="emoji-tab ${activeClass}" onclick="switchEmojiCategory('${category}', this, event)">${category}</div>`;
+                if (first) { loadEmojiGrid(category); first = false; }
+            }
+        }
+
+        function switchEmojiCategory(category, tabElement, event) {
+            event.stopPropagation();
+            document.querySelectorAll(".emoji-tab").forEach(tab => tab.classList.remove("active"));
+            tabElement.classList.add("active");
+            loadEmojiGrid(category);
+        }
+
+        function loadEmojiGrid(category) {
+            const gridContainer = document.getElementById("emojiGrid");
+            gridContainer.innerHTML = "";
+            emojisData[category].forEach(emoji => {
+                gridContainer.innerHTML += `<span class="emoji-item" onclick="insertEmoji('${emoji}', event)">${emoji}</span>`;
+            });
+        }
+
+        function toggleEmojiPanel(event) { event.stopPropagation(); document.getElementById("emojiPanel").classList.toggle("show"); }
+
+        function insertEmoji(emoji, event) {
+            event.stopPropagation();
+            const input = document.getElementById("chatInput");
+            const start = input.selectionStart, end = input.selectionEnd;
+            input.value = input.value.substring(0, start) + emoji + input.value.substring(end);
+            input.focus();
+            const newPos = start + emoji.length;
+            input.setSelectionRange(newPos, newPos);
+        }
+
+        // Gerenciamento de Notificações nativas na Janela do App
+        function showPushNotification(sender, message) {
+            const container = document.getElementById("toastContainer");
+            const toast = document.createElement("div");
+            toast.className = "toast-notification show";
+            toast.innerHTML = `
+                <div class="toast-avatar"><i class="fa-solid fa-envelope"></i></div>
+                <div class="toast-body">
+                    <div class="toast-title">Mensagem de ${sender}</div>
+                    <div class="toast-text">${message}</div>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove("show"); setTimeout(() => toast.remove(), 400); }, 4000);
+        }
+
+        document.getElementById("searchInput").addEventListener("input", (e) => { renderChatList(e.target.value); });
+        function closeChat() { document.getElementById("appContainer").classList.remove("chat-open"); }
+        function showInfoToast() { showPushNotification("Sistema", "Conexão Segura E2EE Ponta-a-Ponta Ativa."); }
+        function autoGrow(element) { element.style.height = "5px"; element.style.height = (element.scrollHeight) + "px"; }
+        function scrollChatToBottom() { const chatWin = document.getElementById("chatWindow"); chatWin.scrollTop = chatWin.scrollHeight; }
+
+        function cycleTheme() {
+            const win = document.getElementById("chatWindow");
+            win.classList.remove(...themes);
+            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+            win.classList.add(themes[currentThemeIndex]);
+        }
+
+        document.getElementById("chatInput").addEventListener("keydown", function(e) {
+            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
         });
     </script>
 </body>
