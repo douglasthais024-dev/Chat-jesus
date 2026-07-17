@@ -3,181 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Premium - Electric Edition</title>
+    <title>Chat Premium - Electric Edition PRO</title>
     <style>
-        :root {
-            --msg-blue: #007AFF;
-            --msg-private: #5856D6;
-            --text-main: #1C1C1E;
-        }
+        :root { --msg-blue: #007AFF; --msg-private: #5856D6; }
 
-        body {
-            margin: 0;
-            padding: 0;
-            /* Fundo com efeito de raios sutil */
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            height: 100vh;
-        }
+        /* Temas de Fundo */
+        body { margin: 0; padding: 0; transition: 0.5s; font-family: -apple-system, sans-serif; display: flex; justify-content: center; height: 100vh; }
+        .theme-1 { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+        .theme-2 { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
+        .theme-3 { background: linear-gradient(135deg, #8e44ad, #3498db); }
+        .theme-4 { background: linear-gradient(135deg, #e74c3c, #f1c40f); }
+        .theme-5 { background: #121212; }
+        .theme-6 { background: radial-gradient(circle, #243949 0%, #517fa4 100%); }
 
-        .chat-app {
-            width: 100%;
-            max-width: 500px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 0 30px rgba(0,0,0,0.3);
-            position: relative;
-        }
+        /* Login */
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; color: white; }
+        .login-box { background: white; padding: 30px; border-radius: 20px; width: 300px; text-align: center; color: black; }
+        .login-box input { width: 90%; padding: 10px; margin: 5px; border-radius: 10px; border: 1px solid #ccc; }
 
-        .header {
-            padding: 15px 20px;
-            background: rgba(255, 255, 255, 0.9);
-            text-align: center;
-            font-weight: 700;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .msg {
-            padding: 12px 16px;
-            border-radius: 20px;
-            font-size: 16px;
-            max-width: 85%;
-            word-wrap: break-word;
-        }
-
-        .received { background: #e5e5ea; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .sent { background: var(--msg-blue); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        /* Chat */
+        .chat-app { width: 100%; max-width: 500px; height: 100%; background: rgba(255, 255, 255, 0.95); display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        .header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
+        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 12px; border-radius: 15px; max-width: 80%; position: relative; cursor: pointer; }
+        .sent { background: var(--msg-blue); color: white; align-self: flex-end; }
+        .received { background: #e5e5ea; align-self: flex-start; }
         
-        /* Balão Particular */
-        .sent.private { 
-            background: var(--msg-private); 
-            border: 2px solid #fff;
-            box-shadow: 0 0 10px rgba(88, 86, 214, 0.5);
-        }
-
-        .emoji-panel {
-            display: none;
-            position: absolute;
-            bottom: 70px;
-            left: 10px;
-            right: 10px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 15px;
-            padding: 10px;
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 5px;
-            z-index: 100;
-        }
-
-        .input-area {
-            padding: 15px;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-top: 1px solid #ddd;
-        }
-
-        .icon-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--msg-blue); }
-        .icon-btn.active { color: var(--msg-private); font-weight: bold; }
-
-        input[type="text"] { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ddd; outline: none; }
-        .send-btn { background: var(--msg-blue); color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; }
+        .file-box { background: #f0f0f0; padding: 10px; border-radius: 10px; color: #333; margin-top: 5px; }
+        .emoji-panel { position: absolute; bottom: 70px; left: 10px; right: 10px; background: white; padding: 10px; display: none; grid-template-columns: repeat(8, 1fr); gap: 5px; border-radius: 15px; max-height: 150px; overflow-y: auto; }
+        .input-area { padding: 15px; display: flex; gap: 5px; border-top: 1px solid #ddd; }
     </style>
 </head>
-<body>
+<body class="theme-1">
+
+<div id="loginOverlay">
+    <div class="login-box">
+        <h3>Login Pro</h3>
+        <img id="prevPic" src="https://via.placeholder.com/80" style="border-radius:50%; cursor:pointer;" onclick="document.getElementById('picInput').click()">
+        <input type="file" id="picInput" style="display:none" onchange="previewPic(event)">
+        <input type="text" id="user" placeholder="Seu Nome">
+        <button onclick="login()" style="width:100%; padding:10px; background:blue; color:white; border:none; border-radius:10px;">Entrar</button>
+    </div>
+</div>
 
 <div class="chat-app">
-    <div class="header">Chat Premium ⚡</div>
-    
-    <div class="messages" id="box">
-        <div class="msg received">Chat Seguro Ativo! 🔒</div>
+    <div class="header">
+        <div style="display:flex; align-items:center; gap:10px">
+            <img id="userPic" src="https://via.placeholder.com/40" style="border-radius:50%">
+            <strong>Chat Premium</strong>
+        </div>
+        <select onchange="document.body.className = this.value">
+            <option value="theme-1">Tema 1</option><option value="theme-2">Tema 2</option>
+            <option value="theme-3">Tema 3</option><option value="theme-4">Tema 4</option>
+            <option value="theme-5">Tema 5</option><option value="theme-6">Tema 6</option>
+        </select>
     </div>
-
-    <div class="emoji-panel" id="emojiPanel" style="display:none;"></div>
     
+    <div class="messages" id="box"></div>
+    <div class="emoji-panel" id="emojiPanel"></div>
+
     <div class="input-area">
-        <input type="file" id="fileInput" style="display: none;" onchange="handleFile(event)">
-        <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📎</button>
-        <button class="icon-btn" onclick="toggleEmoji()">😊</button>
-        <!-- Botão Privado -->
-        <button class="icon-btn" id="privBtn" onclick="togglePrivate()">🔒</button>
-        
-        <input type="text" id="input" placeholder="Mensagem...">
-        <button class="send-btn" onclick="send()">Enviar</button>
+        <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none" onchange="handleFile(event)">
+        <input type="file" id="fileInput" style="display:none" onchange="handleFile(event)">
+        <button onclick="document.getElementById('camInput').click()">📷</button>
+        <button onclick="document.getElementById('fileInput').click()">📎</button>
+        <button onclick="toggleEmojis()">😊</button>
+        <input type="text" id="input" style="flex:1" placeholder="Mensagem...">
+        <button onclick="send()">➤</button>
     </div>
 </div>
 
 <script>
     const box = document.getElementById('box');
-    const inp = document.getElementById('input');
-    const privBtn = document.getElementById('privBtn');
-    let isPrivate = false;
-
-    // Configuração do modo privado
-    function togglePrivate() {
-        isPrivate = !isPrivate;
-        privBtn.classList.toggle('active');
-        inp.placeholder = isPrivate ? "Mensagem particular..." : "Mensagem...";
+    
+    // Login e Perfil
+    function previewPic(e) {
+        const reader = new FileReader();
+        reader.onload = (ev) => document.getElementById('prevPic').src = ev.target.result;
+        reader.readAsDataURL(e.target.files[0]);
     }
 
-    // Gerador de Emojis
-    const emojis = ['😀', '😂', '😍', '😎', '😢', '😡', '👍', '🙏', '🔥', '✨', '❤️', '🎉', '🤔', '🙌', '🚀', '🌈', '🍕', '🐱', '🐶', '⚽', '💡', '🎵', '🎈', '✅'];
-    const emojiPanel = document.getElementById('emojiPanel');
+    function login() {
+        if(document.getElementById('user').value) {
+            document.getElementById('userPic').src = document.getElementById('prevPic').src;
+            document.getElementById('loginOverlay').style.display = 'none';
+        }
+    }
+
+    // Emojis Expandidos
+    const emojis = ['😀','😂','😍','😎','😢','😡','👍','🙏','🔥','✨','❤️','🎉','🤔','🙌','🚀','🌈','🍕','🐱','🐶','⚽','💡','🎵','🎈','✅','⚡','👑','💸','💪','🎮','🚁','🍔','🌌','🌠','🛸','🧊','🌋','😎','🧐','🤩','🥳','🥶','🥵','🤯','🤠','🤪','🥺','🤫','🤥','🤐','🤢','🤮','🤧','🥵','🥶'];
+    const panel = document.getElementById('emojiPanel');
     emojis.forEach(e => {
-        const btn = document.createElement('button');
-        btn.innerText = e;
-        btn.onclick = () => inp.value += e;
-        emojiPanel.appendChild(btn);
+        const b = document.createElement('button');
+        b.innerText = e;
+        b.onclick = () => document.getElementById('input').value += e;
+        panel.appendChild(b);
     });
+    function toggleEmojis() { panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid'; }
 
-    function toggleEmoji() { emojiPanel.style.display = emojiPanel.style.display === 'grid' ? 'none' : 'grid'; }
-
+    // Envio e Manipulação de Arquivos
     function send() {
+        const inp = document.getElementById('input');
         if(!inp.value.trim()) return;
-        const className = isPrivate ? 'sent private' : 'sent';
-        addMessage(inp.value, className);
+        addMsg(inp.value, 'sent');
         inp.value = '';
     }
 
-    function addMessage(content, className, isHtml = false) {
-        const div = document.createElement('div');
-        div.className = `msg ${className}`;
-        isHtml ? div.innerHTML = content : div.innerText = content;
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
-    }
-
-    function handleFile(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+    function handleFile(e) {
+        const file = e.target.files[0];
+        if(!file) return;
         const reader = new FileReader();
-        reader.onload = (e) => {
-            const html = file.type.startsWith('image/') ? `<img src="${e.target.result}" style="max-width:100%; border-radius:10px;">` : `📎 ${file.name}`;
-            addMessage(html, 'sent', true);
+        reader.onload = (ev) => {
+            let content = `<div>${file.name}</div>`;
+            if(file.type.startsWith('image/')) content = `<img src="${ev.target.result}" style="width:100%">`;
+            
+            // Container do arquivo
+            const div = document.createElement('div');
+            div.className = 'msg sent';
+            div.innerHTML = `${content} <br><button onclick="window.open('${ev.target.result}')">Abrir/Ver</button> <button onclick="this.parentElement.innerHTML += '<br><textarea placeholder=\\'Anotação...\\'></textarea>'">✏️ Nota</button>`;
+            div.onclick = (e) => { if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA' && confirm('Apagar?')) div.remove(); };
+            box.appendChild(div);
         };
         reader.readAsDataURL(file);
     }
-</script>
 
+    function addMsg(text, cls) {
+        const div = document.createElement('div');
+        div.className = `msg ${cls}`;
+        div.innerText = text;
+        div.onclick = () => { if(confirm('Apagar?')) div.remove(); };
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+</script>
 </body>
 </html>
