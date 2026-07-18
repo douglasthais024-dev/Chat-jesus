@@ -3,59 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Premium - Electric Edition PRO</title>
+    <title>Chat Premium - Electric Edition</title>
     <style>
-        :root { --msg-blue: #007AFF; --msg-private: #5856D6; }
+        :root { 
+            --bg-grad-1: linear-gradient(135deg, #1a1a2e, #16213e);
+            --bg-grad-2: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            --bg-grad-3: linear-gradient(135deg, #8e44ad, #3498db);
+            --bg-grad-4: linear-gradient(135deg, #e74c3c, #f1c40f);
+            --bg-grad-5: #121212;
+            --bg-grad-6: radial-gradient(circle, #243949 0%, #517fa4 100%);
+            --glass: rgba(255, 255, 255, 0.1);
+        }
 
-        /* Temas de Fundo */
-        body { margin: 0; padding: 0; transition: 0.5s; font-family: -apple-system, sans-serif; display: flex; justify-content: center; height: 100vh; }
-        .theme-1 { background: linear-gradient(135deg, #1a1a2e, #16213e); }
-        .theme-2 { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
-        .theme-3 { background: linear-gradient(135deg, #8e44ad, #3498db); }
-        .theme-4 { background: linear-gradient(135deg, #e74c3c, #f1c40f); }
-        .theme-5 { background: #121212; }
-        .theme-6 { background: radial-gradient(circle, #243949 0%, #517fa4 100%); }
+        body { 
+            margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+            transition: 0.5s;
+        }
 
-        /* Login */
-        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; color: white; }
-        .login-box { background: white; padding: 30px; border-radius: 20px; width: 300px; text-align: center; color: black; }
-        .login-box input { width: 90%; padding: 10px; margin: 5px; border-radius: 10px; border: 1px solid #ccc; }
+        /* Temas */
+        .theme-1 { background: var(--bg-grad-1); }
+        .theme-2 { background: var(--bg-grad-2); }
+        .theme-3 { background: var(--bg-grad-3); }
+        .theme-4 { background: var(--bg-grad-4); }
+        .theme-5 { background: var(--bg-grad-5); }
+        .theme-6 { background: var(--bg-grad-6); }
 
-        /* Chat */
-        .chat-app { width: 100%; max-width: 500px; height: 100%; background: rgba(255, 255, 255, 0.95); display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        .header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
-        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 12px; border-radius: 15px; max-width: 80%; position: relative; cursor: pointer; }
-        .sent { background: var(--msg-blue); color: white; align-self: flex-end; }
-        .received { background: #e5e5ea; align-self: flex-start; }
+        /* Login Overlay */
+        #loginOverlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            z-index: 9999; display: flex; justify-content: center; align-items: center;
+        }
+        .login-box { 
+            background: white; padding: 40px; border-radius: 30px; width: 320px; 
+            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .login-box input { 
+            width: 100%; padding: 12px; margin: 15px 0; border-radius: 12px; 
+            border: 1px solid #ddd; box-sizing: border-box;
+        }
+        .btn-login { 
+            width: 100%; padding: 12px; background: #007AFF; color: white; border: none; 
+            border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+
+        /* App Container */
+        .chat-app { 
+            width: 100%; max-width: 450px; height: 90vh; background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px); border-radius: 30px; display: flex; flex-direction: column; 
+            overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .header { 
+            padding: 20px; display: flex; justify-content: space-between; align-items: center; 
+            background: #fff; border-bottom: 1px solid #eee;
+        }
+        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         
-        .file-box { background: #f0f0f0; padding: 10px; border-radius: 10px; color: #333; margin-top: 5px; }
-        .emoji-panel { position: absolute; bottom: 70px; left: 10px; right: 10px; background: white; padding: 10px; display: none; grid-template-columns: repeat(8, 1fr); gap: 5px; border-radius: 15px; max-height: 150px; overflow-y: auto; }
-        .input-area { padding: 15px; display: flex; gap: 5px; border-top: 1px solid #ddd; }
+        /* Balões de Mensagem */
+        .msg { 
+            padding: 12px 18px; border-radius: 20px; max-width: 75%; position: relative; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer;
+        }
+        .sent { background: #007AFF; color: white; align-self: flex-end; border-bottom-right-radius: 5px; }
+        .received { background: #E9E9EB; color: #333; align-self: flex-start; border-bottom-left-radius: 5px; }
+        
+        .emoji-panel { 
+            display: none; grid-template-columns: repeat(6, 1fr); gap: 10px; 
+            padding: 15px; background: #f9f9f9; border-top: 1px solid #ddd;
+        }
+        .input-area { 
+            padding: 15px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #eee; background: white;
+        }
+        input#input { 
+            flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 20px; outline: none;
+        }
+        button { cursor: pointer; border: none; background: none; font-size: 20px; transition: 0.2s; }
+        button:hover { transform: scale(1.1); }
     </style>
 </head>
 <body class="theme-1">
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h3>Login Pro</h3>
-        <img id="prevPic" src="https://via.placeholder.com/80" style="border-radius:50%; cursor:pointer;" onclick="document.getElementById('picInput').click()">
+        <h3>Bem-vindo ao Pro</h3>
+        <img id="prevPic" src="https://via.placeholder.com/80" style="border-radius:50%; width:80px; height:80px; object-fit:cover; cursor:pointer;" onclick="document.getElementById('picInput').click()">
         <input type="file" id="picInput" style="display:none" onchange="previewPic(event)">
-        <input type="text" id="user" placeholder="Seu Nome">
-        <button onclick="login()" style="width:100%; padding:10px; background:blue; color:white; border:none; border-radius:10px;">Entrar</button>
+        <input type="text" id="user" placeholder="Digite seu nome">
+        <button class="btn-login" onclick="login()">Entrar no Chat</button>
     </div>
 </div>
 
 <div class="chat-app">
     <div class="header">
         <div style="display:flex; align-items:center; gap:10px">
-            <img id="userPic" src="https://via.placeholder.com/40" style="border-radius:50%">
-            <strong>Chat Premium</strong>
+            <img id="userPic" src="https://via.placeholder.com/40" style="border-radius:50%; width:40px; height:40px;">
+            <strong style="color:#333;">Chat Premium</strong>
         </div>
-        <select onchange="document.body.className = this.value">
-            <option value="theme-1">Tema 1</option><option value="theme-2">Tema 2</option>
-            <option value="theme-3">Tema 3</option><option value="theme-4">Tema 4</option>
-            <option value="theme-5">Tema 5</option><option value="theme-6">Tema 6</option>
+        <select onchange="document.body.className = this.value" style="border-radius:10px; padding:5px;">
+            <option value="theme-1">Tema Deep</option><option value="theme-2">Tema Ocean</option>
+            <option value="theme-3">Tema Purple</option><option value="theme-4">Tema Sunset</option>
+            <option value="theme-5">Dark Mode</option><option value="theme-6">Sky Blue</option>
         </select>
     </div>
     
@@ -68,15 +115,14 @@
         <button onclick="document.getElementById('camInput').click()">📷</button>
         <button onclick="document.getElementById('fileInput').click()">📎</button>
         <button onclick="toggleEmojis()">😊</button>
-        <input type="text" id="input" style="flex:1" placeholder="Mensagem...">
-        <button onclick="send()">➤</button>
+        <input type="text" id="input" placeholder="Mensagem...">
+        <button onclick="send()" style="color:#007AFF; font-weight:bold;">➤</button>
     </div>
 </div>
 
 <script>
     const box = document.getElementById('box');
     
-    // Login e Perfil
     function previewPic(e) {
         const reader = new FileReader();
         reader.onload = (ev) => document.getElementById('prevPic').src = ev.target.result;
@@ -84,14 +130,14 @@
     }
 
     function login() {
-        if(document.getElementById('user').value) {
+        const user = document.getElementById('user').value;
+        if(user) {
             document.getElementById('userPic').src = document.getElementById('prevPic').src;
             document.getElementById('loginOverlay').style.display = 'none';
         }
     }
 
-    // Emojis Expandidos
-    const emojis = ['😀','😂','😍','😎','😢','😡','👍','🙏','🔥','✨','❤️','🎉','🤔','🙌','🚀','🌈','🍕','🐱','🐶','⚽','💡','🎵','🎈','✅','⚡','👑','💸','💪','🎮','🚁','🍔','🌌','🌠','🛸','🧊','🌋','😎','🧐','🤩','🥳','🥶','🥵','🤯','🤠','🤪','🥺','🤫','🤥','🤐','🤢','🤮','🤧','🥵','🥶'];
+    const emojis = ['😀','😂','😍','😎','😢','😡','👍','🙏','🔥','✨','❤️','🎉','🤔','🙌','🚀','🌈','🍕','🐱','🐶','⚽','💡','🎵','🎈','✅','⚡','👑','💸','💪','🎮','🚁','🍔','🌌','🌠','🛸','🧊','🌋','🧐','🤩','🥳','🥶','🥵','🤯','🤠','🤪','🥺','🤫','🤥','🤐','🤢','🤮','🤧'];
     const panel = document.getElementById('emojiPanel');
     emojis.forEach(e => {
         const b = document.createElement('button');
@@ -99,9 +145,11 @@
         b.onclick = () => document.getElementById('input').value += e;
         panel.appendChild(b);
     });
-    function toggleEmojis() { panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid'; }
+    
+    function toggleEmojis() { 
+        panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid'; 
+    }
 
-    // Envio e Manipulação de Arquivos
     function send() {
         const inp = document.getElementById('input');
         if(!inp.value.trim()) return;
@@ -114,15 +162,15 @@
         if(!file) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
-            let content = `<div>${file.name}</div>`;
-            if(file.type.startsWith('image/')) content = `<img src="${ev.target.result}" style="width:100%">`;
+            let content = `<div>📄 ${file.name}</div>`;
+            if(file.type.startsWith('image/')) content = `<img src="${ev.target.result}" style="width:100%; border-radius:10px;">`;
             
-            // Container do arquivo
             const div = document.createElement('div');
             div.className = 'msg sent';
-            div.innerHTML = `${content} <br><button onclick="window.open('${ev.target.result}')">Abrir/Ver</button> <button onclick="this.parentElement.innerHTML += '<br><textarea placeholder=\\'Anotação...\\'></textarea>'">✏️ Nota</button>`;
-            div.onclick = (e) => { if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA' && confirm('Apagar?')) div.remove(); };
+            div.innerHTML = `${content} <br><button style="font-size:12px; color:white; text-decoration:underline;" onclick="window.open('${ev.target.result}')">Abrir</button> <button style="font-size:12px; color:white;" onclick="this.parentElement.innerHTML += '<br><textarea style=\\'width:90%; border-radius:5px; border:none; padding:5px;\\' placeholder=\\'Anotação...\\'></textarea>'">✏️</button>`;
+            div.onclick = (e) => { if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA' && confirm('Apagar arquivo?')) div.remove(); };
             box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
         };
         reader.readAsDataURL(file);
     }
@@ -131,7 +179,7 @@
         const div = document.createElement('div');
         div.className = `msg ${cls}`;
         div.innerText = text;
-        div.onclick = () => { if(confirm('Apagar?')) div.remove(); };
+        div.onclick = () => { if(confirm('Apagar mensagem?')) div.remove(); };
         box.appendChild(div);
         box.scrollTop = box.scrollHeight;
     }
