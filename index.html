@@ -2,172 +2,790 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chat Mobile PRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Premium Real-Time Completo</title>
     <style>
-        :root { 
-            --bg-grad-1: linear-gradient(135deg, #1a1a2e, #16213e);
-            --bg-grad-2: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            --bg-grad-3: linear-gradient(135deg, #8e44ad, #3498db);
-            --bg-grad-4: linear-gradient(135deg, #e74c3c, #f1c40f);
-            --bg-grad-5: #121212;
-            --bg-grad-6: radial-gradient(circle, #243949 0%, #517fa4 100%);
+        :root {
+            --bg-gradient-1: linear-gradient(135deg, #121214 0%, #1a1a1e 100%);
+            --bg-gradient-2: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            --bg-gradient-3: linear-gradient(135deg, #141e30 0%, #243b55 100%);
+            --bg-gradient-4: linear-gradient(135deg, #000000 0%, #434343 100%);
         }
 
-        body { 
-            margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            height: 100vh; width: 100vw; overflow: hidden;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Temas */
-        .theme-1 { background: var(--bg-grad-1); }
-        .theme-2 { background: var(--bg-grad-2); }
-        .theme-3 { background: var(--bg-grad-3); }
-        .theme-4 { background: var(--bg-grad-4); }
-        .theme-5 { background: var(--bg-grad-5); }
-        .theme-6 { background: var(--bg-grad-6); }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #0b0b0d;
+        }
 
-        /* Login Overlay */
-        #loginOverlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
+        .chat-container {
+            width: 100%;
+            max-width: 450px;
+            height: 90vh;
+            background: var(--bg-gradient-1);
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: background 0.5s ease;
+            position: relative;
         }
-        .login-box { 
-            background: white; padding: 30px; border-radius: 25px; width: 85%; max-width: 350px;
-            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .login-box input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 12px; border: 1px solid #ccc; box-sizing: border-box; }
-        .btn-login { width: 100%; padding: 12px; background: #007AFF; color: white; border: none; border-radius: 12px; font-weight: bold; }
 
-        /* App Container (Full Mobile) */
-        .chat-app { 
-            width: 100vw; height: 100vh; background: #ffffff; display: flex; flex-direction: column;
+        /* Tela de Autenticação (Login/Cadastro) */
+        .auth-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #121214;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            transition: all 0.3s ease;
         }
-        .header { 
-            padding: 15px; display: flex; justify-content: space-between; align-items: center; 
-            background: #fdfdfd; border-bottom: 1px solid #eee; padding-top: 40px;
+
+        .auth-box {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
-        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        
-        /* Balões de Mensagem */
-        .msg { padding: 12px 16px; border-radius: 18px; max-width: 80%; cursor: pointer; line-height: 1.4; }
-        .sent { background: #007AFF; color: white; align-self: flex-end; border-bottom-right-radius: 5px; }
-        .received { background: #E9E9EB; color: #333; align-self: flex-start; border-bottom-left-radius: 5px; }
-        
-        .emoji-panel { 
-            display: none; grid-template-columns: repeat(7, 1fr); gap: 8px; 
-            padding: 15px; background: #f0f0f0; border-top: 1px solid #ddd;
+
+        .auth-box h2 {
+            color: #fff;
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 8px;
         }
-        .input-area { 
-            padding: 10px; display: flex; gap: 8px; align-items: center; 
-            border-top: 1px solid #eee; background: white; padding-bottom: 20px;
+
+        .auth-input {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #fff;
+            outline: none;
+            font-size: 14px;
         }
-        input#input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 20px; outline: none; }
-        button { cursor: pointer; border: none; background: none; font-size: 22px; padding: 5px; }
+
+        .auth-btn {
+            background: #ffffff;
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .auth-btn:hover { opacity: 0.9; }
+
+        .auth-toggle-text {
+            color: #b0b0b5;
+            font-size: 13px;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 8px;
+            text-decoration: underline;
+        }
+
+        /* Cabeçalho do Perfil */
+        .chat-header {
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            z-index: 10;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-img-wrapper {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #007bff;
+        }
+
+        #file-avatar { display: none; }
+
+        .profile-detail h4 {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #ff4d4d;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: underline;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* Seletor de Papel de Parede */
+        .wallpaper-select {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            outline: none;
+        }
+        .wallpaper-select option { background: #1a1a1e; }
+
+        /* Feed de Mensagens */
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-messages::-webkit-scrollbar { width: 5px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        /* Balões Clássicos */
+        .message {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            color: #ffffff;
+            position: relative;
+        }
+
+        /* Lado Esquerdo - Azul */
+        .message.left {
+            background-color: #007bff;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        /* Lado Direito - Preto */
+        .message.right {
+            background-color: #000000;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Botão Oculto de Apagar */
+        .delete-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 5;
+        }
+
+        .message:hover .delete-btn { display: flex; }
+
+        .message img, .message video {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .message .file-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .file-caption {
+            margin-top: 6px;
+            font-size: 13.5px;
+            color: #eeeeee;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 4px;
+        }
+
+        .encrypted-badge {
+            display: block;
+            font-size: 11px;
+            color: #ffc107;
+            margin-bottom: 4px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Input de Texto inferior */
+        .chat-input-area {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 12px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tools-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding-left: 4px;
+        }
+
+        .tool-btn {
+            background: none;
+            border: none;
+            color: #b0b0b5;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .encrypt-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #b0b0b5;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .input-row { display: flex; gap: 8px; align-items: center; }
+
+        #msg-input {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 16px;
+            border-radius: 16px;
+            color: #fff;
+            outline: none;
+            font-size: 14px;
+        }
+
+        #send-btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Painel de Emojis Expandido */
+        .emoji-picker {
+            display: none;
+            position: absolute;
+            bottom: 120px;
+            left: 20px;
+            right: 20px;
+            background: #1a1a1e;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 10px;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            z-index: 20;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        .emoji-picker span { font-size: 22px; cursor: pointer; text-align: center; padding: 2px; border-radius: 6px; }
+        .emoji-picker span:hover { background: rgba(255,255,255,0.1); }
+
+        /* Modal de Edição de Arquivo Pré-envio */
+        .file-modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 12, 0.95);
+            z-index: 40;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .file-modal-box {
+            background: #1a1a1e;
+            width: 100%;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .file-modal-box h3 { color: white; font-size: 16px; }
+        .preview-container {
+            width: 100%; max-height: 180px; overflow: hidden; border-radius: 10px;
+            display: flex; justify-content: center; align-items: center; background: #000;
+        }
+        .preview-container img, .preview-container video { max-width: 100%; max-height: 180px; }
+        .file-placeholder-icon { font-size: 50px; color: #b0b0b5; padding: 20px; }
+        #file-caption-input {
+            width: 100%; background: #25252b; border: 1px solid #3a3a42;
+            padding: 12px; color: white; border-radius: 10px; outline: none;
+        }
     </style>
 </head>
-<body class="theme-1">
+<body>
 
-<div id="loginOverlay">
-    <div class="login-box">
-        <h3>Entrar no Chat</h3>
-        <img id="prevPic" src="https://via.placeholder.com/80" style="border-radius:50%; width:80px; height:80px; object-fit:cover; cursor:pointer;" onclick="document.getElementById('picInput').click()">
-        <input type="file" id="picInput" style="display:none" onchange="previewPic(event)">
-        <input type="text" id="user" placeholder="Seu apelido">
-        <button class="btn-login" onclick="login()">Conectar</button>
-    </div>
-</div>
-
-<div class="chat-app">
-    <div class="header">
-        <div style="display:flex; align-items:center; gap:10px">
-            <img id="userPic" src="https://via.placeholder.com/40" style="border-radius:50%; width:40px; height:40px;">
-            <strong>Chat PRO</strong>
+    <div class="chat-container" id="chat-box">
+        
+        <!-- ABA DE CADASTRO E LOGIN -->
+        <div class="auth-overlay" id="auth-overlay">
+            <div class="auth-box">
+                <h2 id="auth-title">Acessar o Chat</h2>
+                <input type="email" id="auth-email" class="auth-input" placeholder="Seu e-mail">
+                <input type="password" id="auth-password" class="auth-input" placeholder="Sua senha (mín. 6 dígitos)">
+                <button id="auth-primary-btn" class="auth-btn">Entrar</button>
+                <p id="auth-toggle-link" class="auth-toggle-text">Não tem uma conta? Cadastre-se</p>
+            </div>
         </div>
-        <select onchange="document.body.className = this.value" style="border:none; background:#f0f0f0; padding:5px; border-radius:10px;">
-            <option value="theme-1">Deep</option><option value="theme-2">Ocean</option>
-            <option value="theme-3">Purple</option><option value="theme-4">Sunset</option>
-            <option value="theme-5">Dark</option><option value="theme-6">Sky</option>
-        </select>
-    </div>
-    
-    <div class="messages" id="box"></div>
-    <div class="emoji-panel" id="emojiPanel"></div>
 
-    <div class="input-area">
-        <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none" onchange="handleFile(event)">
-        <input type="file" id="fileInput" style="display:none" onchange="handleFile(event)">
-        <button onclick="document.getElementById('camInput').click()">📷</button>
-        <button onclick="document.getElementById('fileInput').click()">📎</button>
-        <button onclick="toggleEmojis()">😊</button>
-        <input type="text" id="input" placeholder="Mensagem...">
-        <button onclick="send()" style="color:#007AFF;">➤</button>
-    </div>
-</div>
-
-<script>
-    const box = document.getElementById('box');
-    
-    function previewPic(e) {
-        const reader = new FileReader();
-        reader.onload = (ev) => document.getElementById('prevPic').src = ev.target.result;
-        reader.readAsDataURL(e.target.files[0]);
-    }
-
-    function login() {
-        const user = document.getElementById('user').value;
-        if(user) {
-            document.getElementById('userPic').src = document.getElementById('prevPic').src;
-            document.getElementById('loginOverlay').style.display = 'none';
-        }
-    }
-
-    const emojis = ['😀','😂','😍','😎','😢','😡','👍','🙏','🔥','✨','❤️','🎉','🤔','🙌','🚀','🌈','🍕','🐱','🐶','⚽','💡','🎵','🎈','✅','⚡','👑','💸','💪','🎮','🚁','🍔','🌌','🌠','🛸','🧊','🌋','🧐','🤩','🥳','🥶','🥵','🤯','🤠','🤪','🥺','🤫','🤥','🤐','🤢','🤮','🤧'];
-    const panel = document.getElementById('emojiPanel');
-    emojis.forEach(e => {
-        const b = document.createElement('button');
-        b.innerText = e;
-        b.onclick = () => document.getElementById('input').value += e;
-        panel.appendChild(b);
-    });
-    
-    function toggleEmojis() { 
-        panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid'; 
-    }
-
-    function send() {
-        const inp = document.getElementById('input');
-        if(!inp.value.trim()) return;
-        addMsg(inp.value, 'sent');
-        inp.value = '';
-    }
-
-    function handleFile(e) {
-        const file = e.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            let content = `<div>📄 ${file.name}</div>`;
-            if(file.type.startsWith('image/')) content = `<img src="${ev.target.result}" style="width:100%; border-radius:10px;">`;
+        <!-- Topo / Perfil -->
+        <div class="chat-header">
+            <div class="profile-info">
+                <div class="profile-img-wrapper" id="avatar-click-zone">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop" alt="Avatar" class="profile-img" id="avatar-preview">
+                    <input type="file" id="file-avatar" accept="image/*">
+                </div>
+                <div class="profile-detail">
+                    <h4 id="profile-name">Carregando...</h4>
+                    <button class="logout-btn" id="logout-btn">Sair da Conta</button>
+                </div>
+            </div>
             
-            const div = document.createElement('div');
-            div.className = 'msg sent';
-            div.innerHTML = `${content} <br><button style="font-size:12px; color:white; text-decoration:underline;" onclick="window.open('${ev.target.result}')">Abrir</button> <button style="font-size:12px; color:white; margin-left:10px;" onclick="this.parentElement.innerHTML += '<br><textarea style=\\'width:90%; border-radius:5px; border:none; padding:5px; margin-top:5px;\\' placeholder=\\'Anotação...\\'></textarea>'">✏️ Nota</button>`;
-            div.onclick = (e) => { if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA' && confirm('Apagar?')) div.remove(); };
-            box.appendChild(div);
-            box.scrollTop = box.scrollHeight;
-        };
-        reader.readAsDataURL(file);
-    }
+            <select class="wallpaper-select" id="wallpaper-selector">
+                <option value="1">Noir Elegance</option>
+                <option value="2">Deep Ocean</option>
+                <option value="3">Midnight Blue</option>
+                <option value="4">Dark Carbon</option>
+            </select>
+        </div>
 
-    function addMsg(text, cls) {
-        const div = document.createElement('div');
-        div.className = `msg ${cls}`;
-        div.innerText = text;
-        div.onclick = () => { if(confirm('Apagar?')) div.remove(); };
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
-    }
-</script>
+        <!-- Área de Mensagens -->
+        <div class="chat-messages" id="chat-messages"></div>
+
+        <!-- Seletor de Emojis -->
+        <div class="emoji-picker" id="emoji-picker"></div>
+
+        <!-- Modal de Edição de Arquivo -->
+        <div class="file-modal" id="file-modal">
+            <div class="file-modal-box">
+                <h3 id="upload-status-title">Enviar Arquivo</h3>
+                <div class="preview-container" id="file-preview-zone"></div>
+                <input type="text" id="file-caption-input" placeholder="Escreva uma legenda ou alteração no arquivo...">
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button id="cancel-file-btn" style="background: none; border: none; color: #ff4d4d; cursor: pointer; font-weight: 600; padding: 10px;">Cancelar</button>
+                    <button id="confirm-file-btn" style="background: #fff; border: none; color: #000; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer;">Enviar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inputs e Ferramentas -->
+        <div class="chat-input-area">
+            <div class="tools-bar">
+                <button class="tool-btn" id="emoji-toggle-btn">😀</button>
+                <button class="tool-btn" id="attach-btn">📎</button>
+                <input type="file" id="file-input" style="display: none;">
+
+                <label class="encrypt-toggle">
+                    <input type="checkbox" id="encrypt-check"> 🔑 Criptografar Conteúdo
+                </label>
+            </div>
+
+            <div class="input-row">
+                <input type="text" id="msg-input" placeholder="Digite uma mensagem..." onkeypress="checkEnter(event)">
+                <button id="send-btn">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Integração do Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQ3ebWx62hta35KRdihRbtwJoxrlUtxiM",
+            authDomain: "chat-e797a.firebaseapp.com",
+            projectId: "chat-e797a",
+            storageBucket: "chat-e797a.firebasestorage.app",
+            messagingSenderId: "104946241159",
+            appId: "1:104946241159:web:93acbec71b40ec46c87222"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        const CHAVE_DE_SEGURANCA = "1234";
+        let usuarioAtual = null;
+        let isScreenLoginMode = true;
+
+        // Elementos DOM
+        const authOverlay = document.getElementById('auth-overlay');
+        const authTitle = document.getElementById('auth-title');
+        const authEmail = document.getElementById('auth-email');
+        const authPassword = document.getElementById('auth-password');
+        const authPrimaryBtn = document.getElementById('auth-primary-btn');
+        const authToggleLink = document.getElementById('auth-toggle-link');
+        
+        const chatMessages = document.getElementById('chat-messages');
+        const msgInput = document.getElementById('msg-input');
+        const encryptCheck = document.getElementById('encrypt-check');
+        const emojiPicker = document.getElementById('emoji-picker');
+        const fileInput = document.getElementById('file-input');
+        const fileModal = document.getElementById('file-modal');
+        const filePreviewZone = document.getElementById('file-preview-zone');
+        const fileCaptionInput = document.getElementById('file-caption-input');
+
+        let rawSelectedFile = null;
+        let unsubscribeSnapshot = null;
+
+        // ---------------- AUTHENTICATION ----------------
+        authToggleLink.onclick = () => {
+            isScreenLoginMode = !isScreenLoginMode;
+            if (isScreenLoginMode) {
+                authTitle.innerText = "Acessar o Chat";
+                authPrimaryBtn.innerText = "Entrar";
+                authToggleLink.innerText = "Não tem uma conta? Cadastre-se";
+            } else {
+                authTitle.innerText = "Criar Nova Conta";
+                authPrimaryBtn.innerText = "Cadastrar";
+                authToggleLink.innerText = "Já possui uma conta? Entre aqui";
+            }
+        };
+
+        authPrimaryBtn.onclick = () => {
+            const email = authEmail.value.trim();
+            const password = authPassword.value;
+
+            if (!email || !password) {
+                alert("Preencha todos os campos!");
+                return;
+            }
+
+            if (isScreenLoginMode) {
+                signInWithEmailAndPassword(auth, email, password)
+                    .catch(error => alert("Erro no Login: " + error.message + "\n\nImportante: Ative o provedor 'E-mail/Senha' no painel Authentication do Firebase!"));
+            } else {
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(() => {
+                        alert("Conta criada com sucesso! Faça seu login.");
+                        isScreenLoginMode = false;
+                        authToggleLink.click();
+                    })
+                    .catch(error => alert("Erro ao Cadastrar: " + error.message));
+            }
+        };
+
+        document.getElementById('logout-btn').onclick = () => {
+            signOut(auth).then(() => {
+                if (unsubscribeSnapshot) unsubscribeSnapshot();
+                chatMessages.innerHTML = '';
+            });
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                usuarioAtual = user;
+                authOverlay.style.display = 'none';
+                
+                const nomeSalvo = localStorage.getItem('profile_name_' + user.uid);
+                document.getElementById('profile-name').innerText = nomeSalvo || user.email.split('@')[0];
+                
+                const avatarSalvo = localStorage.getItem('profile_avatar_' + user.uid);
+                if(avatarSalvo) document.getElementById('avatar-preview').src = avatarSalvo;
+                
+                authEmail.value = '';
+                authPassword.value = '';
+                iniciarEscutaMensagens();
+            } else {
+                usuarioAtual = null;
+                authOverlay.style.display = 'flex';
+                document.getElementById('profile-name').innerText = "Desconectado";
+            }
+        });
+
+        // ---------------- CHAT ENGINE ----------------
+        const listaEmojis = ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','👾','🤖','🎃','😺','😸','🌟','⭐','🎈','🎉','🎊','🚀','👑','💎','🔮','🧿','🛍️','🎁','🧸','🎈','🎨','🎰','🎲','🎯','🎸','🎺','🥁','🎤','🎧','🎨','🎬','🎤','🎧','🎼','🎹','🎷','🎺','🎸','🪕','🎻','🎲','♟️','🎯','🎳','🎮','🎰','🚗','🚕','🚙','🚌','🏎️','🏍️','🛵','🚲','🛴','🛹','🛺','🚨','🚘','✈️','🚀','🛸','🚁','🛶','⛵','🚢','⚓','🗺️','🗿','🗼','🏰','🏯','🏟️','🎡','🎢','🎠','🌋','⛰️','🏔️','🗻','🏕️','🏖️','🏜️','🏝️','🏞️','🏙️','⚙️','🔧','🔨','⚒️','🛠️','⛏️','🔩','⚙️','🧱','⛓️','🧲','🔫','💣','🧨','🪓','Knife','🗡️','⚔️','🛡️','🚬','⚰️','⚱️','🏺','🔮','📿','🧿','💈','🧫','🧪','🌡️','🧬','🔬','🔬','🔭','📡','🛰️'];
+        listaEmojis.forEach(emoji => {
+            const span = document.createElement('span');
+            span.innerText = emoji;
+            span.onclick = () => { msgInput.value += emoji; msgInput.focus(); };
+            emojiPicker.appendChild(span);
+        });
+
+        document.getElementById('emoji-toggle-btn').onclick = () => emojiPicker.style.display = emojiPicker.style.display === 'grid' ? 'none' : 'grid';
+        document.getElementById('attach-btn').onclick = () => fileInput.click();
+        document.getElementById('cancel-file-btn').onclick = () => { fileModal.style.display = 'none'; fileInput.value = ''; };
+        document.getElementById('wallpaper-selector').onchange = (e) => document.getElementById('chat-box').style.background = `var(--bg-gradient-${e.target.value})`;
+        document.getElementById('avatar-click-zone').onclick = () => document.getElementById('file-avatar').click();
+        
+        document.getElementById('file-avatar').onchange = (e) => {
+            const f = e.target.files[0];
+            if(f) {
+                const r = new FileReader();
+                r.onload = (ev) => {
+                    document.getElementById('avatar-preview').src = ev.target.result;
+                    if(usuarioAtual) localStorage.setItem('profile_avatar_' + usuarioAtual.uid, ev.target.result);
+                };
+                r.readAsDataURL(f);
+            }
+        };
+
+        document.getElementById('profile-name').onclick = () => {
+            const n = prompt("Digite o novo nome do perfil:");
+            if(n && usuarioAtual) {
+                document.getElementById('profile-name').innerText = n;
+                localStorage.setItem('profile_name_' + usuarioAtual.uid, n);
+            }
+        };
+
+        window.checkEnter = function(e) { if(e.key === 'Enter') enviarMensagemTexto(); };
+        document.getElementById('send-btn').onclick = enviarMensagemTexto;
+
+        fileInput.onchange = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            rawSelectedFile = file;
+
+            filePreviewZone.innerHTML = '';
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                filePreviewZone.appendChild(img);
+            } else if (file.type.startsWith('video/')) {
+                const vid = document.createElement('video');
+                vid.src = URL.createObjectURL(file);
+                vid.controls = true;
+                filePreviewZone.appendChild(vid);
+            } else {
+                filePreviewZone.innerHTML = `<div class="file-placeholder-icon">📁<div style="font-size:12px; color:#fff">${file.name}</div></div>`;
+            }
+            fileCaptionInput.value = '';
+            document.getElementById('upload-status-title').innerText = "Enviar Arquivo";
+            fileModal.style.display = 'flex';
+        };
+
+        // Enviar Arquivo obedecendo estritamente a sua Regra de 4 campos com serverTimestamp()
+        document.getElementById('confirm-file-btn').onclick = () => {
+            if (!rawSelectedFile || !usuarioAtual) return;
+            
+            document.getElementById('upload-status-title').innerText = "Subindo arquivo... Aguarde.";
+            const storageRef = ref(storage, 'arquivos/' + Date.now() + '_' + rawSelectedFile.name);
+            const uploadTask = uploadBytesResumable(storageRef, rawSelectedFile);
+
+            uploadTask.on('state_changed', null, 
+                (error) => { alert("Erro ao fazer upload no Storage: " + error.message); }, 
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        
+                        const dadosArquivoOcultos = JSON.stringify({
+                            isRealFile: true,
+                            fileUrl: downloadURL,
+                            fileType: rawSelectedFile.type,
+                            fileName: rawSelectedFile.name,
+                            legenda: fileCaptionInput.value.trim()
+                        });
+
+                        const criptografar = encryptCheck.checked;
+                        let payloadFinal = dadosArquivoOcultos;
+
+                        if (criptografar) {
+                            payloadFinal = btoa(unescape(encodeURIComponent(dadosArquivoOcultos)));
+                        }
+
+                        addDoc(collection(db, "mensagens"), {
+                            autorId: usuarioAtual.uid,
+                            texto: payloadFinal,
+                            isEncrypted: criptografar,
+                            createdAt: serverTimestamp() // Sincroniza perfeitamente com request.time da regra
+                        }).then(() => {
+                            fileModal.style.display = 'none';
+                            fileInput.value = '';
+                            encryptCheck.checked = false;
+                        }).catch(err => {
+                            alert("Bloqueado pelo Firebase! Erro: " + err.message + "\n\nVerifique se as Regras do seu Database aceitam gravações.");
+                        });
+                    });
+                }
+            );
+        };
+
+        // Enviar Mensagem de Texto obedecendo estritamente a sua Regra de 4 campos com serverTimestamp()
+        function enviarMensagemTexto() {
+            const texto = msgInput.value.trim();
+            if (!texto) return;
+            if (!usuarioAtual) {
+                alert("Você precisa estar logado para enviar mensagens!");
+                return;
+            }
+
+            const criptografar = encryptCheck.checked;
+            let textoFinal = texto;
+
+            if (criptografar) {
+                textoFinal = btoa(unescape(encodeURIComponent(texto)));
+            }
+
+            addDoc(collection(db, "mensagens"), {
+                autorId: usuarioAtual.uid,
+                texto: textoFinal,
+                isEncrypted: criptografar,
+                createdAt: serverTimestamp() // Sincroniza perfeitamente com request.time da regra
+            }).then(() => {
+                msgInput.value = '';
+                encryptCheck.checked = false;
+                emojiPicker.style.display = 'none';
+            }).catch(err => {
+                alert("Bloqueado pelo Firebase! Erro: " + err.message + "\n\nVerifique as regras do Firestore no seu console!");
+            });
+        }
+
+        // Renderizador inteligente que abre mídias compactadas dentro do texto
+        function renderizarConteudoEstruturado(textoBruto, elementoDestino) {
+            if (textoBruto.startsWith('{"isRealFile":true')) {
+                try {
+                    const arquivo = JSON.parse(textoBruto);
+                    if (arquivo.fileType && arquivo.fileType.startsWith('image/')) {
+                        elementoDestino.innerHTML = `<img src="${arquivo.fileUrl}">`;
+                    } else if (arquivo.fileType && arquivo.fileType.startsWith('video/')) {
+                        elementoDestino.innerHTML = `<video src="${arquivo.fileUrl}" controls></video>`;
+                    } else {
+                        elementoDestino.innerHTML = `<a href="${arquivo.fileUrl}" download="${arquivo.fileName}" class="file-link" target="_blank">📁 ${arquivo.fileName}</a>`;
+                    }
+                    if (arquivo.legenda) {
+                        elementoDestino.innerHTML += `<div class="file-caption">${arquivo.legenda}</div>`;
+                    }
+                } catch(e) {
+                    elementoDestino.innerText = textoBruto;
+                }
+            } else {
+                elementoDestino.innerText = textoBruto;
+            }
+        }
+
+        // Escuta Real-Time global do Banco de Dados
+        function iniciarEscutaMensagens() {
+            const q = query(collection(db, "mensagens"), orderBy("createdAt", "asc"));
+            unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+                chatMessages.innerHTML = '';
+                snapshot.forEach((docSnap) => {
+                    const dados = docSnap.data();
+                    const idMensagem = docSnap.id;
+                    
+                    const msgDiv = document.createElement('div');
+                    const lado = (usuarioAtual && dados.autorId === usuarioAtual.uid) ? 'right' : 'left';
+                    msgDiv.classList.add('message', lado);
+
+                    const btnDeletar = document.createElement('button');
+                    btnDeletar.className = 'delete-btn';
+                    btnDeletar.innerText = '✕';
+                    btnDeletar.onclick = () => {
+                        deleteDoc(doc(db, "mensagens", idMensagem)).catch(err => {
+                            alert("Você só pode apagar suas próprias mensagens!");
+                        });
+                    };
+                    msgDiv.appendChild(btnDeletar);
+
+                    const containerConteudo = document.createElement('div');
+
+                    if (dados.isEncrypted) {
+                        msgDiv.setAttribute('data-encrypted-raw', dados.texto);
+                        containerConteudo.innerHTML = `
+                            <span class="encrypted-badge">🔒 Conteúdo Criptografado (Clique p/ liberar)</span>
+                            <span class="text-real-content">•••••••••••••</span>
+                        `;
+                        msgDiv.onclick = (e) => {
+                            if(e.target.className === 'delete-btn') return;
+                            const senha = prompt("Insira o código de liberação:");
+                            if (senha === CHAVE_DE_SEGURANCA) {
+                                const raw = msgDiv.getAttribute('data-encrypted-raw');
+                                const textoDecriptado = decodeURIComponent(escape(atob(raw)));
+                                
+                                const spanDestino = msgDiv.querySelector('.text-real-content');
+                                spanDestino.innerHTML = '';
+                                renderizarConteudoEstruturado(textoDecriptado, spanDestino);
+                                
+                                const badge = msgDiv.querySelector('.encrypted-badge');
+                                badge.innerText = "🔓 Desbloqueado";
+                                badge.style.color = "#00ff88";
+                                msgDiv.onclick = null;
+                            } else if (senha !== null) {
+                                alert("Código incorreto!");
+                            }
+                        };
+                    } else {
+                        renderizarConteudoEstruturado(dados.texto, containerConteudo);
+                    }
+
+                    msgDiv.appendChild(containerConteudo);
+                    chatMessages.appendChild(msgDiv);
+                });
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, (error) => {
+                console.error("Erro no Listener: ", error);
+            });
+        }
+    </script>
 </body>
 </html>
