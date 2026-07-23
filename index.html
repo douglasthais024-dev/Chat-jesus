@@ -220,14 +220,23 @@
             z-index: 50;
             flex-direction: column;
             padding: 20px;
+            gap: 12px;
         }
 
         .contacts-modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
             color: #fff;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 8px;
+            background: rgba(255,255,255,0.03);
+            padding: 10px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
         .contacts-list {
@@ -512,11 +521,18 @@
         <!-- MODAL DE LISTA DE CONTATOS (CONVERSAS PRIVADAS) -->
         <div class="contacts-modal" id="contacts-modal">
             <div class="contacts-modal-header">
-                <h3>Suas Conversas Privadas</h3>
+                <h3>Iniciar Conversa Privada</h3>
                 <button id="close-contacts-btn" style="background:none; border:none; color:#ff4d4d; font-size:16px; cursor:pointer; font-weight:bold;">Fechar ✕</button>
             </div>
+
+            <!-- Busca Direta por E-mail do Contato -->
+            <div class="search-box">
+                <input type="email" id="search-email-input" class="auth-input" placeholder="Digite o e-mail do seu contato..." style="padding: 8px 12px;">
+                <button id="search-email-btn" class="auth-btn" style="padding: 8px 14px; white-space: nowrap;">Buscar</button>
+            </div>
+
             <div class="contacts-list" id="contacts-list">
-                <!-- Lista de usuários carregada dinamicamente -->
+                <!-- Usuários cadastrados -->
             </div>
         </div>
 
@@ -646,6 +662,8 @@
         const contactsList = document.getElementById('contacts-list');
         const openContactsBtn = document.getElementById('open-contacts-btn');
         const closeContactsBtn = document.getElementById('close-contacts-btn');
+        const searchEmailInput = document.getElementById('search-email-input');
+        const searchEmailBtn = document.getElementById('search-email-btn');
         const activeChatSubtitle = document.getElementById('active-chat-subtitle');
 
         const chatMessages = document.getElementById('chat-messages');
@@ -788,33 +806,41 @@
             }
         }
 
-        // ---------------- CONTATOS E SALAS PRIVADAS ----------------
+        // ---------------- GERENCIAMENTO DE PERFIL E CONTATOS PRIVADOS ----------------
         async function salvarPerfilNoFirestore(user) {
-            const name = localStorage.getItem('profile_name_' + user.uid) || user.email.split('@')[0];
-            const avatar = localStorage.getItem('profile_avatar_' + user.uid) || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop';
-            
-            await setDoc(doc(db, "usuarios", user.uid), {
-                uid: user.uid,
-                email: user.email,
-                name: name,
-                avatar: avatar,
-                lastSeen: serverTimestamp()
-            }, { merge: true });
+            try {
+                const name = localStorage.getItem('profile_name_' + user.uid) || user.email.split('@')[0];
+                const avatar = localStorage.getItem('profile_avatar_' + user.uid) || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop';
+                
+                await setDoc(doc(db, "usuarios", user.uid), {
+                    uid: user.uid,
+                    email: user.email.toLowerCase(),
+                    name: name,
+                    avatar: avatar,
+                    lastSeen: serverTimestamp()
+                }, { merge: true });
+            } catch (e) {
+                console.log("Erro ao sincronizar perfil:", e);
+            }
         }
 
+        // Abrir Modal de Contatos e carregar lista
         openContactsBtn.onclick = async () => {
             contactsModal.style.display = 'flex';
-            contactsList.innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">Carregando usuários...</p>';
-            
-            try {
-                const querySnapshot = await getDocs(collection(db, "usuarios"));
-                contactsList.innerHTML = '';
+            carregarListaGeralContatos();
+        };
 
-                let encontrouOutro = false;
-                querySnapshot.forEach((docSnap) => {
+        async function carregarListaGeralContatos() {
+            contactsList.innerHTML = '<p style="color:#aaa; text-align:center; padding:15px; font-size:13px;">Carregando contatos...</p>';
+            try {
+                const snap = await getDocs(collection(db, "usuarios"));
+                contactsList.innerHTML = '';
+                let encontrou = 0;
+                
+                snap.forEach(docSnap => {
                     const u = docSnap.data();
                     if (usuarioAtual && u.uid !== usuarioAtual.uid) {
-                        encontrouOutro = true;
+                        encontrou++;
                         const item = document.createElement('div');
                         item.className = 'contact-item';
                         item.innerHTML = `
@@ -829,11 +855,44 @@
                     }
                 });
 
-                if (!encontrouOutro) {
-                    contactsList.innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">Nenhum outro usuário cadastrado. Peça para alguém se cadastrar e iniciar uma conversa privada!</p>';
+                if (encontrou === 0) {
+                    contactsList.innerHTML = '<p style="color:#aaa; text-align:center; padding:15px; font-size:12px;">Nenhum outro usuário na lista automática.<br><b>Use o campo acima para buscar pelo e-mail do contato!</b></p>';
                 }
-            } catch(e) {
-                contactsList.innerHTML = '<p style="color:#ff4d4d; text-align:center; padding:20px;">Erro ao carregar lista de contatos.</p>';
+            } catch (e) {
+                contactsList.innerHTML = '<p style="color:#ffc107; text-align:center; padding:15px; font-size:12px;">Para conversar, digite o e-mail do seu contato no campo acima e clique em Buscar.</p>';
+            }
+        }
+
+        // Buscar Contato Específico por E-mail no Firestore
+        searchEmailBtn.onclick = async () => {
+            const emailBusca = searchEmailInput.value.trim().toLowerCase();
+            if (!emailBusca) {
+                alert("Por favor, digite um e-mail para pesquisar.");
+                return;
+            }
+            if (usuarioAtual && emailBusca === usuarioAtual.email.toLowerCase()) {
+                alert("Você não pode abrir uma conversa privada com você mesmo.");
+                return;
+            }
+
+            try {
+                const q = query(collection(db, "usuarios"), where("email", "==", emailBusca));
+                const snap = await getDocs(q);
+
+                if (snap.empty) {
+                    alert("Usuário não encontrado! Peça para a pessoa se cadastrar primeiro neste app com o e-mail: " + emailBusca);
+                    return;
+                }
+
+                let usuarioEncontrado = null;
+                snap.forEach(d => usuarioEncontrado = d.data());
+
+                if (usuarioEncontrado) {
+                    selecionarContatoParaConversa(usuarioEncontrado);
+                    searchEmailInput.value = '';
+                }
+            } catch (e) {
+                alert("Erro ao pesquisar e-mail: " + e.message);
             }
         };
 
@@ -843,11 +902,12 @@
             contatoAtivo = contato;
             contactsModal.style.display = 'none';
             
+            // Gerar chatId privado ordenando UIDs reais
             const ids = [usuarioAtual.uid, contato.uid].sort();
             chatIdAtual = `${ids[0]}_${ids[1]}`;
 
-            activeChatSubtitle.innerText = `Privado: ${contato.name}`;
-            msgInput.placeholder = `Mensagem privada para ${contato.name}...`;
+            activeChatSubtitle.innerText = `Privado: ${contato.name || contato.email}`;
+            msgInput.placeholder = `Mensagem para ${contato.name || contato.email}...`;
 
             iniciarEscutaMensagensPrivadas();
         }
@@ -1124,6 +1184,7 @@
                 addDoc(collection(db, "mensagens"), {
                     autorId: usuarioAtual.uid,
                     autorNome: localStorage.getItem('profile_name_' + usuarioAtual.uid) || usuarioAtual.email.split('@')[0],
+                    autorEmail: usuarioAtual.email,
                     destinatarioId: contatoAtivo.uid,
                     chatId: chatIdAtual,
                     texto: payloadFinal,
@@ -1149,7 +1210,7 @@
                 return;
             }
             if (!contatoAtivo || !chatIdAtual) {
-                alert("Abra a opção '👥 Contatos' e selecione um usuário para iniciar a conversa privada!");
+                alert("Clique no botão '👥 Contatos', digite o e-mail do seu contato e clique em Buscar para iniciar a conversa!");
                 return;
             }
 
@@ -1168,6 +1229,7 @@
             addDoc(collection(db, "mensagens"), {
                 autorId: usuarioAtual.uid,
                 autorNome: localStorage.getItem('profile_name_' + usuarioAtual.uid) || usuarioAtual.email.split('@')[0],
+                autorEmail: usuarioAtual.email,
                 destinatarioId: contatoAtivo.uid,
                 chatId: chatIdAtual,
                 texto: textoFinal,
@@ -1218,12 +1280,12 @@
             unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
                 chatMessages.innerHTML = '';
                 
-                // Ordenação segura em tempo de execução no lado do cliente
                 const mensagensDocs = [];
                 snapshot.forEach(docSnap => {
                     mensagensDocs.push({ id: docSnap.id, ...docSnap.data() });
                 });
 
+                // Ordenação local em memória para evitar erros de índice do Firebase
                 mensagensDocs.sort((a, b) => {
                     const timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt).getTime()) : Date.now();
                     const timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt).getTime()) : Date.now();
@@ -1292,11 +1354,11 @@
 
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }, (error) => {
-                console.error("Erro na escuta da conversa privada: ", error);
+                console.error("Erro na conversa privada: ", error);
             });
         }
 
-        // ---------------- ESCUTA GLOBAL DE NOTIFICAÇÕES (MESMO FORA DO CHAT) ----------------
+        // ---------------- ESCUTA GLOBAL DE NOTIFICAÇÕES (NO VISOR DO CELULAR) ----------------
         function iniciarEscutaGlobalDeNotificacoes() {
             if (unsubscribeGlobalNotif) unsubscribeGlobalNotif();
             if (!usuarioAtual) return;
@@ -1318,7 +1380,7 @@
                                     resumo = "Enviou uma mídia";
                                 }
                             }
-                            const tituloNotif = `Nova mensagem de ${dados.autorNome || 'Contato'}`;
+                            const tituloNotif = `Nova mensagem de ${dados.autorNome || dados.autorEmail || 'Contato'}`;
                             emitirNotificacaoRecebida(tituloNotif, resumo);
                         }
                     });
