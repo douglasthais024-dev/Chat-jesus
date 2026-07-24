@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta tags para funcionamento como App no Celular -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Chat Premium Real-Time Completo & Privado</title>
+    <title>Chat Premium Real-Time Completo</title>
     <style>
         :root {
             --bg-gradient-1: linear-gradient(135deg, #121214 0%, #1a1a1e 100%);
@@ -45,7 +46,7 @@
             position: relative;
         }
 
-        /* Tela de Autenticação */
+        /* Tela de Autenticação (Login/Cadastro) */
         .auth-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -68,14 +69,14 @@
             border-radius: 20px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
         }
 
         .auth-box h2 {
             color: #fff;
             font-size: 20px;
             text-align: center;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
         }
 
         .auth-input {
@@ -100,28 +101,18 @@
         }
         .auth-btn:hover { opacity: 0.9; }
 
-        .auth-btn-demo {
-            background: #007bff;
-            color: #ffffff;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
         .auth-toggle-text {
             color: #b0b0b5;
             font-size: 13px;
             text-align: center;
             cursor: pointer;
-            margin-top: 4px;
+            margin-top: 8px;
             text-decoration: underline;
         }
 
         /* Cabeçalho do Perfil */
         .chat-header {
-            padding: 14px 16px;
+            padding: 16px;
             background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(10px);
             display: flex;
@@ -134,7 +125,7 @@
         .profile-info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .profile-img-wrapper {
@@ -143,8 +134,8 @@
         }
 
         .profile-img {
-            width: 42px;
-            height: 42px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #007bff;
@@ -154,139 +145,50 @@
 
         .profile-detail h4 {
             color: #ffffff;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-        }
-
-        .profile-subtitle {
-            font-size: 11px;
-            color: #00ff88;
-            display: block;
-            max-width: 130px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .logout-btn {
             background: none;
             border: none;
             color: #ff4d4d;
-            font-size: 11px;
+            font-size: 12px;
             cursor: pointer;
             text-decoration: underline;
-            display: inline-block;
-            margin-left: 4px;
+            display: block;
+            margin-top: 2px;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 6px;
-        }
-
-        .contacts-btn {
-            background: rgba(0, 123, 255, 0.25);
-            border: 1px solid rgba(0, 123, 255, 0.5);
-            color: #66b2ff;
-            padding: 6px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
+            gap: 8px;
         }
 
         .notif-btn {
             background: rgba(255,255,255,0.08);
             border: none;
             color: #ffc107;
-            padding: 6px 8px;
+            padding: 6px 10px;
             border-radius: 12px;
-            font-size: 13px;
+            font-size: 14px;
             cursor: pointer;
         }
 
+        /* Seletor de Papel de Parede */
         .wallpaper-select {
             background: rgba(255,255,255,0.08);
             color: #fff;
             border: none;
-            padding: 6px 8px;
+            padding: 6px 10px;
             border-radius: 12px;
-            font-size: 11px;
+            font-size: 12px;
             cursor: pointer;
             outline: none;
         }
         .wallpaper-select option { background: #1a1a1e; }
-
-        /* Modal de Lista de Contatos */
-        .contacts-modal {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 10, 12, 0.96);
-            z-index: 50;
-            flex-direction: column;
-            padding: 20px;
-            gap: 12px;
-        }
-
-        .contacts-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #fff;
-        }
-
-        .search-box {
-            display: flex;
-            gap: 8px;
-            background: rgba(255,255,255,0.03);
-            padding: 10px;
-            border-radius: 14px;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .contacts-list {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .contact-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 12px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .contact-item:hover {
-            background: rgba(0, 123, 255, 0.25);
-        }
-
-        .contact-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .contact-info h5 {
-            color: #fff;
-            font-size: 14px;
-        }
-
-        .contact-info p {
-            color: #b0b0b5;
-            font-size: 11px;
-        }
 
         /* Feed de Mensagens */
         .chat-messages {
@@ -301,6 +203,7 @@
         .chat-messages::-webkit-scrollbar { width: 5px; }
         .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
 
+        /* Balões Clássicos */
         .message {
             max-width: 75%;
             padding: 12px 16px;
@@ -314,12 +217,14 @@
             flex-direction: column;
         }
 
+        /* Lado Esquerdo - Azul */
         .message.left {
             background-color: #007bff;
             align-self: flex-start;
             border-bottom-left-radius: 4px;
         }
 
+        /* Lado Direito - Preto */
         .message.right {
             background-color: #000000;
             align-self: flex-end;
@@ -335,6 +240,7 @@
             display: block;
         }
 
+        /* Botão Oculto de Apagar */
         .delete-btn {
             position: absolute;
             top: -5px;
@@ -390,7 +296,7 @@
             text-decoration: underline;
         }
 
-        /* Inputs */
+        /* Input de Texto inferior */
         .chat-input-area {
             background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(10px);
@@ -449,6 +355,7 @@
             cursor: pointer;
         }
 
+        /* Painel de Emojis Expandido */
         .emoji-picker {
             display: none;
             position: absolute;
@@ -466,8 +373,12 @@
             overflow-y: auto;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
+        .emoji-picker::-webkit-scrollbar { width: 5px; }
+        .emoji-picker::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
         .emoji-picker span { font-size: 20px; cursor: pointer; text-align: center; padding: 4px; border-radius: 6px; }
+        .emoji-picker span:hover { background: rgba(255,255,255,0.1); }
 
+        /* Modal de Edição de Arquivo Pré-envio */
         .file-modal {
             display: none;
             position: absolute;
@@ -489,11 +400,13 @@
             flex-direction: column;
             gap: 15px;
         }
+        .file-modal-box h3 { color: white; font-size: 16px; }
         .preview-container {
             width: 100%; max-height: 180px; overflow: hidden; border-radius: 10px;
             display: flex; justify-content: center; align-items: center; background: #000;
         }
         .preview-container img, .preview-container video { max-width: 100%; max-height: 180px; object-fit: contain; }
+        .file-placeholder-icon { font-size: 50px; color: #b0b0b5; padding: 20px; text-align: center; }
         #file-caption-input {
             width: 100%; background: #25252b; border: 1px solid #3a3a42;
             padding: 12px; color: white; border-radius: 10px; outline: none;
@@ -504,34 +417,18 @@
 
     <div class="chat-container" id="chat-box">
         
-        <!-- TELA DE AUTENTICAÇÃO -->
+        <!-- ABA DE CADASTRO E LOGIN -->
         <div class="auth-overlay" id="auth-overlay">
             <div class="auth-box">
                 <h2 id="auth-title">Acessar o Chat</h2>
                 <input type="email" id="auth-email" class="auth-input" placeholder="Seu e-mail">
                 <input type="password" id="auth-password" class="auth-input" placeholder="Sua senha (mín. 6 dígitos)">
                 <button id="auth-primary-btn" class="auth-btn">Entrar</button>
-                <button id="auth-demo-btn" class="auth-btn-demo">⚡ Entrar Direto (Modo Local/Teste)</button>
                 <p id="auth-toggle-link" class="auth-toggle-text">Não tem uma conta? Cadastre-se</p>
             </div>
         </div>
 
-        <!-- MODAL DE CONTATOS -->
-        <div class="contacts-modal" id="contacts-modal">
-            <div class="contacts-modal-header">
-                <h3>Conversas Privadas</h3>
-                <button id="close-contacts-btn" style="background:none; border:none; color:#ff4d4d; font-size:16px; cursor:pointer; font-weight:bold;">Fechar ✕</button>
-            </div>
-
-            <div class="search-box">
-                <input type="email" id="search-email-input" class="auth-input" placeholder="Digite o e-mail do seu contato..." style="padding: 8px 12px;">
-                <button id="search-email-btn" class="auth-btn" style="padding: 8px 14px; white-space: nowrap;">Buscar</button>
-            </div>
-
-            <div class="contacts-list" id="contacts-list"></div>
-        </div>
-
-        <!-- Cabeçalho -->
+        <!-- Topo / Perfil -->
         <div class="chat-header">
             <div class="profile-info">
                 <div class="profile-img-wrapper" id="avatar-click-zone">
@@ -539,15 +436,13 @@
                     <input type="file" id="file-avatar" accept="image/*">
                 </div>
                 <div class="profile-detail">
-                    <h4 id="profile-name">Usuário</h4>
-                    <span class="profile-subtitle" id="active-chat-subtitle">Escolha um contato</span>
-                    <button class="logout-btn" id="logout-btn">Sair</button>
+                    <h4 id="profile-name">Carregando...</h4>
+                    <button class="logout-btn" id="logout-btn">Sair da Conta</button>
                 </div>
             </div>
             
             <div class="header-actions">
-                <button class="contacts-btn" id="open-contacts-btn" title="Escolher com quem conversar">👥 Contatos</button>
-                <button class="notif-btn" id="enable-notif-btn" title="Ativar Notificações">🔔</button>
+                <button class="notif-btn" id="enable-notif-btn" title="Ativar Notificações no Celular">🔔</button>
                 <select class="wallpaper-select" id="wallpaper-selector">
                     <option value="1">Noir Elegance</option>
                     <option value="2">Deep Ocean</option>
@@ -557,18 +452,18 @@
             </div>
         </div>
 
-        <!-- Mensagens -->
+        <!-- Área de Mensagens -->
         <div class="chat-messages" id="chat-messages"></div>
 
-        <!-- Emojis -->
+        <!-- Seletor de Emojis -->
         <div class="emoji-picker" id="emoji-picker"></div>
 
-        <!-- Modal Arquivo -->
+        <!-- Modal de Edição de Arquivo -->
         <div class="file-modal" id="file-modal">
             <div class="file-modal-box">
                 <h3 id="upload-status-title">Enviar Arquivo / Foto</h3>
                 <div class="preview-container" id="file-preview-zone"></div>
-                <input type="text" id="file-caption-input" placeholder="Escreva uma legenda...">
+                <input type="text" id="file-caption-input" placeholder="Escreva uma legenda ou alteração no arquivo...">
                 <div style="display: flex; gap: 10px; justify-content: flex-end;">
                     <button id="cancel-file-btn" style="background: none; border: none; color: #ff4d4d; cursor: pointer; font-weight: 600; padding: 10px;">Cancelar</button>
                     <button id="confirm-file-btn" style="background: #fff; border: none; color: #000; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer;">Enviar</button>
@@ -576,30 +471,30 @@
             </div>
         </div>
 
-        <!-- Inputs -->
+        <!-- Inputs e Ferramentas -->
         <div class="chat-input-area">
             <div class="tools-bar">
-                <button class="tool-btn" id="emoji-toggle-btn">😀</button>
-                <button class="tool-btn" id="attach-btn">📎</button>
+                <button class="tool-btn" id="emoji-toggle-btn" title="Emojis">😀</button>
+                <button class="tool-btn" id="attach-btn" title="Enviar Foto ou Arquivo">📎</button>
                 <input type="file" id="file-input" accept="image/*,video/*,application/*" style="display: none;">
 
                 <label class="encrypt-toggle">
-                    <input type="checkbox" id="encrypt-check"> 🔑 Criptografar
+                    <input type="checkbox" id="encrypt-check"> 🔑 Criptografar Conteúdo
                 </label>
             </div>
 
             <div class="input-row">
-                <input type="text" id="msg-input" placeholder="Selecione um contato em '👥 Contatos'..." onkeypress="checkEnter(event)">
+                <input type="text" id="msg-input" placeholder="Digite uma mensagem..." onkeypress="checkEnter(event)">
                 <button id="send-btn">Enviar</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase Script -->
+    <!-- Integração do Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, setDoc, getDocs, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -611,38 +506,47 @@
             appId: "1:104946241159:web:93acbec71b40ec46c87222"
         };
 
-        let app, auth, db, storage;
-        try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-            storage = getStorage(app);
-        } catch(e) {
-            console.warn("Firebase offline ou com erro de inicialização:", e);
-        }
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
 
         let usuarioAtual = null;
-        let contatoAtivo = null; 
-        let chatIdAtual = null;  
         let isScreenLoginMode = true;
-        let mensagensLocais = [];
+        let carregamentoInicial = true;
+        let audioCtxInstance = null;
+        let swRegistration = null;
 
+        // ---------------- SERVICE WORKER PARA NOTIFICAÇÃO NO VISOR DO CELULAR ----------------
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('install', function(e) { self.skipWaiting(); });
+                self.addEventListener('activate', function(e) { e.waitUntil(self.clients.claim()); });
+                self.addEventListener('notificationclick', function(e) {
+                    e.notification.close();
+                    e.waitUntil(
+                        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
+                            if (clientList.length > 0) return clientList[0].focus();
+                            return clients.openWindow('/');
+                        })
+                    );
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl).then(reg => {
+                swRegistration = reg;
+            }).catch(err => console.log("Service Worker registrado para background."));
+        }
+
+        // Elementos DOM
         const authOverlay = document.getElementById('auth-overlay');
         const authTitle = document.getElementById('auth-title');
         const authEmail = document.getElementById('auth-email');
         const authPassword = document.getElementById('auth-password');
         const authPrimaryBtn = document.getElementById('auth-primary-btn');
-        const authDemoBtn = document.getElementById('auth-demo-btn');
         const authToggleLink = document.getElementById('auth-toggle-link');
         
-        const contactsModal = document.getElementById('contacts-modal');
-        const contactsList = document.getElementById('contacts-list');
-        const openContactsBtn = document.getElementById('open-contacts-btn');
-        const closeContactsBtn = document.getElementById('close-contacts-btn');
-        const searchEmailInput = document.getElementById('search-email-input');
-        const searchEmailBtn = document.getElementById('search-email-btn');
-        const activeChatSubtitle = document.getElementById('active-chat-subtitle');
-
         const chatMessages = document.getElementById('chat-messages');
         const msgInput = document.getElementById('msg-input');
         const encryptCheck = document.getElementById('encrypt-check');
@@ -651,28 +555,23 @@
         const fileModal = document.getElementById('file-modal');
         const filePreviewZone = document.getElementById('file-preview-zone');
         const fileCaptionInput = document.getElementById('file-caption-input');
+        const enableNotifBtn = document.getElementById('enable-notif-btn');
 
         let rawSelectedFile = null;
         let unsubscribeSnapshot = null;
 
-        // Entrar Direto (Modo Teste/Local - Garantia que o app abre 100%)
-        authDemoBtn.onclick = () => {
-            const emailDigitado = authEmail.value.trim() || "usuario@teste.com";
-            usuarioAtual = {
-                uid: "uid_" + btoa(emailDigitado).replace(/=/g, '').slice(0, 10),
-                email: emailDigitado
-            };
-            entrarNoApp(usuarioAtual);
-        };
+        // Ativar áudio na primeira interação do usuário
+        window.addEventListener('click', () => {
+            if (!audioCtxInstance) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) audioCtxInstance = new AudioCtx();
+            }
+            if (audioCtxInstance && audioCtxInstance.state === 'suspended') {
+                audioCtxInstance.resume();
+            }
+        }, { once: false });
 
-        function entrarNoApp(user) {
-            authOverlay.style.display = 'none';
-            document.getElementById('profile-name').innerText = user.email.split('@')[0];
-            const avatarSalvo = localStorage.getItem('profile_avatar_' + user.uid);
-            if(avatarSalvo) document.getElementById('avatar-preview').src = avatarSalvo;
-        }
-
-        // Criptografia por senha
+        // ---------------- CRIPTOGRAFIA COM SENHA CUSTOMIZADA ----------------
         function criptografarTextoComSenha(texto, senha) {
             let resultado = '';
             for (let i = 0; i < texto.length; i++) {
@@ -687,7 +586,9 @@
         function decriptografarTextoComSenha(payloadStr, senhaDigitada) {
             try {
                 const obj = JSON.parse(payloadStr);
-                if (obj.passHash !== btoa(senhaDigitada)) return null;
+                if (obj.passHash !== btoa(senhaDigitada)) {
+                    return null;
+                }
                 const raw = decodeURIComponent(escape(atob(obj.data)));
                 let resultado = '';
                 for (let i = 0; i < raw.length; i++) {
@@ -699,133 +600,171 @@
             }
         }
 
+        // ---------------- FORMATADOR DE HORÁRIO ----------------
         function obterHoraFormatada(createdAt) {
-            if (!createdAt) return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            if (!createdAt) {
+                return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
             const data = createdAt.toDate ? createdAt.toDate() : new Date(createdAt);
             return data.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        openContactsBtn.onclick = () => {
-            contactsModal.style.display = 'flex';
-            carregarListaGeralContatos();
-        };
-
-        async function carregarListaGeralContatos() {
-            contactsList.innerHTML = '';
-            let lista = [
-                { uid: "user_maria", email: "maria@chat.com", name: "Maria Silva" },
-                { uid: "user_joao", email: "joao@chat.com", name: "João Pedro" }
-            ];
-
-            if (db) {
-                try {
-                    const snap = await getDocs(collection(db, "usuarios"));
-                    snap.forEach(docSnap => {
-                        const u = docSnap.data();
-                        if (usuarioAtual && u.uid !== usuarioAtual.uid) {
-                            if(!lista.some(x => x.email === u.email)) lista.push(u);
-                        }
-                    });
-                } catch(e) { console.log("Aviso ao buscar contatos:", e); }
+        // ---------------- NOTIFICAÇÕES DO SISTEMA (VISOR DO CELULAR) ----------------
+        function pedirPermissaoNotificacao() {
+            if ("Notification" in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        enableNotifBtn.style.color = "#00ff88";
+                    } else if (permission === "denied") {
+                        enableNotifBtn.style.color = "#ff4d4d";
+                    }
+                });
+            } else {
+                alert("Seu navegador não suporta notificações de sistema.");
             }
-
-            lista.forEach(u => {
-                if(usuarioAtual && u.email === usuarioAtual.email) return;
-                const item = document.createElement('div');
-                item.className = 'contact-item';
-                item.innerHTML = `
-                    <img src="${u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop'}" class="contact-avatar">
-                    <div class="contact-info">
-                        <h5>${u.name || u.email}</h5>
-                        <p>🔒 Conversa Privada • ${u.email}</p>
-                    </div>
-                `;
-                item.onclick = () => selecionarContatoParaConversa(u);
-                contactsList.appendChild(item);
-            });
         }
 
-        searchEmailBtn.onclick = () => {
-            const emailBusca = searchEmailInput.value.trim().toLowerCase();
-            if (!emailBusca) return alert("Digite um e-mail.");
-            if (usuarioAtual && emailBusca === usuarioAtual.email.toLowerCase()) return alert("Você não pode abrir conversa com você mesmo.");
-
-            const contato = {
-                uid: "user_" + btoa(emailBusca).replace(/=/g, '').slice(0, 12),
-                email: emailBusca,
-                name: emailBusca.split('@')[0],
-                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop'
-            };
-            selecionarContatoParaConversa(contato);
-            searchEmailInput.value = '';
+        enableNotifBtn.onclick = () => {
+            pedirPermissaoNotificacao();
+            alert("Notificações ativadas! Você receberá alertas no visor quando uma nova mensagem chegar.");
         };
 
-        closeContactsBtn.onclick = () => contactsModal.style.display = 'none';
+        function tocarSomNotificacao(tipo = 'recebida') {
+            try {
+                if (!audioCtxInstance) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) audioCtxInstance = new AudioCtx();
+                }
+                if (!audioCtxInstance) return;
 
-        function selecionarContatoParaConversa(contato) {
-            contatoAtivo = contato;
-            contactsModal.style.display = 'none';
-            
-            const ids = [usuarioAtual.uid, contato.uid].sort();
-            chatIdAtual = `${ids[0]}_${ids[1]}`;
+                const osc = audioCtxInstance.createOscillator();
+                const gain = audioCtxInstance.createGain();
 
-            activeChatSubtitle.innerText = `Privado: ${contato.name || contato.email}`;
-            msgInput.placeholder = `Mensagem para ${contato.name || contato.email}...`;
+                osc.connect(gain);
+                gain.connect(audioCtxInstance.destination);
 
-            iniciarEscutaMensagensPrivadas();
+                if (tipo === 'enviada') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, audioCtxInstance.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtxInstance.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.15, audioCtxInstance.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtxInstance.currentTime + 0.08);
+                    osc.start();
+                    osc.stop(audioCtxInstance.currentTime + 0.08);
+                } else {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(587.33, audioCtxInstance.currentTime);
+                    osc.frequency.setValueAtTime(880, audioCtxInstance.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.2, audioCtxInstance.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtxInstance.currentTime + 0.25);
+                    osc.start();
+                    osc.stop(audioCtxInstance.currentTime + 0.25);
+                }
+            } catch (e) {
+                console.log("Aguardando toque para emitir áudio.");
+            }
         }
 
-        // Auth
+        // Emitir Notificação no Visor/Barra de Notificações do Celular
+        function emitirNotificacaoRecebida(titulo, corpo) {
+            tocarSomNotificacao('recebida');
+
+            if ("Notification" in window && Notification.permission === "granted") {
+                const opcoesNotificacao = {
+                    body: corpo,
+                    icon: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop',
+                    badge: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop',
+                    vibrate: [300, 100, 300], // Vibração do celular
+                    tag: 'chat-mensagem-nova',
+                    renotify: true,
+                    requireInteraction: true // Mantém no visor até o usuário clicar
+                };
+
+                if (swRegistration && swRegistration.showNotification) {
+                    swRegistration.showNotification(titulo, opcoesNotificacao);
+                } else {
+                    new Notification(titulo, opcoesNotificacao);
+                }
+            }
+        }
+
+        // ---------------- AUTHENTICATION ----------------
         authToggleLink.onclick = () => {
             isScreenLoginMode = !isScreenLoginMode;
-            authTitle.innerText = isScreenLoginMode ? "Acessar o Chat" : "Criar Nova Conta";
-            authPrimaryBtn.innerText = isScreenLoginMode ? "Entrar" : "Cadastrar";
-            authToggleLink.innerText = isScreenLoginMode ? "Não tem uma conta? Cadastre-se" : "Já possui uma conta? Entre aqui";
+            if (isScreenLoginMode) {
+                authTitle.innerText = "Acessar o Chat";
+                authPrimaryBtn.innerText = "Entrar";
+                authToggleLink.innerText = "Não tem uma conta? Cadastre-se";
+            } else {
+                authTitle.innerText = "Criar Nova Conta";
+                authPrimaryBtn.innerText = "Cadastrar";
+                authToggleLink.innerText = "Já possui uma conta? Entre aqui";
+            }
         };
 
         authPrimaryBtn.onclick = () => {
             const email = authEmail.value.trim();
             const password = authPassword.value;
 
-            if (!email || !password) return alert("Preencha e-mail e senha!");
+            if (!email || !password) {
+                alert("Preencha todos os campos!");
+                return;
+            }
 
-            if (auth) {
-                if (isScreenLoginMode) {
-                    signInWithEmailAndPassword(auth, email, password)
-                        .then(() => {})
-                        .catch(error => alert("Erro no Login: " + error.message + "\n\n💡 Dica: Clique no botão azul 'Entrar Direto' para acessar imediatamente!"));
-                } else {
-                    createUserWithEmailAndPassword(auth, email, password)
-                        .then(() => { alert("Conta criada! Faça login."); authToggleLink.click(); })
-                        .catch(error => alert("Erro ao Cadastrar: " + error.message));
-                }
+            if (isScreenLoginMode) {
+                signInWithEmailAndPassword(auth, email, password)
+                    .then(() => pedirPermissaoNotificacao())
+                    .catch(error => alert("Erro no Login: " + error.message));
             } else {
-                authDemoBtn.click();
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(() => {
+                        alert("Conta criada com sucesso! Faça seu login.");
+                        authToggleLink.click();
+                    })
+                    .catch(error => alert("Erro ao Cadastrar: " + error.message));
             }
         };
 
         document.getElementById('logout-btn').onclick = () => {
-            if(auth) signOut(auth);
-            usuarioAtual = null;
-            contatoAtivo = null;
-            chatIdAtual = null;
-            chatMessages.innerHTML = '';
-            authOverlay.style.display = 'flex';
+            signOut(auth).then(() => {
+                if (unsubscribeSnapshot) unsubscribeSnapshot();
+                chatMessages.innerHTML = '';
+            });
         };
 
-        if(auth) {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    usuarioAtual = user;
-                    entrarNoApp(user);
-                }
-            });
-        }
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                usuarioAtual = user;
+                authOverlay.style.display = 'none';
+                
+                const nomeSalvo = localStorage.getItem('profile_name_' + user.uid);
+                document.getElementById('profile-name').innerText = nomeSalvo || user.email.split('@')[0];
+                
+                const avatarSalvo = localStorage.getItem('profile_avatar_' + user.uid);
+                if(avatarSalvo) document.getElementById('avatar-preview').src = avatarSalvo;
+                
+                authEmail.value = '';
+                authPassword.value = '';
+                pedirPermissaoNotificacao();
+                iniciarEscutaMensagens();
+            } else {
+                usuarioAtual = null;
+                authOverlay.style.display = 'flex';
+                document.getElementById('profile-name').innerText = "Desconectado";
+            }
+        });
 
-        // Emojis
-        const emojis = ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😋','😛','😜','🤪','🤓','😎','🥳','😏','😒','😞','😔','😟','😕','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤯','😳','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','🥱','😴','🤤','😵','🤐','😷','🤒','🤑','🤠','😈','👹','🤡','💩','👻','💀','👽','👾','🤖','🎃','👋','✋','👌','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','👇','👍','👎','👊','👏','🙌','🤝','🙏','❤️','🧡','💛','💚','💙','💜','🖤','🤍','💔','❣️','💕','💞','💓','💗','💖','💘','💝','⚽','🏀','🚗','🚕','✈️','🚀','🇧🇷','🇺🇸'];
+        // ---------------- EMOJIS LIBERADOS ----------------
+        const listaEmojis = [
+            '😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','👾','🤖','🎃','😺','😸','😹','😻','😼','😽','🙀','😿','😾',
+            '👋','🤚','🖐️','✋','🖖','👌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','🦵','🦿','🦶','👂','🦻','👃','🧠','🦷','🦴','👀','👁️','舌','👄',
+            '❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☪️','🕉️','☸️','✡️','🔯','🕎','☯️','☦️','🛐','🦘','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🐐','🐕','🐩','🐈','🐓','🦃','🦚','🦜','🐰','🦝','🦨','🦦','🦥','🦔',
+            '🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥒','🌽','🥕','🧄','🧅','🥔','🥐','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🫓','sandwich','🥙','🧆','🌮','burrito','🥗','🥘','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','☕','🍵','🧃','🥤','🧋','🍶','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🧉','🍾','🧊',
+            '⚽','🏀','🏈','⚾','🥎','tennis','🏐','🏉','🥏','🎱','🪀','🏓','badminton','hockey','🏑','🥍','cricket','🪃','🥅','golf','🏹','fishing','🤿','boxing','🥋','🎽','skateboard','roller skate','sled','ice skate','curling stone','ski','⛷️','snowboard','parachute','weightlifting','wrestling','gymnastics','basketball player','fencing','handball','golfing','horse racing','yoga','surfing','swimming','water polo','rowing','climbing','biking','cycling','trophy','1st place','2nd place','3rd place','medal','military medal','rosette','reminder ribbon','ticket','tickets','circus','performing arts','framed picture','art','thread','needle','yarn','knot','microphone','headphones','musical score','keyboard','drum','long drum','saxophone','trumpet','guitar','banjo','violin','game die','chess','darts','bowling','video game','slot machine','puzzle',
+            '🚗','🚕','🚙','🚌','🏣','police car','ambulance','fire engine','minibus','pickup truck','truck','tractor','wheelchair','motorized wheelchair','scooter','motor scooter','bicycle','kick scooter','skateboard','police car light','fire extinguisher','airplane','rocket','flying saucer','helicopter','canoe','sailboat','speed-boat','motorboat','passenger ship','gear','wrench','hammer','tools','magnet','bomb','firecracker','axe','knife','dagger','shield','coffin','crystal ball','microscope','telescope','🇧🇷','🇺🇸','🇪🇸','🇫🇷','🇩🇪','🇮🇹','🇯🇵','🇰🇷','🇨🇳','🇬🇧','🇦🇷'
+        ];
 
-        emojis.forEach(emoji => {
+        listaEmojis.forEach(emoji => {
             const span = document.createElement('span');
             span.innerText = emoji;
             span.onclick = () => { msgInput.value += emoji; msgInput.focus(); };
@@ -850,146 +789,335 @@
             }
         };
 
+        document.getElementById('profile-name').onclick = () => {
+            const n = prompt("Digite o novo nome do perfil:");
+            if(n && usuarioAtual) {
+                document.getElementById('profile-name').innerText = n;
+                localStorage.setItem('profile_name_' + usuarioAtual.uid, n);
+            }
+        };
+
         window.checkEnter = function(e) { if(e.key === 'Enter') enviarMensagemTexto(); };
         document.getElementById('send-btn').onclick = enviarMensagemTexto;
 
-        fileInput.onchange = (event) => {
-            const file = event.target.files[0];
+        // ---------------- UPLOAD DE FOTOS E ARQUIVOS ----------------
+        function abrirModalArquivo(file) {
             if (!file) return;
             rawSelectedFile = file;
+
             filePreviewZone.innerHTML = '';
             if (file.type.startsWith('image/')) {
                 const img = document.createElement('img');
                 img.src = URL.createObjectURL(file);
                 filePreviewZone.appendChild(img);
+            } else if (file.type.startsWith('video/')) {
+                const vid = document.createElement('video');
+                vid.src = URL.createObjectURL(file);
+                vid.controls = true;
+                filePreviewZone.appendChild(vid);
             } else {
-                filePreviewZone.innerHTML = `<div style="color:#fff; padding:20px;">📁 ${file.name}</div>`;
+                filePreviewZone.innerHTML = `<div class="file-placeholder-icon">📁<div style="font-size:12px; color:#fff">${file.name}</div></div>`;
             }
+            fileCaptionInput.value = '';
+            document.getElementById('upload-status-title').innerText = file.type.startsWith('image/') ? "Enviar Foto" : "Enviar Arquivo";
             fileModal.style.display = 'flex';
+        }
+
+        fileInput.onchange = (event) => {
+            abrirModalArquivo(event.target.files[0]);
         };
 
-        document.getElementById('confirm-file-btn').onclick = () => {
-            if (!rawSelectedFile || !contatoAtivo) return alert("Selecione um contato primeiro!");
+        msgInput.addEventListener('paste', (event) => {
+            const items = (event.clipboardData || window.clipboardData).items;
+            for (let item of items) {
+                if (item.type.indexOf("image") === 0) {
+                    const blob = item.getAsFile();
+                    abrirModalArquivo(blob);
+                    event.preventDefault();
+                    break;
+                }
+            }
+        });
+
+        function converterParaBase64(file, callback) {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                const dadosArquivo = JSON.stringify({
+            reader.onload = (e) => callback(e.target.result);
+            reader.readAsDataURL(file);
+        }
+
+        function comprimirFotoSeNecessario(file, callback) {
+            if (!file.type.startsWith('image/') || file.size < 1200000) {
+                callback(file);
+                return;
+            }
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const max = 1200;
+                if (width > height && width > max) { height *= max / width; width = max; }
+                else if (height > max) { width *= max / height; height = max; }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob((blob) => {
+                    callback(new File([blob], file.name || 'foto.jpg', { type: 'image/jpeg' }));
+                }, 'image/jpeg', 0.8);
+            };
+            img.onerror = () => callback(file);
+        }
+
+        function processarEEnviarArquivo(arquivo, callbackSucesso) {
+            comprimirFotoSeNecessario(arquivo, (fotoPronta) => {
+                const nomeArquivo = fotoPronta.name || `foto_${Date.now()}.jpg`;
+                const storageRef = ref(storage, 'arquivos/' + Date.now() + '_' + nomeArquivo);
+                const uploadTask = uploadBytesResumable(storageRef, fotoPronta);
+
+                let finalizou = false;
+
+                const timeoutFallback = setTimeout(() => {
+                    if (!finalizou) {
+                        finalizou = true;
+                        try { uploadTask.cancel(); } catch(e){}
+                        document.getElementById('upload-status-title').innerText = "Enviando imagem rápida...";
+                        converterParaBase64(fotoPronta, (dataUrl) => {
+                            callbackSucesso(dataUrl, fotoPronta.type, nomeArquivo);
+                        });
+                    }
+                }, 6000);
+
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        const progresso = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                        document.getElementById('upload-status-title').innerText = `Enviando... ${progresso}%`;
+                    }, 
+                    (error) => {
+                        if (!finalizou) {
+                            finalizou = true;
+                            clearTimeout(timeoutFallback);
+                            converterParaBase64(fotoPronta, (dataUrl) => {
+                                callbackSucesso(dataUrl, fotoPronta.type, nomeArquivo);
+                            });
+                        }
+                    }, 
+                    () => {
+                        if (!finalizou) {
+                            finalizou = true;
+                            clearTimeout(timeoutFallback);
+                            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                                callbackSucesso(downloadURL, fotoPronta.type, nomeArquivo);
+                            }).catch(() => {
+                                converterParaBase64(fotoPronta, (dataUrl) => {
+                                    callbackSucesso(dataUrl, fotoPronta.type, nomeArquivo);
+                                });
+                            });
+                        }
+                    }
+                );
+            });
+        }
+
+        document.getElementById('confirm-file-btn').onclick = () => {
+            if (!rawSelectedFile || !usuarioAtual) return;
+
+            const criptografar = encryptCheck.checked;
+            let senhaDefinida = "";
+
+            if (criptografar) {
+                senhaDefinida = prompt("Crie uma senha de proteção para este anexo:");
+                if (!senhaDefinida) {
+                    alert("Envio cancelado! Você precisa definir uma senha para criptografar.");
+                    return;
+                }
+            }
+
+            document.getElementById('upload-status-title').innerText = "Preparando anexo...";
+
+            processarEEnviarArquivo(rawSelectedFile, (urlOuData, tipo, nome) => {
+                const dadosArquivoOcultos = JSON.stringify({
                     isRealFile: true,
-                    fileUrl: e.target.result,
-                    fileType: rawSelectedFile.type,
-                    fileName: rawSelectedFile.name,
+                    fileUrl: urlOuData,
+                    fileType: tipo || 'image/jpeg',
+                    fileName: nome,
                     legenda: fileCaptionInput.value.trim()
                 });
-                salvarEEnviarMensagem(dadosArquivo);
-                fileModal.style.display = 'none';
-                rawSelectedFile = null;
-            };
-            reader.readAsDataURL(rawSelectedFile);
+
+                let payloadFinal = dadosArquivoOcultos;
+                if (criptografar) {
+                    payloadFinal = criptografarTextoComSenha(dadosArquivoOcultos, senhaDefinida);
+                }
+
+                addDoc(collection(db, "mensagens"), {
+                    autorId: usuarioAtual.uid,
+                    texto: payloadFinal,
+                    isEncrypted: criptografar,
+                    createdAt: serverTimestamp()
+                }).then(() => {
+                    tocarSomNotificacao('enviada');
+                    fileModal.style.display = 'none';
+                    fileInput.value = '';
+                    rawSelectedFile = null;
+                    encryptCheck.checked = false;
+                }).catch(err => {
+                    alert("Erro ao gravar mensagem: " + err.message);
+                });
+            });
         };
 
         function enviarMensagemTexto() {
             const texto = msgInput.value.trim();
             if (!texto) return;
-            if (!contatoAtivo) return alert("Clique em '👥 Contatos' e escolha com quem conversar!");
-            
+            if (!usuarioAtual) {
+                alert("Você precisa estar logado para enviar mensagens!");
+                return;
+            }
+
+            const criptografar = encryptCheck.checked;
             let textoFinal = texto;
-            if (encryptCheck.checked) {
-                const senha = prompt("Crie uma senha de proteção:");
-                if (!senha) return alert("Cancelado! Senha obrigatória para criptografar.");
-                textoFinal = criptografarTextoComSenha(texto, senha);
+
+            if (criptografar) {
+                const senhaDefinida = prompt("Crie uma senha de proteção para esta mensagem:");
+                if (!senhaDefinida) {
+                    alert("Envio cancelado! É necessário definir uma senha para criptografar.");
+                    return;
+                }
+                textoFinal = criptografarTextoComSenha(texto, senhaDefinida);
             }
 
-            salvarEEnviarMensagem(textoFinal, encryptCheck.checked);
-            msgInput.value = '';
-            encryptCheck.checked = false;
-        }
-
-        function salvarEEnviarMensagem(conteudo, isEncrypted = false) {
-            const novaMsg = {
+            addDoc(collection(db, "mensagens"), {
                 autorId: usuarioAtual.uid,
-                chatId: chatIdAtual,
-                texto: conteudo,
-                isEncrypted: isEncrypted,
-                createdAt: new Date().toISOString()
-            };
-
-            if (db) {
-                addDoc(collection(db, "mensagens"), { ...novaMsg, createdAt: serverTimestamp() }).catch(e => {
-                    mensagensLocais.push(novaMsg);
-                    renderizarMensagens();
-                });
-            } else {
-                mensagensLocais.push(novaMsg);
-                renderizarMensagens();
-            }
+                texto: textoFinal,
+                isEncrypted: criptografar,
+                createdAt: serverTimestamp()
+            }).then(() => {
+                tocarSomNotificacao('enviada');
+                msgInput.value = '';
+                encryptCheck.checked = false;
+                emojiPicker.style.display = 'none';
+            }).catch(err => {
+                alert("Bloqueado pelo Firebase! Erro: " + err.message);
+            });
         }
 
-        function renderizarConteudo(texto, el) {
-            if (texto.startsWith('{"isRealFile":true')) {
+        function renderizarConteudoEstruturado(textoBruto, elementoDestino) {
+            if (textoBruto.startsWith('{"isRealFile":true')) {
                 try {
-                    const arq = JSON.parse(texto);
-                    if (arq.fileType.startsWith('image/')) el.innerHTML = `<img src="${arq.fileUrl}">`;
-                    else el.innerHTML = `<a href="${arq.fileUrl}" download="${arq.fileName}" class="file-link">📁 ${arq.fileName}</a>`;
-                    if (arq.legenda) el.innerHTML += `<div class="file-caption">${arq.legenda}</div>`;
-                } catch(e) { el.innerText = texto; }
+                    const arquivo = JSON.parse(textoBruto);
+                    if (arquivo.fileType && arquivo.fileType.startsWith('image/')) {
+                        elementoDestino.innerHTML = `<img src="${arquivo.fileUrl}" alt="Foto" style="cursor:pointer;" onclick="window.open('${arquivo.fileUrl}', '_blank')">`;
+                    } else if (arquivo.fileType && arquivo.fileType.startsWith('video/')) {
+                        elementoDestino.innerHTML = `<video src="${arquivo.fileUrl}" controls></video>`;
+                    } else {
+                        elementoDestino.innerHTML = `<a href="${arquivo.fileUrl}" download="${arquivo.fileName}" class="file-link" target="_blank">📁 ${arquivo.fileName}</a>`;
+                    }
+                    if (arquivo.legenda) {
+                        elementoDestino.innerHTML += `<div class="file-caption">${arquivo.legenda}</div>`;
+                    }
+                } catch(e) {
+                    elementoDestino.innerText = textoBruto;
+                }
             } else {
-                el.innerText = texto;
+                elementoDestino.innerText = textoBruto;
             }
         }
 
-        function renderizarMensagens(docs = []) {
-            chatMessages.innerHTML = '';
-            const lista = docs.length ? docs : mensagensLocais.filter(m => m.chatId === chatIdAtual);
-
-            lista.forEach(dados => {
-                const msgDiv = document.createElement('div');
-                const lado = (usuarioAtual && dados.autorId === usuarioAtual.uid) ? 'right' : 'left';
-                msgDiv.classList.add('message', lado);
-
-                const container = document.createElement('div');
-                if (dados.isEncrypted) {
-                    container.innerHTML = `<span class="encrypted-badge">🔒 Mensagem Protegida (Clique p/ ver)</span><span>••••••••</span>`;
-                    msgDiv.onclick = () => {
-                        const s = prompt("Digite a senha:");
-                        if (s) {
-                            const dec = decriptografarTextoComSenha(dados.texto, s);
-                            if (dec !== null) {
-                                container.innerHTML = '';
-                                renderizarConteudo(dec, container);
-                            } else alert("Senha incorreta!");
+        function iniciarEscutaMensagens() {
+            carregamentoInicial = true;
+            const q = query(collection(db, "mensagens"), orderBy("createdAt", "asc"));
+            
+            unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+                
+                if (!carregamentoInicial) {
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === "added") {
+                            const dados = change.doc.data();
+                            // Notificação acionada exclusivamente para mensagens recebidas de OUTROS usuários
+                            if (usuarioAtual && dados.autorId !== usuarioAtual.uid) {
+                                let resumo = dados.isEncrypted ? "🔒 Mensagem Criptografada" : dados.texto;
+                                if (resumo.startsWith('{"isRealFile":true')) {
+                                    try {
+                                        const arq = JSON.parse(resumo);
+                                        resumo = arq.fileType && arq.fileType.startsWith('image/') ? "📷 Enviou uma foto" : "📁 Enviou um arquivo";
+                                    } catch(e) {
+                                        resumo = "Enviou uma mídia";
+                                    }
+                                }
+                                emitirNotificacaoRecebida("Nova mensagem recebida", resumo);
+                            }
                         }
-                    };
-                } else {
-                    renderizarConteudo(dados.texto, container);
+                    });
                 }
 
-                msgDiv.appendChild(container);
-                const hora = document.createElement('span');
-                hora.className = 'msg-time';
-                hora.innerText = obterHoraFormatada(dados.createdAt);
-                msgDiv.appendChild(hora);
+                chatMessages.innerHTML = '';
+                snapshot.forEach((docSnap) => {
+                    const dados = docSnap.data();
+                    const idMensagem = docSnap.id;
+                    
+                    const msgDiv = document.createElement('div');
+                    const lado = (usuarioAtual && dados.autorId === usuarioAtual.uid) ? 'right' : 'left';
+                    msgDiv.classList.add('message', lado);
 
-                chatMessages.appendChild(msgDiv);
+                    const btnDeletar = document.createElement('button');
+                    btnDeletar.className = 'delete-btn';
+                    btnDeletar.innerText = '✕';
+                    btnDeletar.onclick = () => {
+                        deleteDoc(doc(db, "mensagens", idMensagem)).catch(err => {
+                            alert("Você só pode apagar suas próprias mensagens!");
+                        });
+                    };
+                    msgDiv.appendChild(btnDeletar);
+
+                    const containerConteudo = document.createElement('div');
+
+                    if (dados.isEncrypted) {
+                        msgDiv.setAttribute('data-encrypted-raw', dados.texto);
+                        containerConteudo.innerHTML = `
+                            <span class="encrypted-badge">🔒 Conteúdo Protegido (Clique p/ liberar com senha)</span>
+                            <span class="text-real-content">•••••••••••••</span>
+                        `;
+                        msgDiv.onclick = (e) => {
+                            if(e.target.className === 'delete-btn') return;
+                            const senhaDigitada = prompt("Insira a senha definida para este conteúdo:");
+                            if (senhaDigitada) {
+                                const raw = msgDiv.getAttribute('data-encrypted-raw');
+                                const textoDecriptado = decriptografarTextoComSenha(raw, senhaDigitada);
+                                
+                                if (textoDecriptado !== null) {
+                                    const spanDestino = msgDiv.querySelector('.text-real-content');
+                                    spanDestino.innerHTML = '';
+                                    renderizarConteudoEstruturado(textoDecriptado, spanDestino);
+                                    
+                                    const badge = msgDiv.querySelector('.encrypted-badge');
+                                    badge.innerText = "🔓 Conteúdo Desbloqueado";
+                                    badge.style.color = "#00ff88";
+                                    msgDiv.onclick = null;
+                                } else {
+                                    alert("Senha incorreta!");
+                                }
+                            }
+                        };
+                    } else {
+                        renderizarConteudoEstruturado(dados.texto, containerConteudo);
+                    }
+
+                    msgDiv.appendChild(containerConteudo);
+
+                    const horaSpan = document.createElement('span');
+                    horaSpan.className = 'msg-time';
+                    horaSpan.innerText = obterHoraFormatada(dados.createdAt);
+                    msgDiv.appendChild(horaSpan);
+
+                    chatMessages.appendChild(msgDiv);
+                });
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                carregamentoInicial = false;
+            }, (error) => {
+                console.error("Erro no Listener: ", error);
             });
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function iniciarEscutaMensagensPrivadas() {
-            if (unsubscribeSnapshot) unsubscribeSnapshot();
-            if (!chatIdAtual) return;
-
-            if (db) {
-                try {
-                    const q = query(collection(db, "mensagens"), where("chatId", "==", chatIdAtual));
-                    unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
-                        const docs = [];
-                        snapshot.forEach(d => docs.push({ id: d.id, ...d.data() }));
-                        docs.sort((a,b) => new Date(a.createdAt?.toDate ? a.createdAt.toDate() : a.createdAt) - new Date(b.createdAt?.toDate ? b.createdAt.toDate() : b.createdAt));
-                        renderizarMensagens(docs);
-                    }, () => renderizarMensagens());
-                } catch(e) { renderizarMensagens(); }
-            } else {
-                renderizarMensagens();
-            }
         }
     </script>
 </body>
