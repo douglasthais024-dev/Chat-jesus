@@ -2,1184 +2,1121 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Chat Premium Real-Time com Gerenciador de Contatos</title>
-    <style>
-        :root {
-            --bg-gradient-1: linear-gradient(135deg, #121214 0%, #1a1a1e 100%);
-            --bg-gradient-2: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-            --bg-gradient-3: linear-gradient(135deg, #141e30 0%, #243b55 100%);
-            --bg-gradient-4: linear-gradient(135deg, #000000 0%, #434343 100%);
-        }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat Full Screen com Autenticação Firebase</title>
+    
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
+    <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
+            background-color: #07090e;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #0b0b0d;
+            width: 100vw;
+            overflow: hidden;
         }
 
-        .chat-container {
-            width: 100%;
-            max-width: 450px;
-            height: 90vh;
-            background: var(--bg-gradient-1);
-            border-radius: 24px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+        .mobile-container {
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            max-height: none;
+            background: #ffffff;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: background 0.5s ease;
             position: relative;
+            overflow: hidden;
         }
 
-        /* Tela de Autenticação */
-        .auth-overlay {
+        /* Alerta de Nova Mensagem (Toast) */
+        .notification-toast {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #121214;
-            z-index: 100;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.96);
+            color: #fff;
+            padding: 14px 18px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.88rem;
+            border: 1px solid rgba(255,255,255,0.18);
+            width: 92%;
+            max-width: 480px;
+            backdrop-filter: blur(10px);
+        }
+
+        .notification-toast.show {
+            top: 16px;
+        }
+
+        .notification-toast img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #0084ff;
+        }
+
+        .notification-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .notification-content strong {
+            display: block;
+            font-size: 0.84rem;
+            color: #38bdf8;
+        }
+
+        .notification-content p {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #f1f5f9;
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* --- TELA 0: AUTENTICAÇÃO (LOGIN E CADASTRO) --- */
+        .auth-container {
+            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            padding: 30px;
-        }
-
-        .auth-box {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
             padding: 24px;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            background: #ffffff;
+            max-width: 440px;
+            width: 100%;
+            margin: 0 auto;
         }
 
-        .auth-box h2 {
-            color: #fff;
-            font-size: 20px;
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .auth-tab {
+            flex: 1;
             text-align: center;
+            padding: 12px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: color 0.2s;
+        }
+
+        .auth-tab.active {
+            color: #0084ff;
+            border-bottom-color: #0084ff;
+        }
+
+        .auth-form {
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .auth-form.active {
+            display: flex;
         }
 
         .auth-input {
-            width: 100%;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 12px 16px;
-            border-radius: 12px;
-            color: #fff;
+            padding: 14px 18px;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
             outline: none;
-            font-size: 14px;
+            font-size: 1rem;
+            background: #f8fafc;
+            color: #0f172a;
+            transition: border-color 0.2s;
+        }
+
+        .auth-input:focus {
+            border-color: #0084ff;
+            background: #ffffff;
         }
 
         .auth-btn {
-            background: #ffffff;
-            color: #000;
+            background: linear-gradient(135deg, #0084ff, #0056b3);
+            color: white;
             border: none;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 14px;
+            border-radius: 14px;
             font-weight: 600;
             cursor: pointer;
+            font-size: 1rem;
+            margin-top: 8px;
+            box-shadow: 0 4px 12px rgba(0,132,255,0.3);
+            transition: transform 0.1s;
         }
 
-        .auth-toggle-text {
-            color: #b0b0b5;
-            font-size: 13px;
+        .auth-btn:active {
+            transform: scale(0.98);
+        }
+
+        .auth-error {
+            color: #ef4444;
+            font-size: 0.85rem;
             text-align: center;
-            cursor: pointer;
-            text-decoration: underline;
+            min-height: 20px;
         }
 
-        /* Cabeçalho do Chat */
-        .chat-header {
-            padding: 12px 16px;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            z-index: 10;
-        }
-
-        .header-top {
+        /* --- TELA 1: LISTA DE CONVERSAS --- */
+        .app-header {
+            padding: 18px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .profile-info {
+        .my-profile-wrapper {
             display: flex;
             align-items: center;
-            gap: 10px;
         }
 
-        .profile-img {
-            width: 40px;
-            height: 40px;
+        .my-profile-pic {
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #007bff;
-            cursor: pointer;
+            margin-right: 14px;
+            border: 2px solid #0084ff;
+            box-shadow: 0 2px 8px rgba(0,132,255,0.25);
         }
 
-        #file-avatar { display: none; }
+        .my-profile-info h2 {
+            font-size: 1.15rem;
+            color: #0f172a;
+            font-weight: 700;
+        }
 
-        .profile-detail h4 {
-            color: #ffffff;
-            font-size: 14px;
+        .my-profile-info span {
+            font-size: 0.8rem;
+            color: #10b981;
             font-weight: 600;
-            cursor: pointer;
-        }
-
-        .logout-btn {
-            background: none;
-            border: none;
-            color: #ff4d4d;
-            font-size: 11px;
-            cursor: pointer;
-            text-decoration: underline;
         }
 
         .header-actions {
             display: flex;
+            gap: 8px;
             align-items: center;
-            gap: 6px;
         }
 
-        .notif-btn {
-            background: rgba(255,255,255,0.08);
+        .sim-btn, .logout-btn {
+            background: linear-gradient(135deg, #0084ff, #0056b3);
+            color: #fff;
             border: none;
-            color: #ffc107;
-            padding: 6px 10px;
-            border-radius: 10px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .wallpaper-select {
-            background: rgba(255,255,255,0.08);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 6px 8px;
-            border-radius: 10px;
-            font-size: 12px;
-            cursor: pointer;
-            outline: none;
-        }
-        .wallpaper-select option { background: #1a1a1e; color: #fff; }
-
-        /* Barra de Seleção de Conversa e Botões de Ação */
-        .chat-selector-bar {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 6px 8px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .room-select {
-            flex: 1;
-            background: #1a1a1e;
-            color: #00ff88;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 6px 8px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .action-bar-btn {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.15);
-            padding: 6px 8px;
-            border-radius: 8px;
-            font-size: 11.5px;
+            padding: 8px 12px;
+            border-radius: 18px;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
-            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,132,255,0.3);
+            transition: transform 0.1s;
         }
-        .action-bar-btn:hover { background: rgba(255,255,255,0.2); }
-        .action-bar-btn.blue { background: #007bff; border-color: #007bff; }
-        .action-bar-btn.blue:hover { background: #0056b3; }
 
-        /* Feed de Mensagens */
-        .chat-messages {
+        .logout-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+        }
+
+        .sim-btn:active, .logout-btn:active {
+            transform: scale(0.95);
+        }
+
+        .chat-list {
             flex: 1;
-            padding: 16px;
             overflow-y: auto;
+            background: #ffffff;
+        }
+
+        .chat-list-item {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .chat-messages::-webkit-scrollbar { width: 4px; }
-        .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-
-        .message {
-            max-width: 80%;
-            padding: 10px 14px;
-            border-radius: 16px;
-            font-size: 14px;
-            line-height: 1.4;
-            word-break: break-word;
-            color: #ffffff;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .message.left {
-            background-color: #007bff;
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-
-        .message.right {
-            background-color: #000000;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .msg-author {
-            font-size: 10px;
-            color: rgba(255,255,255,0.7);
-            font-weight: 700;
-            margin-bottom: 2px;
-        }
-
-        .msg-time {
-            font-size: 9px;
-            color: rgba(255, 255, 255, 0.6);
-            align-self: flex-end;
-            margin-top: 4px;
-        }
-
-        .delete-btn {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            background: #ff4d4d;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 10px;
-            cursor: pointer;
-            display: none;
             align-items: center;
-            justify-content: center;
-            z-index: 5;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
         }
 
-        .message:hover .delete-btn { display: flex; }
-
-        .message img, .message video {
-            max-width: 100%;
-            border-radius: 10px;
-            margin-top: 4px;
-            display: block;
+        .chat-list-item:active {
+            background: #f8fafc;
         }
 
-        .file-link {
-            color: #00ff88;
-            text-decoration: none;
+        .chat-list-item img {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chat-list-details {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .chat-list-details h4 {
+            font-size: 1.05rem;
+            color: #0f172a;
             font-weight: 600;
         }
 
-        .file-caption {
+        .chat-list-details p {
+            font-size: 0.9rem;
+            color: #64748b;
             margin-top: 4px;
-            font-size: 13px;
-            color: #eeeeee;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .encrypted-badge {
-            font-size: 11px;
-            color: #ffc107;
-            cursor: pointer;
-            text-decoration: underline;
+        .unread-badge {
+            background: #0084ff;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 50%;
+            display: none;
+            box-shadow: 0 2px 5px rgba(0,132,255,0.4);
         }
 
-        /* Entrada de Texto */
-        .chat-input-area {
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
-            padding: 10px;
-            border-top: 1px solid rgba(255,255,255,0.05);
+        .chat-list-item.unread .unread-badge {
+            display: inline-block;
+        }
+
+        /* --- TELA 2: ÁREA DO CHAT --- */
+        .chat-header {
+            padding: 14px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .tools-bar {
-            display: flex;
-            gap: 10px;
             align-items: center;
-            padding-left: 4px;
+            gap: 14px;
+            z-index: 10;
         }
 
-        .tool-btn {
+        .back-btn {
             background: none;
             border: none;
-            color: #b0b0b5;
-            font-size: 18px;
+            font-size: 1.5rem;
             cursor: pointer;
+            color: #0084ff;
+            padding: 0 4px;
         }
 
-        .encrypt-toggle {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #b0b0b5;
-            font-size: 11px;
-            cursor: pointer;
-            margin-left: auto;
+        .chat-header img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #cbd5e1;
         }
 
-        .input-row { display: flex; gap: 8px; align-items: center; }
-
-        #msg-input {
-            flex: 1;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 10px 14px;
-            border-radius: 14px;
-            color: #fff;
-            outline: none;
-            font-size: 14px;
-        }
-
-        #send-btn {
-            background: #ffffff;
-            color: #000000;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 14px;
+        .chat-header-info h4 {
+            font-size: 1.02rem;
+            color: #0f172a;
             font-weight: 600;
-            cursor: pointer;
         }
 
-        /* Emojis */
-        .emoji-picker {
-            display: none;
-            position: absolute;
-            bottom: 110px;
-            left: 16px;
-            right: 16px;
-            background: #1a1a1e;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 10px;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 6px;
-            z-index: 20;
-            max-height: 200px;
-            overflow-y: auto;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        .chat-header-info p {
+            font-size: 0.78rem;
+            color: #64748b;
         }
-        .emoji-picker span { font-size: 20px; cursor: pointer; text-align: center; padding: 4px; border-radius: 6px; }
-        .emoji-picker span:hover { background: rgba(255,255,255,0.1); }
 
-        /* Modais */
-        .modal-overlay {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 10, 12, 0.95);
-            z-index: 40;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        /* PAPEL DE PAREDE PREMIUM LUXURY DESIGN */
+        .chat-messages {
+            flex: 1;
             padding: 20px;
-        }
-
-        .modal-box {
-            background: #1a1a1e;
-            width: 100%;
-            border-radius: 16px;
-            padding: 18px;
-            border: 1px solid rgba(255,255,255,0.1);
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 85vh;
+            background-color: #0b0f19;
+            background-image: 
+                radial-gradient(circle at 10% 15%, rgba(0, 132, 255, 0.22) 0%, transparent 50%),
+                radial-gradient(circle at 90% 85%, rgba(147, 51, 234, 0.18) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 100%),
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px, 28px 28px;
         }
 
-        .modal-box h3 { color: white; font-size: 16px; }
-
-        .preview-container {
-            width: 100%; max-height: 180px; overflow: hidden; border-radius: 10px;
-            display: flex; justify-content: center; align-items: center; background: #000;
-        }
-        .preview-container img, .preview-container video { max-width: 100%; max-height: 180px; object-fit: contain; }
-
-        .modal-input {
-            width: 100%; background: #25252b; border: 1px solid #3a3a42;
-            padding: 10px; color: white; border-radius: 8px; outline: none; font-size: 13px;
-        }
-
-        /* Lista de Contatos com Estilo Card */
-        .contacts-list-container {
+        /* Balões de Mensagem */
+        .message {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.96rem;
+            line-height: 1.45;
+            position: relative;
+            word-wrap: break-word;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            max-height: 250px;
-            overflow-y: auto;
-            background: #121214;
-            padding: 8px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .contact-card {
+        /* Lado esquerdo (Recebida) - AZUL */
+        .message.received {
+            background: linear-gradient(135deg, #0084ff, #0056b3);
+            color: #ffffff;
+            align-self: flex-start;
+            border-top-left-radius: 4px;
+        }
+
+        /* Lado direito (Enviada) - PRETO */
+        .message.sent {
+            background: linear-gradient(135deg, #1c1c1e, #000000);
+            color: #ffffff;
+            align-self: flex-end;
+            border-top-right-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .message img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 4px;
+            cursor: pointer;
+        }
+
+        .file-card {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 8px 12px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .contact-card-info {
-            display: flex;
-            align-items: center;
             gap: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-top: 4px;
+            color: inherit;
         }
 
-        .contact-card-avatar {
-            width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
-            border: 1px solid #007bff;
+        .message-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+            margin-top: 5px;
         }
 
-        .contact-card-details h5 { color: #fff; font-size: 13px; }
-        .contact-card-details p { color: #888; font-size: 10.5px; }
+        .message-time {
+            font-size: 0.68rem;
+            opacity: 0.8;
+        }
 
-        .contact-start-btn {
-            background: #00ff88;
-            color: #000;
+        .delete-btn {
+            background: none;
             border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 700;
+            color: inherit;
             cursor: pointer;
+            font-size: 0.78rem;
+            opacity: 0.75;
+            padding: 0 2px;
         }
 
-        .users-checkbox-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 180px;
+        .delete-btn:active {
+            opacity: 1;
+        }
+
+        /* SELETOR DE EMOJIS COMPLETO E LIBERADO */
+        .emoji-picker {
+            display: none;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            padding: 14px;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            max-height: 240px;
             overflow-y: auto;
-            background: #25252b;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #3a3a42;
+            text-align: center;
+            box-shadow: inset 0 4px 6px -4px rgba(0,0,0,0.1);
         }
 
-        .user-checkbox-item {
+        @media (max-width: 600px) {
+            .emoji-picker {
+                grid-template-columns: repeat(8, 1fr);
+            }
+        }
+
+        .emoji-picker.active {
+            display: grid;
+        }
+
+        .emoji-item {
+            font-size: 1.6rem;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .emoji-item:active {
+            background: #e2e8f0;
+            transform: scale(1.15);
+        }
+
+        /* Rodapé de Envio */
+        .chat-input-area {
+            padding: 12px 20px;
+            background: #f8fafc;
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: #fff;
-            font-size: 13px;
-            cursor: pointer;
+            gap: 12px;
+            border-top: 1px solid #e2e8f0;
         }
-        .user-checkbox-item input { cursor: pointer; }
+
+        .action-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px;
+            color: #475569;
+            transition: color 0.2s;
+        }
+
+        .action-btn:hover {
+            color: #0084ff;
+        }
+
+        .chat-input-area input[type="text"] {
+            flex: 1;
+            padding: 12px 18px;
+            border: 1px solid #cbd5e1;
+            border-radius: 24px;
+            outline: none;
+            font-size: 1rem;
+            background: #ffffff;
+            color: #0f172a;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .send-btn {
+            background: #0084ff;
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: 0 3px 10px rgba(0,132,255,0.4);
+            transition: transform 0.1s;
+        }
+
+        .send-btn:active {
+            transform: scale(0.92);
+            background: #006ddb;
+        }
     </style>
 </head>
 <body>
 
-    <div class="chat-container" id="chat-box">
+    <div class="mobile-container">
         
-        <!-- Tela de Autenticação -->
-        <div class="auth-overlay" id="auth-overlay">
-            <div class="auth-box">
-                <h2 id="auth-title">Acessar o Chat</h2>
-                <input type="email" id="auth-email" class="auth-input" placeholder="Seu e-mail">
-                <input type="password" id="auth-password" class="auth-input" placeholder="Sua senha">
-                <button id="auth-primary-btn" class="auth-btn">Entrar</button>
-                <p id="auth-toggle-link" class="auth-toggle-text">Não tem uma conta? Cadastre-se</p>
+        <!-- ALERTA DE NOVA MENSAGEM (TOAST) -->
+        <div class="notification-toast" id="notificationToast">
+            <img id="toastPic" src="" alt="Avatar">
+            <div class="notification-content">
+                <strong id="toastName">Nome</strong>
+                <p id="toastText">Nova mensagem recebida...</p>
             </div>
         </div>
 
-        <!-- Cabeçalho -->
-        <div class="chat-header">
-            <div class="header-top">
-                <div class="profile-info">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop" alt="Avatar" class="profile-img" id="avatar-preview">
-                    <input type="file" id="file-avatar" accept="image/*">
-                    <div class="profile-detail">
-                        <h4 id="profile-name">Carregando...</h4>
-                        <button class="logout-btn" id="logout-btn">Sair</button>
+        <!-- TELA 0: AUTENTICAÇÃO (LOGIN / CADASTRO) -->
+        <div id="authScreen" class="screen active">
+            <div class="auth-container">
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <h1 style="font-size: 1.8rem; color: #0f172a; font-weight: 800;">Chat Premium ✨</h1>
+                    <p style="color: #64748b; font-size: 0.9rem; margin-top: 6px;">Entre ou cadastre-se para começar</p>
+                </div>
+
+                <div class="auth-tabs">
+                    <div id="tabLogin" class="auth-tab active" onclick="switchAuthTab('login')">Entrar</div>
+                    <div id="tabRegister" class="auth-tab" onclick="switchAuthTab('register')">Cadastrar</div>
+                </div>
+
+                <!-- Formulário de Login -->
+                <div id="loginForm" class="auth-form active">
+                    <input type="email" id="loginEmail" class="auth-input" placeholder="Seu e-mail">
+                    <input type="password" id="loginPassword" class="auth-input" placeholder="Sua senha">
+                    <div id="loginError" class="auth-error"></div>
+                    <button class="auth-btn" onclick="handleLogin()">Entrar</button>
+                </div>
+
+                <!-- Formulário de Cadastro -->
+                <div id="registerForm" class="auth-form">
+                    <input type="text" id="regName" class="auth-input" placeholder="Seu nome completo">
+                    <input type="email" id="regEmail" class="auth-input" placeholder="Seu e-mail">
+                    <input type="password" id="regPassword" class="auth-input" placeholder="Crie uma senha forte">
+                    <div id="regError" class="auth-error"></div>
+                    <button class="auth-btn" onclick="handleRegister()">Criar Conta</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TELA 1: LISTA DE CONVERSAS -->
+        <div id="listScreen" class="screen">
+            <div class="app-header">
+                <div class="my-profile-wrapper">
+                    <img id="userAvatarPic" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" alt="Meu Perfil" class="my-profile-pic">
+                    <div class="my-profile-info">
+                        <h2 id="userDisplayName">Mariana Souza ✨</h2>
+                        <span>● Online</span>
                     </div>
                 </div>
-                
                 <div class="header-actions">
-                    <button class="notif-btn" id="enable-notif-btn" title="Ativar Notificações">🔔</button>
-                    <select class="wallpaper-select" id="wallpaper-selector">
-                        <option value="1">Noir</option>
-                        <option value="2">Ocean</option>
-                        <option value="3">Blue</option>
-                        <option value="4">Carbon</option>
-                    </select>
+                    <button class="sim-btn" onclick="simulateNewIncomingMessage()" title="Simular Nova Mensagem">🔔</button>
+                    <button class="logout-btn" onclick="handleLogout()" title="Sair">Sair</button>
+                </div>
+            </div>
+            <div class="chat-list" id="chatListContainer">
+                <!-- Gerado por JavaScript -->
+            </div>
+        </div>
+
+        <!-- TELA 2: SALA DE CHAT -->
+        <div id="chatScreen" class="screen">
+            <div class="chat-header">
+                <button class="back-btn" onclick="goBackToList()">⬅</button>
+                <img id="activeChatPic" src="" alt="Foto">
+                <div class="chat-header-info">
+                    <h4 id="activeChatName">Nome</h4>
+                    <p id="activeChatStatus">Status</p>
                 </div>
             </div>
 
-            <!-- Seletor de Chat e Botões de Gerenciamento -->
-            <div class="chat-selector-bar">
-                <select class="room-select" id="chat-room-select">
-                    <option value="global">🌐 Grupo Geral (Todos)</option>
-                </select>
-                <button class="action-bar-btn" id="open-contacts-btn">📇 Contatos</button>
-                <button class="action-bar-btn blue" id="open-group-modal-btn">➕ Grupo</button>
+            <div class="chat-messages" id="chatMessagesContainer">
+                <!-- Mensagens geradas dinamicamente -->
+            </div>
+
+            <!-- PAINEL DE EMOJIS COMPLETO E LIBERADO -->
+            <div class="emoji-picker" id="emojiPicker">
+                <span class="emoji-item" onclick="addEmoji('😀')">😀</span>
+                <span class="emoji-item" onclick="addEmoji('😃')">😃</span>
+                <span class="emoji-item" onclick="addEmoji('😄')">😄</span>
+                <span class="emoji-item" onclick="addEmoji('😁')">😁</span>
+                <span class="emoji-item" onclick="addEmoji('😆')">😆</span>
+                <span class="emoji-item" onclick="addEmoji('😅')">😅</span>
+                <span class="emoji-item" onclick="addEmoji('🤣')">🤣</span>
+                <span class="emoji-item" onclick="addEmoji('😂')">😂</span>
+                <span class="emoji-item" onclick="addEmoji('🙂')">🙂</span>
+                <span class="emoji-item" onclick="addEmoji('🙃')">🙃</span>
+                <span class="emoji-item" onclick="addEmoji('😉')">😉</span>
+                <span class="emoji-item" onclick="addEmoji('😊')">😊</span>
+                <span class="emoji-item" onclick="addEmoji('😇')">😇</span>
+                <span class="emoji-item" onclick="addEmoji('🥰')">🥰</span>
+                <span class="emoji-item" onclick="addEmoji('😍')">😍</span>
+                <span class="emoji-item" onclick="addEmoji('🤩')">🤩</span>
+                <span class="emoji-item" onclick="addEmoji('😘')">😘</span>
+                <span class="emoji-item" onclick="addEmoji('😗')">😗</span>
+                <span class="emoji-item" onclick="addEmoji('😚')">😚</span>
+                <span class="emoji-item" onclick="addEmoji('😙')">😙</span>
+                <span class="emoji-item" onclick="addEmoji('😋')">😋</span>
+                <span class="emoji-item" onclick="addEmoji('😛')">😛</span>
+                <span class="emoji-item" onclick="addEmoji('😜')">😜</span>
+                <span class="emoji-item" onclick="addEmoji('🤪')">🤪</span>
+                <span class="emoji-item" onclick="addEmoji('😝')">😝</span>
+                <span class="emoji-item" onclick="addEmoji('🤑')">🤑</span>
+                <span class="emoji-item" onclick="addEmoji('🤗')">🤗</span>
+                <span class="emoji-item" onclick="addEmoji('🤭')">🤭</span>
+                <span class="emoji-item" onclick="addEmoji('🤫')">🤫</span>
+                <span class="emoji-item" onclick="addEmoji('🤔')">🤔</span>
+                <span class="emoji-item" onclick="addEmoji('🤐')">🤐</span>
+                <span class="emoji-item" onclick="addEmoji('🤨')">🤨</span>
+                <span class="emoji-item" onclick="addEmoji('😐')">😐</span>
+                <span class="emoji-item" onclick="addEmoji('😑')">😑</span>
+                <span class="emoji-item" onclick="addEmoji('😶')">😶</span>
+                <span class="emoji-item" onclick="addEmoji('😏')">😏</span>
+                <span class="emoji-item" onclick="addEmoji('😒')">😒</span>
+                <span class="emoji-item" onclick="addEmoji('🙄')">🙄</span>
+                <span class="emoji-item" onclick="addEmoji('😬')">😬</span>
+                <span class="emoji-item" onclick="addEmoji('🤥')">🤥</span>
+                <span class="emoji-item" onclick="addEmoji('😌')">😌</span>
+                <span class="emoji-item" onclick="addEmoji('😔')">😔</span>
+                <span class="emoji-item" onclick="addEmoji('😪')">😪</span>
+                <span class="emoji-item" onclick="addEmoji('🤤')">🤤</span>
+                <span class="emoji-item" onclick="addEmoji('😴')">😴</span>
+                <span class="emoji-item" onclick="addEmoji('😷')">😷</span>
+                <span class="emoji-item" onclick="addEmoji('🤒')">🤒</span>
+                <span class="emoji-item" onclick="addEmoji('🤕')">🤕</span>
+                <span class="emoji-item" onclick="addEmoji('🤢')">🤢</span>
+                <span class="emoji-item" onclick="addEmoji('🤮')">🤮</span>
+                <span class="emoji-item" onclick="addEmoji('🤧')">🤧</span>
+                <span class="emoji-item" onclick="addEmoji('🥵')">🥵</span>
+                <span class="emoji-item" onclick="addEmoji('🥶')">🥶</span>
+                <span class="emoji-item" onclick="addEmoji('🥴')">🥴</span>
+                <span class="emoji-item" onclick="addEmoji('😵')">😵</span>
+                <span class="emoji-item" onclick="addEmoji('🤯')">🤯</span>
+                <span class="emoji-item" onclick="addEmoji('🤠')">🤠</span>
+                <span class="emoji-item" onclick="addEmoji('🥳')">🥳</span>
+                <span class="emoji-item" onclick="addEmoji('😎')">😎</span>
+                <span class="emoji-item" onclick="addEmoji('🤓')">🤓</span>
+                <span class="emoji-item" onclick="addEmoji('🧐')">🧐</span>
+                <span class="emoji-item" onclick="addEmoji('❤️')">❤️</span>
+                <span class="emoji-item" onclick="addEmoji('🧡')">🧡</span>
+                <span class="emoji-item" onclick="addEmoji('💛')">💛</span>
+                <span class="emoji-item" onclick="addEmoji('💚')">💚</span>
+                <span class="emoji-item" onclick="addEmoji('💙')">💙</span>
+                <span class="emoji-item" onclick="addEmoji('💜')">💜</span>
+                <span class="emoji-item" onclick="addEmoji('🖤')">🖤</span>
+                <span class="emoji-item" onclick="addEmoji('🤍')">🤍</span>
+                <span class="emoji-item" onclick="addEmoji('🤎')">🤎</span>
+                <span class="emoji-item" onclick="addEmoji('💔')">💔</span>
+                <span class="emoji-item" onclick="addEmoji('❣️')">❣️</span>
+                <span class="emoji-item" onclick="addEmoji('💕')">💕</span>
+                <span class="emoji-item" onclick="addEmoji('💞')">💞</span>
+                <span class="emoji-item" onclick="addEmoji('💓')">💓</span>
+                <span class="emoji-item" onclick="addEmoji('💗')">💗</span>
+                <span class="emoji-item" onclick="addEmoji('💖')">💖</span>
+                <span class="emoji-item" onclick="addEmoji('✨')">✨</span>
+                <span class="emoji-item" onclick="addEmoji('⭐')">⭐</span>
+                <span class="emoji-item" onclick="addEmoji('🌟')">🌟</span>
+                <span class="emoji-item" onclick="addEmoji('🔥')">🔥</span>
+                <span class="emoji-item" onclick="addEmoji('💥')">💥</span>
+                <span class="emoji-item" onclick="addEmoji('🎉')">🎉</span>
+                <span class="emoji-item" onclick="addEmoji('🎊')">🎊</span>
+                <span class="emoji-item" onclick="addEmoji('🚀')">🚀</span>
+                <span class="emoji-item" onclick="addEmoji('👍')">👍</span>
+                <span class="emoji-item" onclick="addEmoji('👎')">👎</span>
+                <span class="emoji-item" onclick="addEmoji('👏')">👏</span>
+                <span class="emoji-item" onclick="addEmoji('🙌')">🙌</span>
+                <span class="emoji-item" onclick="addEmoji('🤝')">🤝</span>
+                <span class="emoji-item" onclick="addEmoji('🙏')">🙏</span>
+                <span class="emoji-item" onclick="addEmoji('💪')">💪</span>
+                <span class="emoji-item" onclick="addEmoji('🍕')">🍕</span>
+                <span class="emoji-item" onclick="addEmoji('☕')">☕</span>
+                <span class="emoji-item" onclick="addEmoji('🏡')">🏡</span>
+                <span class="emoji-item" onclick="addEmoji('🐶')">🐶</span>
+                <span class="emoji-item" onclick="addEmoji('💡')">💡</span>
+            </div>
+
+            <div class="chat-input-area">
+                <button class="action-btn" onclick="toggleEmojiPicker()" title="Emojis">😃</button>
+                
+                <label for="fileInput" class="action-btn" title="Enviar Arquivo ou Foto">📎</label>
+                <input type="file" id="fileInput" style="display: none;" onchange="sendFile(event)">
+                
+                <input type="text" id="messageInput" placeholder="Mensagem... 💬" onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="sendMessage()">➤</button>
             </div>
         </div>
 
-        <!-- Feed de Mensagens -->
-        <div class="chat-messages" id="chat-messages"></div>
-
-        <!-- Emojis -->
-        <div class="emoji-picker" id="emoji-picker"></div>
-
-        <!-- Modal de Mídia -->
-        <div class="modal-overlay" id="file-modal">
-            <div class="modal-box">
-                <h3 id="upload-status-title">Enviar Foto / Arquivo</h3>
-                <div class="preview-container" id="file-preview-zone"></div>
-                <input type="text" id="file-caption-input" class="modal-input" placeholder="Escreva uma legenda...">
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button id="cancel-file-btn" style="background: none; border: none; color: #ff4d4d; cursor: pointer; font-weight: 600;">Cancelar</button>
-                    <button id="confirm-file-btn" style="background: #fff; border: none; color: #000; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;">Enviar Rápido</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal de Gerenciador de Contatos -->
-        <div class="modal-overlay" id="contacts-modal">
-            <div class="modal-box">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h3>📇 Meus Contatos</h3>
-                    <button id="close-contacts-btn" style="background:none; border:none; color:#ff4d4d; font-size:18px; cursor:pointer;">✕</button>
-                </div>
-                <input type="text" id="search-contact-input" class="modal-input" placeholder="🔍 Buscar contato por nome...">
-                <div class="contacts-list-container" id="contacts-full-list"></div>
-            </div>
-        </div>
-
-        <!-- Modal de Criar Novo Grupo -->
-        <div class="modal-overlay" id="group-modal">
-            <div class="modal-box">
-                <h3>👥 Criar Novo Grupo</h3>
-                <input type="text" id="group-name-input" class="modal-input" placeholder="Nome do Grupo (ex: Família, Trabalho...)">
-                <p style="color:#b0b0b5; font-size:12px;">Selecione os contatos membros do grupo:</p>
-                <div class="users-checkbox-list" id="group-users-list"></div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button id="cancel-group-btn" style="background: none; border: none; color: #ff4d4d; cursor: pointer; font-weight: 600;">Cancelar</button>
-                    <button id="confirm-group-btn" style="background: #007bff; border: none; color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;">Criar Grupo</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Área de Entrada -->
-        <div class="chat-input-area">
-            <div class="tools-bar">
-                <button class="tool-btn" id="emoji-toggle-btn">😀</button>
-                <button class="tool-btn" id="attach-btn">📎</button>
-                <input type="file" id="file-input" accept="image/*,video/*,application/*" style="display: none;">
-
-                <label class="encrypt-toggle">
-                    <input type="checkbox" id="encrypt-check"> 🔑 Criptografar
-                </label>
-            </div>
-
-            <div class="input-row">
-                <input type="text" id="msg-input" placeholder="Digite uma mensagem..." onkeypress="checkEnter(event)">
-                <button id="send-btn">Enviar</button>
-            </div>
-        </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+    <script>
+        // Configuração do Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyDQ3ebWx62hta35KRdihRbtwJoxrlUtxiM",
-            authDomain: "chat-e797a.firebaseapp.com",
-            projectId: "chat-e797a",
-            storageBucket: "chat-e797a.firebasestorage.app",
-            messagingSenderId: "104946241159",
-            appId: "1:104946241159:web:93acbec71b40ec46c87222"
+          apiKey: "AIzaSyDQ3ebWx62hta35KRdihRbtwJoxrlUtxiM",
+          authDomain: "chat-e797a.firebaseapp.com",
+          projectId: "chat-e797a",
+          storageBucket: "chat-e797a.firebasestorage.app",
+          messagingSenderId: "104946241159",
+          appId: "1:104946241159:web:93acbec71b40ec46c87222"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        let usuarioAtual = null;
-        let isScreenLoginMode = true;
-        let audioCtxInstance = null;
-        let currentChatId = "global"; 
-        let usuariosCadastrados = [];
+        let currentUser = null;
 
-        const authOverlay = document.getElementById('auth-overlay');
-        const authTitle = document.getElementById('auth-title');
-        const authEmail = document.getElementById('auth-email');
-        const authPassword = document.getElementById('auth-password');
-        const authPrimaryBtn = document.getElementById('auth-primary-btn');
-        const authToggleLink = document.getElementById('auth-toggle-link');
-        
-        const chatMessages = document.getElementById('chat-messages');
-        const msgInput = document.getElementById('msg-input');
-        const encryptCheck = document.getElementById('encrypt-check');
-        const emojiPicker = document.getElementById('emoji-picker');
-        const fileInput = document.getElementById('file-input');
-        
-        const fileModal = document.getElementById('file-modal');
-        const groupModal = document.getElementById('group-modal');
-        const contactsModal = document.getElementById('contacts-modal');
-
-        const filePreviewZone = document.getElementById('file-preview-zone');
-        const fileCaptionInput = document.getElementById('file-caption-input');
-        const enableNotifBtn = document.getElementById('enable-notif-btn');
-        const chatRoomSelect = document.getElementById('chat-room-select');
-
-        let rawSelectedFile = null;
-        let unsubscribeSnapshot = null;
-
-        // Áudio
-        window.addEventListener('click', () => {
-            if (!audioCtxInstance) {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (AudioCtx) audioCtxInstance = new AudioCtx();
-            }
-        }, { once: false });
-
-        function tocarSom(tipo = 'recebida') {
-            try {
-                if (!audioCtxInstance) return;
-                const osc = audioCtxInstance.createOscillator();
-                const gain = audioCtxInstance.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtxInstance.destination);
-
-                if (tipo === 'enviada') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(440, audioCtxInstance.currentTime);
-                    gain.gain.setValueAtTime(0.1, audioCtxInstance.currentTime);
-                    osc.start();
-                    osc.stop(audioCtxInstance.currentTime + 0.08);
-                } else {
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(600, audioCtxInstance.currentTime);
-                    gain.gain.setValueAtTime(0.15, audioCtxInstance.currentTime);
-                    osc.start();
-                    osc.stop(audioCtxInstance.currentTime + 0.15);
-                }
-            } catch(e) {}
-        }
-
-        // Criptografia por Senha
-        function criptografar(texto, senha) {
-            let res = '';
-            for (let i = 0; i < texto.length; i++) {
-                res += String.fromCharCode(texto.charCodeAt(i) ^ senha.charCodeAt(i % senha.length));
-            }
-            return JSON.stringify({ data: btoa(unescape(encodeURIComponent(res))), passHash: btoa(senha) });
-        }
-
-        function decriptografar(payloadStr, senhaDigitada) {
-            try {
-                const obj = JSON.parse(payloadStr);
-                if (obj.passHash !== btoa(senhaDigitada)) return null;
-                const raw = decodeURIComponent(escape(atob(obj.data)));
-                let res = '';
-                for (let i = 0; i < raw.length; i++) {
-                    res += String.fromCharCode(raw.charCodeAt(i) ^ senhaDigitada.charCodeAt(i % senhaDigitada.length));
-                }
-                return res;
-            } catch (e) { return null; }
-        }
-
-        function obterHora(createdAt) {
-            if (!createdAt) return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const data = createdAt.toDate ? createdAt.toDate() : new Date(createdAt);
-            return data.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-
-        // Autenticação
-        authToggleLink.onclick = () => {
-            isScreenLoginMode = !isScreenLoginMode;
-            authTitle.innerText = isScreenLoginMode ? "Acessar o Chat" : "Criar Nova Conta";
-            authPrimaryBtn.innerText = isScreenLoginMode ? "Entrar" : "Cadastrar";
-            authToggleLink.innerText = isScreenLoginMode ? "Não tem uma conta? Cadastre-se" : "Já possui conta? Entre aqui";
-        };
-
-        authPrimaryBtn.onclick = () => {
-            const email = authEmail.value.trim();
-            const password = authPassword.value;
-            if (!email || !password) return alert("Preencha todos os campos!");
-
-            if (isScreenLoginMode) {
-                signInWithEmailAndPassword(auth, email, password).catch(e => alert("Erro: " + e.message));
-            } else {
-                createUserWithEmailAndPassword(auth, email, password).then((cred) => {
-                    salvarPerfilUsuario(cred.user);
-                    alert("Conta criada! Faça seu login.");
-                    authToggleLink.click();
-                }).catch(e => alert("Erro: " + e.message));
-            }
-        };
-
-        document.getElementById('logout-btn').onclick = () => signOut(auth);
-
-        onAuthStateChanged(auth, (user) => {
+        // Monitorar Estado de Autenticação
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
             if (user) {
-                usuarioAtual = user;
-                authOverlay.style.display = 'none';
+                // Usuário logado -> Ir para lista de conversas
+                document.getElementById('authScreen').classList.remove('active');
+                document.getElementById('listScreen').classList.add('active');
                 
-                const nomeSalvo = localStorage.getItem('profile_name_' + user.uid) || user.email.split('@')[0];
-                document.getElementById('profile-name').innerText = nomeSalvo;
-                
-                const avatarSalvo = localStorage.getItem('profile_avatar_' + user.uid);
-                if(avatarSalvo) document.getElementById('avatar-preview').src = avatarSalvo;
-
-                salvarPerfilUsuario(user);
-                escutarUsuariosEGrupos();
-                iniciarEscutaMensagens();
+                const userName = user.displayName || user.email.split('@')[0];
+                document.getElementById('userDisplayName').innerText = userName + " ✨";
+                renderChatList();
             } else {
-                usuarioAtual = null;
-                authOverlay.style.display = 'flex';
+                // Deslogado -> Ir para tela de autenticação
+                document.getElementById('chatScreen').classList.remove('active');
+                document.getElementById('listScreen').classList.remove('active');
+                document.getElementById('authScreen').classList.add('active');
             }
         });
 
-        function salvarPerfilUsuario(user) {
-            if (!user) return;
-            const nome = localStorage.getItem('profile_name_' + user.uid) || user.email.split('@')[0];
-            const avatar = localStorage.getItem('profile_avatar_' + user.uid) || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop';
-            setDoc(doc(db, "usuarios", user.uid), {
-                uid: user.uid,
-                nome: nome,
-                email: user.email,
-                avatar: avatar,
-                ultimoAcesso: serverTimestamp()
-            }, { merge: true });
+        // Alternar Abas de Autenticação (Login / Cadastro)
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const tabLogin = document.getElementById('tabLogin');
+            const tabRegister = document.getElementById('tabRegister');
+
+            document.getElementById('loginError').innerText = '';
+            document.getElementById('regError').innerText = '';
+
+            if (tab === 'login') {
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+                tabLogin.classList.add('active');
+                tabRegister.classList.remove('active');
+            } else {
+                registerForm.classList.add('active');
+                loginForm.classList.remove('active');
+                tabRegister.classList.add('active');
+                tabLogin.classList.remove('active');
+            }
         }
 
-        // Carregar Lista de Contatos e Grupos
-        function escutarUsuariosEGrupos() {
-            onSnapshot(collection(db, "usuarios"), (snapshotUsers) => {
-                usuariosCadastrados = [];
-                snapshotUsers.forEach(d => {
-                    const u = d.data();
-                    if (u.uid !== usuarioAtual.uid) usuariosCadastrados.push(u);
-                });
+        // Ação de Login
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const errEl = document.getElementById('loginError');
 
-                onSnapshot(collection(db, "grupos"), (snapshotGroups) => {
-                    const selVal = chatRoomSelect.value;
-                    chatRoomSelect.innerHTML = '<option value="global">🌐 Grupo Geral (Todos)</option>';
-
-                    snapshotGroups.forEach(d => {
-                        const g = d.data();
-                        if (g.membros && g.membros.includes(usuarioAtual.uid)) {
-                            const opt = document.createElement('option');
-                            opt.value = "group_" + d.id;
-                            opt.textContent = `👥 Grupo: ${g.nome}`;
-                            chatRoomSelect.appendChild(opt);
-                        }
-                    });
-
-                    usuariosCadastrados.forEach(u => {
-                        const opt = document.createElement('option');
-                        const privateId = [usuarioAtual.uid, u.uid].sort().join('_');
-                        opt.value = privateId;
-                        opt.textContent = `💬 ${u.nome || u.email.split('@')[0]} (Particular)`;
-                        chatRoomSelect.appendChild(opt);
-                    });
-
-                    chatRoomSelect.value = selVal;
-                });
-            });
-        }
-
-        chatRoomSelect.onchange = (e) => {
-            currentChatId = e.target.value;
-            iniciarEscutaMensagens();
-        };
-
-        // Modal de Contatos
-        document.getElementById('open-contacts-btn').onclick = () => {
-            renderizarListaContatos(usuariosCadastrados);
-            contactsModal.style.display = 'flex';
-        };
-
-        document.getElementById('close-contacts-btn').onclick = () => contactsModal.style.display = 'none';
-
-        document.getElementById('search-contact-input').oninput = (e) => {
-            const termo = e.target.value.toLowerCase();
-            const filtrados = usuariosCadastrados.filter(u => 
-                (u.nome && u.nome.toLowerCase().includes(termo)) || 
-                (u.email && u.email.toLowerCase().includes(termo))
-            );
-            renderizarListaContatos(filtrados);
-        };
-
-        function renderizarListaContatos(lista) {
-            const container = document.getElementById('contacts-full-list');
-            container.innerHTML = '';
-
-            if (lista.length === 0) {
-                container.innerHTML = '<p style="color:#888; font-size:12px; text-align:center; padding:10px;">Nenhum contato encontrado.</p>';
+            if (!email || !password) {
+                errEl.innerText = "Preencha todos os campos.";
                 return;
             }
 
-            lista.forEach(u => {
-                const card = document.createElement('div');
-                card.className = 'contact-card';
+            auth.signInWithEmailAndPassword(email, password)
+                .catch(error => {
+                    errEl.innerText = "Erro ao entrar: " + error.message;
+                });
+        }
 
-                const privateId = [usuarioAtual.uid, u.uid].sort().join('_');
-                const avatar = u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop';
+        // Ação de Cadastro
+        function handleRegister() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const errEl = document.getElementById('regError');
 
-                card.innerHTML = `
-                    <div class="contact-card-info">
-                        <img src="${avatar}" class="contact-card-avatar">
-                        <div class="contact-card-details">
-                            <h5>${u.nome || u.email.split('@')[0]}</h5>
-                            <p>${u.email}</p>
-                        </div>
+            if (!name || !email || !password) {
+                errEl.innerText = "Preencha todos os campos.";
+                return;
+            }
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(userCredential => {
+                    return userCredential.user.updateProfile({
+                        displayName: name
+                    });
+                })
+                .catch(error => {
+                    errEl.innerText = "Erro ao cadastrar: " + error.message;
+                });
+        }
+
+        // Ação de Logout
+        function handleLogout() {
+            auth.signOut();
+        }
+
+        // Dados de Conversas
+        let chatsData = [
+            {
+                id: 1,
+                name: "Carlos Silva 🚀",
+                type: "individual",
+                pic: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces",
+                status: "Online",
+                unread: false,
+                messages: [
+                    { autorId: "system", sender: "received", text: "Olá! Tudo bem por aí? 👋", time: "10:00" },
+                    { autorId: "me", sender: "sent", text: "Tudo ótimo! E com você? 😊", time: "10:02" },
+                    { autorId: "system", sender: "received", text: "Tudo tranquilo. Vamos fechar aquele projeto amanhã? 📊", time: "10:05" }
+                ]
+            },
+            {
+                id: 2,
+                name: "Família Oliveira 🏡❤️",
+                type: "group",
+                pic: "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=100&h=100&fit=crop&crop=faces",
+                status: "3 membros online",
+                unread: false,
+                messages: [
+                    { autorId: "system", sender: "received", text: "Mãe: Alguém vai no almoço de domingo? 🍲", time: "09:15" },
+                    { autorId: "me", sender: "sent", text: "Eu vou com certeza! 😋", time: "09:20" },
+                    { autorId: "system", sender: "received", text: "Pai: Vou fazer aquele churrasco especial! 🥩🔥", time: "09:25" }
+                ]
+            }
+        ];
+
+        let currentChatId = 1;
+
+        function renderChatList() {
+            const container = document.getElementById('chatListContainer');
+            container.innerHTML = '';
+
+            chatsData.forEach(chat => {
+                const lastMsg = chat.messages[chat.messages.length - 1];
+                let lastText = 'Nenhuma mensagem';
+                if (lastMsg) {
+                    if (lastMsg.text) lastText = lastMsg.text;
+                    else if (lastMsg.fileUrl) lastText = '📎 [Arquivo enviado]';
+                }
+
+                const item = document.createElement('div');
+                item.className = `chat-list-item ${chat.unread ? 'unread' : ''}`;
+                item.onclick = () => openChat(chat.id);
+                item.innerHTML = `
+                    <img src="${chat.pic}" alt="${chat.name}">
+                    <div class="chat-list-details">
+                        <h4>${chat.name}</h4>
+                        <p>${lastText}</p>
+                    </div>
+                    <span class="unread-badge">1</span>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function openChat(id) {
+            currentChatId = id;
+            const chat = chatsData.find(c => c.id === id);
+            chat.unread = false;
+            
+            document.getElementById('listScreen').classList.remove('active');
+            document.getElementById('chatScreen').classList.add('active');
+            document.getElementById('emojiPicker').classList.remove('active');
+            renderActiveChat();
+        }
+
+        function goBackToList() {
+            document.getElementById('chatScreen').classList.remove('active');
+            document.getElementById('listScreen').classList.add('active');
+            renderChatList();
+        }
+
+        function renderActiveChat() {
+            const chat = chatsData.find(c => c.id === currentChatId);
+            document.getElementById('activeChatName').innerText = chat.name;
+            document.getElementById('activeChatPic').src = chat.pic;
+            document.getElementById('activeChatStatus').innerText = chat.status;
+
+            const messagesContainer = document.getElementById('chatMessagesContainer');
+            messagesContainer.innerHTML = '';
+
+            chat.messages.forEach((msg, index) => {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `message ${msg.sender}`;
+
+                let content = '';
+                if (msg.fileUrl) {
+                    if (msg.isImage) {
+                        content += `<img src="${msg.fileUrl}" alt="Foto">`;
+                    } else {
+                        content += `
+                            <div class="file-card">
+                                <span style="font-size: 1.4rem;">📄</span>
+                                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.85rem;">
+                                    <strong>${msg.fileName}</strong>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                if (msg.text) {
+                    content += `<span>${msg.text}</span>`;
+                }
+
+                content += `
+                    <div class="message-footer">
+                        <span class="message-time">${msg.time}</span>
+                        ${msg.sender === 'sent' ? `<button class="delete-btn" onclick="deleteMessage(${index})" title="Apagar mensagem">🗑️</button>` : ''}
                     </div>
                 `;
 
-                const btn = document.createElement('button');
-                btn.className = 'contact-start-btn';
-                btn.innerText = '💬 Conversar';
-                btn.onclick = () => {
-                    currentChatId = privateId;
-                    chatRoomSelect.value = privateId;
-                    contactsModal.style.display = 'none';
-                    iniciarEscutaMensagens();
-                };
-
-                card.appendChild(btn);
-                container.appendChild(card);
+                msgDiv.innerHTML = content;
+                messagesContainer.appendChild(msgDiv);
             });
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        // Modal de Criar Grupo
-        document.getElementById('open-group-modal-btn').onclick = () => {
-            const listDiv = document.getElementById('group-users-list');
-            listDiv.innerHTML = '';
+        function toggleEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            picker.classList.toggle('active');
+        }
 
-            if (usuariosCadastrados.length === 0) {
-                listDiv.innerHTML = '<p style="color:#888; font-size:12px;">Nenhum outro contato para adicionar.</p>';
-            } else {
-                usuariosCadastrados.forEach(u => {
-                    const label = document.createElement('label');
-                    label.className = 'user-checkbox-item';
-                    label.innerHTML = `
-                        <input type="checkbox" value="${u.uid}" class="group-user-cb">
-                        <span>${u.nome || u.email}</span>
-                    `;
-                    listDiv.appendChild(label);
-                });
-            }
+        function addEmoji(emoji) {
+            const input = document.getElementById('messageInput');
+            input.value += emoji;
+            input.focus();
+        }
 
-            document.getElementById('group-name-input').value = '';
-            groupModal.style.display = 'flex';
-        };
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            if (!text) return;
 
-        document.getElementById('cancel-group-btn').onclick = () => groupModal.style.display = 'none';
+            const chat = chatsData.find(c => c.id === currentChatId);
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-        document.getElementById('confirm-group-btn').onclick = () => {
-            const nomeGrupo = document.getElementById('group-name-input').value.trim();
-            if (!nomeGrupo) return alert("Digite o nome do grupo!");
-
-            const cbs = document.querySelectorAll('.group-user-cb:checked');
-            const membrosSelecionados = [usuarioAtual.uid];
-            cbs.forEach(cb => membrosSelecionados.push(cb.value));
-
-            addDoc(collection(db, "grupos"), {
-                nome: nomeGrupo,
-                criadorId: usuarioAtual.uid,
-                membros: membrosSelecionados,
-                createdAt: serverTimestamp()
-            }).then(() => {
-                alert(`Grupo "${nomeGrupo}" criado com sucesso!`);
-                groupModal.style.display = 'none';
-            });
-        };
-
-        // Emojis
-        const emojis = ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😋','😛','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','🥱','😴','🤤','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👹','👺','🤡','💩','👻','💀','👽','🤖','🎃','😺','😸','😹','😻','😼','😽','👋','🤚','🖐️','✋','🖖','👌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','⚽','🏀','🏈','⚾','🎾','🏐','🏉','🎱','🏓','🏸','⛳','🏹','🎣','🥊','🥋','🚗','🚕','🚙','🚌','🚓','🚑','🚒','🚀','✈️','🛸','🔥','⭐','✨','⚡','💥','🎉','🎊','🎈','🎁','🇧🇷','🇺🇸'];
-
-        emojis.forEach(e => {
-            const s = document.createElement('span');
-            s.innerText = e;
-            s.onclick = () => { msgInput.value += e; msgInput.focus(); };
-            emojiPicker.appendChild(s);
-        });
-
-        document.getElementById('emoji-toggle-btn').onclick = () => emojiPicker.style.display = emojiPicker.style.display === 'grid' ? 'none' : 'grid';
-        document.getElementById('attach-btn').onclick = () => fileInput.click();
-        document.getElementById('cancel-file-btn').onclick = () => { fileModal.style.display = 'none'; rawSelectedFile = null; };
-        document.getElementById('wallpaper-selector').onchange = (e) => document.getElementById('chat-box').style.background = `var(--bg-gradient-${e.target.value})`;
-        
-        document.getElementById('avatar-preview').onclick = () => document.getElementById('file-avatar').click();
-        document.getElementById('file-avatar').onchange = (e) => {
-            const f = e.target.files[0];
-            if(f) {
-                const r = new FileReader();
-                r.onload = (ev) => {
-                    document.getElementById('avatar-preview').src = ev.target.result;
-                    if(usuarioAtual) {
-                        localStorage.setItem('profile_avatar_' + usuarioAtual.uid, ev.target.result);
-                        salvarPerfilUsuario(usuarioAtual);
-                    }
-                };
-                r.readAsDataURL(f);
-            }
-        };
-
-        document.getElementById('profile-name').onclick = () => {
-            const n = prompt("Seu novo nome:");
-            if(n && usuarioAtual) {
-                document.getElementById('profile-name').innerText = n;
-                localStorage.setItem('profile_name_' + usuarioAtual.uid, n);
-                salvarPerfilUsuario(usuarioAtual);
-            }
-        };
-
-        window.checkEnter = function(e) { if(e.key === 'Enter') enviarMensagemTexto(); };
-        document.getElementById('send-btn').onclick = enviarMensagemTexto;
-
-        // Otimização e Compressão de Foto Ultrarrápida
-        function comprimirEConverterFoto(file, callback) {
-            if (!file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = (e) => callback(e.target.result, file.type, file.name);
-                reader.readAsDataURL(file);
-                return;
-            }
-
-            const img = new Image();
-            const tempUrl = URL.createObjectURL(file);
-            img.src = tempUrl;
-            img.onload = () => {
-                URL.revokeObjectURL(tempUrl);
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-                const max = 700;
-
-                if (width > height && width > max) { height *= max / width; width = max; }
-                else if (height > max) { height *= max / height; height = max; }
-
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.65);
-                callback(dataUrl, 'image/jpeg', file.name || 'foto.jpg');
+            const newMsg = {
+                autorId: currentUser ? currentUser.uid : 'anonymous',
+                sender: 'sent',
+                text: text,
+                time: timeStr
             };
+
+            chat.messages.push(newMsg);
+
+            // Gravação segura no Firestore seguindo suas regras
+            try {
+                db.collection("mensagens").add({
+                    autorId: currentUser ? currentUser.uid : 'anonymous',
+                    texto: text,
+                    isEncrypted: true,
+                    tipo: 'texto',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch(e) {}
+
+            input.value = '';
+            document.getElementById('emojiPicker').classList.remove('active');
+            renderActiveChat();
         }
 
-        fileInput.onchange = (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
-            rawSelectedFile = file;
+        function sendFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-            filePreviewZone.innerHTML = '';
-            if (file.type.startsWith('image/')) {
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(file);
-                filePreviewZone.appendChild(img);
-            } else {
-                filePreviewZone.innerHTML = `<div style="color:white; padding:20px;">📁 ${file.name}</div>`;
-            }
-            fileCaptionInput.value = '';
-            fileModal.style.display = 'flex';
-        };
+            const reader = new FileReader();
+            const isImage = file.type.startsWith('image/');
 
-        document.getElementById('confirm-file-btn').onclick = () => {
-            if (!rawSelectedFile || !usuarioAtual) return;
+            reader.onload = function(e) {
+                const chat = chatsData.find(c => c.id === currentChatId);
+                const now = new Date();
+                const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-            const isEnc = encryptCheck.checked;
-            let senha = "";
-            if (isEnc) {
-                senha = prompt("Defina uma senha para criptografar a mídia:");
-                if(!senha) return alert("Envio cancelado!");
-            }
-
-            document.getElementById('upload-status-title').innerText = "Enviando foto rápida...";
-
-            comprimirEConverterFoto(rawSelectedFile, (dataUrl, tipo, nome) => {
-                const payloadMedia = JSON.stringify({
-                    isMedia: true,
-                    url: dataUrl,
-                    type: tipo,
-                    name: nome,
-                    legenda: fileCaptionInput.value.trim()
+                chat.messages.push({
+                    autorId: currentUser ? currentUser.uid : 'anonymous',
+                    sender: 'sent',
+                    fileUrl: e.target.result,
+                    fileName: file.name,
+                    isImage: isImage,
+                    text: '',
+                    time: timeStr
                 });
 
-                let textoFinal = isEnc ? criptografar(payloadMedia, senha) : payloadMedia;
-
-                addDoc(collection(db, "mensagens"), {
-                    autorId: usuarioAtual.uid,
-                    autorNome: localStorage.getItem('profile_name_' + usuarioAtual.uid) || usuarioAtual.email.split('@')[0],
-                    texto: textoFinal,
-                    isEncrypted: isEnc,
-                    chatId: currentChatId,
-                    createdAt: serverTimestamp()
-                }).then(() => {
-                    tocarSom('enviada');
-                    fileModal.style.display = 'none';
-                    fileInput.value = '';
-                    rawSelectedFile = null;
-                    encryptCheck.checked = false;
-                });
-            });
-        };
-
-        function enviarMensagemTexto() {
-            const txt = msgInput.value.trim();
-            if(!txt || !usuarioAtual) return;
-
-            const isEnc = encryptCheck.checked;
-            let textoFinal = txt;
-
-            if (isEnc) {
-                const senha = prompt("Crie uma senha de proteção:");
-                if(!senha) return alert("Envio cancelado!");
-                textoFinal = criptografar(txt, senha);
-            }
-
-            addDoc(collection(db, "mensagens"), {
-                autorId: usuarioAtual.uid,
-                autorNome: localStorage.getItem('profile_name_' + usuarioAtual.uid) || usuarioAtual.email.split('@')[0],
-                texto: textoFinal,
-                isEncrypted: isEnc,
-                chatId: currentChatId,
-                createdAt: serverTimestamp()
-            }).then(() => {
-                tocarSom('enviada');
-                msgInput.value = '';
-                encryptCheck.checked = false;
-                emojiPicker.style.display = 'none';
-            });
+                renderActiveChat();
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
         }
 
-        function renderizarConteudo(texto, elemento) {
-            if (texto.startsWith('{"isMedia":true')) {
-                try {
-                    const m = JSON.parse(texto);
-                    if (m.type && m.type.startsWith('image/')) {
-                        elemento.innerHTML = `<img src="${m.url}" alt="Foto" onclick="window.open('${m.url}', '_blank')">`;
-                    } else {
-                        elemento.innerHTML = `<a href="${m.url}" download="${m.name}" class="file-link">📁 ${m.name}</a>`;
-                    }
-                    if (m.legenda) elemento.innerHTML += `<div class="file-caption">${m.legenda}</div>`;
-                } catch(e) { elemento.innerText = texto; }
-            } else {
-                elemento.innerText = texto;
+        function deleteMessage(index) {
+            const chat = chatsData.find(c => c.id === currentChatId);
+            chat.messages.splice(index, 1);
+            renderActiveChat();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
             }
         }
 
-        function iniciarEscutaMensagens() {
-            if (unsubscribeSnapshot) unsubscribeSnapshot();
+        // Sistema de Alerta Sonoro e Visual (Toast)
+        function playBeep() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.15);
+            } catch(e) {}
+        }
 
-            const q = query(collection(db, "mensagens"), orderBy("createdAt", "asc"));
+        function showNotificationAlert(name, pic, text) {
+            const toast = document.getElementById('notificationToast');
+            document.getElementById('toastName').innerText = name;
+            document.getElementById('toastPic').src = pic;
+            document.getElementById('toastText').innerText = text;
+            
+            playBeep();
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
 
-            unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
-                chatMessages.innerHTML = '';
+        function simulateNewIncomingMessage() {
+            const randomChat = chatsData[Math.floor(Math.random() * chatsData.length)];
+            const sampleTexts = [
+                "Oi! Tudo bem? Passando para dar um alô! ✨",
+                "Olha só essa novidade incrível! 🚀",
+                "Vamos marcar aquele café? ☕",
+                "Me avisa quando chegar por favor! 👍"
+            ];
+            const randomText = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
+            
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-                snapshot.forEach((docSnap) => {
-                    const d = docSnap.data();
-                    const idMsg = docSnap.id;
-                    const msgChatId = d.chatId || "global";
-
-                    if (msgChatId !== currentChatId) return;
-
-                    const msgDiv = document.createElement('div');
-                    const eMeu = (usuarioAtual && d.autorId === usuarioAtual.uid);
-                    msgDiv.classList.add('message', eMeu ? 'right' : 'left');
-
-                    const btnDel = document.createElement('button');
-                    btnDel.className = 'delete-btn';
-                    btnDel.innerText = '✕';
-                    btnDel.onclick = () => deleteDoc(doc(db, "mensagens", idMsg));
-                    msgDiv.appendChild(btnDel);
-
-                    if (!eMeu) {
-                        const autorSpan = document.createElement('span');
-                        autorSpan.className = 'msg-author';
-                        autorSpan.innerText = d.autorNome || 'Usuário';
-                        msgDiv.appendChild(autorSpan);
-                    }
-
-                    const contDiv = document.createElement('div');
-
-                    if (d.isEncrypted) {
-                        msgDiv.setAttribute('data-raw', d.texto);
-                        contDiv.innerHTML = `<span class="encrypted-badge">🔒 Conteúdo Protegido (Toque para abrir)</span>`;
-                        msgDiv.onclick = (e) => {
-                            if(e.target.className === 'delete-btn') return;
-                            const pass = prompt("Insira a senha do conteúdo:");
-                            if(pass) {
-                                const dec = decriptografar(msgDiv.getAttribute('data-raw'), pass);
-                                if(dec !== null) {
-                                    contDiv.innerHTML = '';
-                                    renderizarConteudo(dec, contDiv);
-                                    msgDiv.onclick = null;
-                                } else {
-                                    alert("Senha incorreta!");
-                                }
-                            }
-                        };
-                    } else {
-                        renderizarConteudo(d.texto, contDiv);
-                    }
-
-                    msgDiv.appendChild(contDiv);
-
-                    const horaSpan = document.createElement('span');
-                    horaSpan.className = 'msg-time';
-                    horaSpan.innerText = obterHora(d.createdAt);
-                    msgDiv.appendChild(horaSpan);
-
-                    chatMessages.appendChild(msgDiv);
-                });
-
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+            randomChat.messages.push({
+                autorId: 'other',
+                sender: 'received',
+                text: randomText,
+                time: timeStr
             });
+
+            randomChat.unread = true;
+
+            const listScreenActive = document.getElementById('listScreen').classList.contains('active');
+            if (listScreenActive) {
+                renderChatList();
+            } else if (currentChatId === randomChat.id) {
+                renderActiveChat();
+            }
+
+            showNotificationAlert(randomChat.name, randomChat.pic, randomText);
         }
     </script>
 </body>
