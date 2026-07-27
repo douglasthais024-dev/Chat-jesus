@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chat Premium - Glass Dark Edition</title>
+    <title>Chat Messenger Interativo</title>
     
     <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -139,7 +139,7 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* --- TELA 0: AUTENTICAÇÃO --- */
+        /* TELA DE AUTENTICAÇÃO */
         .auth-container {
             flex: 1;
             display: flex;
@@ -248,7 +248,7 @@
             min-height: 20px;
         }
 
-        /* --- TELA 1: LISTA DE CONVERSAS --- */
+        /* LISTA DE CONVERSAS */
         .app-header {
             padding: 16px 20px;
             background: rgba(15, 23, 42, 0.8);
@@ -315,7 +315,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
             transition: all 0.2s;
         }
 
@@ -324,7 +324,7 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
-        /* BARRA DE PESQUISA */
+        /* SEARCH BAR */
         .search-container {
             padding: 12px 20px;
             background: rgba(15, 23, 42, 0.4);
@@ -429,7 +429,7 @@
             display: inline-block;
         }
 
-        /* --- TELA 2: ÁREA DO CHAT --- */
+        /* ÁREA DE CHAT */
         .chat-header {
             padding: 12px 18px;
             background: rgba(15, 23, 42, 0.85);
@@ -471,7 +471,7 @@
             color: #38bdf8;
         }
 
-        /* PAPEL DE PAREDE ULTRA LUXURY DARK */
+        /* PAPEL DE PAREDE */
         .chat-messages {
             flex: 1;
             padding: 16px;
@@ -488,7 +488,7 @@
             background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
         }
 
-        /* Balões de Mensagem */
+        /* BALÕES */
         .message {
             max-width: 78%;
             padding: 10px 14px;
@@ -509,7 +509,6 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* Lado esquerdo (Recebida) */
         .message.received {
             background: var(--received-bubble);
             color: #ffffff;
@@ -517,7 +516,6 @@
             border-bottom-left-radius: 4px;
         }
 
-        /* Lado direito (Enviada) */
         .message.sent {
             background: var(--sent-bubble);
             color: #f1f5f9;
@@ -575,17 +573,6 @@
             border-radius: 3px;
         }
 
-        .file-card {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.08);
-            padding: 8px 12px;
-            border-radius: 10px;
-            margin-top: 4px;
-            color: inherit;
-        }
-
         .message-footer {
             display: flex;
             justify-content: flex-end;
@@ -604,6 +591,7 @@
             color: #38bdf8;
         }
 
+        /* REAÇÃO BADGE */
         .reaction-badge {
             position: absolute;
             bottom: -10px;
@@ -616,7 +604,6 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.4);
         }
 
-        /* PAINEL DE REAÇÃO RÁPIDA */
         .reaction-picker {
             position: absolute;
             background: rgba(15, 23, 42, 0.95);
@@ -628,12 +615,6 @@
             gap: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             z-index: 100;
-            animation: popUp 0.15s ease-out;
-        }
-
-        @keyframes popUp {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
 
         .reaction-item {
@@ -646,7 +627,7 @@
             transform: scale(1.3);
         }
 
-        /* DIGITANDO ANIMADO */
+        /* TYPING INDICATOR */
         .typing-indicator {
             display: flex;
             align-items: center;
@@ -676,7 +657,6 @@
             50% { transform: translateY(-4px); }
         }
 
-        /* SELETOR DE EMOJIS COMPLETO */
         .emoji-picker {
             display: none;
             background: rgba(15, 23, 42, 0.95);
@@ -699,15 +679,8 @@
             cursor: pointer;
             padding: 6px;
             border-radius: 8px;
-            transition: background 0.15s, transform 0.1s;
         }
 
-        .emoji-item:active {
-            background: rgba(255, 255, 255, 0.1);
-            transform: scale(1.2);
-        }
-
-        /* Rodapé de Envio */
         .chat-input-area {
             padding: 12px 16px;
             background: rgba(15, 23, 42, 0.9);
@@ -725,11 +698,6 @@
             cursor: pointer;
             padding: 4px;
             color: var(--text-muted);
-            transition: color 0.2s;
-        }
-
-        .action-btn:hover {
-            color: var(--primary);
         }
 
         .chat-input-area input[type="text"] {
@@ -741,10 +709,6 @@
             font-size: 0.92rem;
             background: var(--bg-input);
             color: #ffffff;
-        }
-
-        .chat-input-area input[type="text"]::placeholder {
-            color: #64748b;
         }
 
         .send-btn {
@@ -761,46 +725,43 @@
             font-size: 1rem;
             flex-shrink: 0;
             box-shadow: 0 4px 12px rgba(0,132,255,0.4);
-            transition: transform 0.1s;
         }
 
-        .send-btn:active {
-            transform: scale(0.9);
-        }
-
-        /* LIGHTBOX PARA VISUALIZAR IMAGENS */
-        .lightbox-modal {
+        /* MODAL ADD CONTACT */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 3000;
-            backdrop-filter: blur(10px);
         }
 
-        .lightbox-modal.active {
+        .modal-overlay.active {
             display: flex;
         }
 
-        .lightbox-modal img {
-            max-width: 90%;
-            max-height: 85%;
-            border-radius: 12px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        .modal-card {
+            background: #0f172a;
+            border: 1px solid var(--border-glow);
+            padding: 24px;
+            border-radius: 20px;
+            width: 88%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
 
-        .lightbox-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
+        .modal-card h3 {
+            font-size: 1.1rem;
+            color: #fff;
         }
     </style>
 </head>
@@ -808,21 +769,21 @@
 
     <div class="mobile-container">
         
-        <!-- ALERTA DE NOVA MENSAGEM (TOAST) -->
+        <!-- TOAST -->
         <div class="notification-toast" id="notificationToast">
             <img id="toastPic" src="" alt="Avatar">
             <div class="notification-content">
                 <strong id="toastName">Nome</strong>
-                <p id="toastText">Nova mensagem recebida...</p>
+                <p id="toastText">Nova mensagem...</p>
             </div>
         </div>
 
-        <!-- TELA 0: AUTENTICAÇÃO -->
+        <!-- AUTH SCREEN -->
         <div id="authScreen" class="screen active">
             <div class="auth-container">
                 <div class="auth-brand">
                     <h1>Chat Messenger</h1>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 6px;">Conecte-se em tempo real com elegância</p>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 6px;">Conecte-se em tempo real com qualquer pessoa</p>
                 </div>
 
                 <div class="auth-tabs">
@@ -830,27 +791,25 @@
                     <div id="tabRegister" class="auth-tab" onclick="switchAuthTab('register')">Cadastrar</div>
                 </div>
 
-                <!-- Login -->
                 <div id="loginForm" class="auth-form active">
                     <input type="email" id="loginEmail" class="auth-input" placeholder="Seu e-mail">
                     <input type="password" id="loginPassword" class="auth-input" placeholder="Sua senha">
                     <div id="loginError" class="auth-error"></div>
-                    <button class="auth-btn" onclick="handleLogin()">Entrar na Conta</button>
-                    <button class="auth-btn auth-btn-demo" onclick="enterDemoMode('usuario@teste.com', 'Usuário Visitante')">Entrar como Convidado (Modo Offline)</button>
+                    <button class="auth-btn" onclick="handleLogin()">Entrar</button>
+                    <button class="auth-btn auth-btn-demo" onclick="enterDemoMode('usuario@teste.com', 'Você')">Entrar como Convidado</button>
                 </div>
 
-                <!-- Cadastro -->
                 <div id="registerForm" class="auth-form">
-                    <input type="text" id="regName" class="auth-input" placeholder="Nome de usuário">
+                    <input type="text" id="regName" class="auth-input" placeholder="Seu nome">
                     <input type="email" id="regEmail" class="auth-input" placeholder="Seu e-mail">
-                    <input type="password" id="regPassword" class="auth-input" placeholder="Crie uma senha (min. 6 dígitos)">
+                    <input type="password" id="regPassword" class="auth-input" placeholder="Senha">
                     <div id="regError" class="auth-error"></div>
-                    <button class="auth-btn" onclick="handleRegister()">Criar Nova Conta</button>
+                    <button class="auth-btn" onclick="handleRegister()">Criar Conta</button>
                 </div>
             </div>
         </div>
 
-        <!-- TELA 1: LISTA DE CONVERSAS -->
+        <!-- CHAT LIST SCREEN -->
         <div id="listScreen" class="screen">
             <div class="app-header">
                 <div class="my-profile-wrapper">
@@ -861,25 +820,25 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    <button class="icon-btn" onclick="simulateNewIncomingMessage()" title="Simular Mensagem Recebida">🔔</button>
-                    <button class="icon-btn" onclick="handleLogout()" title="Sair da Conta">🚪</button>
+                    <button class="icon-btn" onclick="openAddContactModal()" title="Adicionar amigo / Entrar em Sala">➕</button>
+                    <button class="icon-btn" onclick="simulateNewIncomingMessage()" title="Simular Notificação">🔔</button>
+                    <button class="icon-btn" onclick="handleLogout()" title="Sair">🚪</button>
                 </div>
             </div>
 
-            <!-- Pesquisa -->
             <div class="search-container">
                 <div class="search-box">
-                    <span style="color: var(--text-muted); font-size: 0.9rem;">🔍</span>
+                    <span>🔍</span>
                     <input type="text" id="searchInput" placeholder="Pesquisar conversa..." oninput="filterChats()">
                 </div>
             </div>
 
             <div class="chat-list" id="chatListContainer">
-                <!-- Itens dinamicos -->
+                <!-- Dinâmico -->
             </div>
         </div>
 
-        <!-- TELA 2: SALA DE CHAT -->
+        <!-- CHAT ROOM SCREEN -->
         <div id="chatScreen" class="screen">
             <div class="chat-header">
                 <button class="back-btn" onclick="goBackToList()">❮</button>
@@ -894,41 +853,29 @@
                 <!-- Mensagens -->
             </div>
 
-            <!-- EMOJIS COMPLETO -->
             <div class="emoji-picker" id="emojiPicker">
                 <span class="emoji-item" onclick="addEmoji('😀')">😀</span>
-                <span class="emoji-item" onclick="addEmoji('😃')">😃</span>
                 <span class="emoji-item" onclick="addEmoji('😄')">😄</span>
-                <span class="emoji-item" onclick="addEmoji('😁')">😁</span>
                 <span class="emoji-item" onclick="addEmoji('😅')">😅</span>
                 <span class="emoji-item" onclick="addEmoji('😂')">😂</span>
-                <span class="emoji-item" onclick="addEmoji('🤣')">🤣</span>
-                <span class="emoji-item" onclick="addEmoji('😊')">😊</span>
                 <span class="emoji-item" onclick="addEmoji('🥰')">🥰</span>
                 <span class="emoji-item" onclick="addEmoji('😍')">😍</span>
-                <span class="emoji-item" onclick="addEmoji('🤩')">🤩</span>
-                <span class="emoji-item" onclick="addEmoji('😘')">😘</span>
-                <span class="emoji-item" onclick="addEmoji('😜')">😜</span>
                 <span class="emoji-item" onclick="addEmoji('😎')">😎</span>
                 <span class="emoji-item" onclick="addEmoji('🥳')">🥳</span>
-                <span class="emoji-item" onclick="addEmoji('🙈')">🙈</span>
                 <span class="emoji-item" onclick="addEmoji('❤️')">❤️</span>
                 <span class="emoji-item" onclick="addEmoji('🔥')">🔥</span>
                 <span class="emoji-item" onclick="addEmoji('✨')">✨</span>
-                <span class="emoji-item" onclick="addEmoji('⭐')">⭐</span>
                 <span class="emoji-item" onclick="addEmoji('👍')">👍</span>
-                <span class="emoji-item" onclick="addEmoji('👏')">👏</span>
-                <span class="emoji-item" onclick="addEmoji('🙌')">🙌</span>
                 <span class="emoji-item" onclick="addEmoji('🚀')">🚀</span>
             </div>
 
             <div class="chat-input-area">
-                <button class="action-btn" onclick="toggleEmojiPicker()" title="Emojis">😊</button>
+                <button class="action-btn" onclick="toggleEmojiPicker()">😊</button>
                 
-                <label for="fileInput" class="action-btn" title="Enviar Arquivo ou Imagem">📎</label>
+                <label for="fileInput" class="action-btn">📎</label>
                 <input type="file" id="fileInput" style="display: none;" onchange="sendFile(event)">
 
-                <button class="action-btn" onclick="sendSimulatedVoiceNote()" title="Enviar Áudio de Voz">🎙️</button>
+                <button class="action-btn" onclick="sendSimulatedVoiceNote()">🎙️</button>
                 
                 <input type="text" id="messageInput" placeholder="Digite sua mensagem..." onkeypress="handleKeyPress(event)">
                 <button class="send-btn" onclick="sendMessage()">➤</button>
@@ -937,19 +884,23 @@
 
     </div>
 
-    <!-- LIGHTBOX PARA IMAGENS -->
-    <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox()">
-        <span class="lightbox-close">&times;</span>
-        <img id="lightboxImg" src="" alt="Visualização em tamanho real">
+    <!-- MODAL PARA ADICIONAR CONTATO / ENTRAR EM SALA -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal-card">
+            <h3>Iniciar Nova Conversa</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Digite o nome, e-mail da pessoa ou um código de sala (ex: <strong>sala123</strong>) para conversarem no mesmo chat:</p>
+            <input type="text" id="newChatInput" class="auth-input" placeholder="Ex: Lucas ou sala123">
+            <button class="auth-btn" onclick="addNewContactOrRoom()">Entrar / Conversar</button>
+            <button class="auth-btn auth-btn-demo" onclick="closeAddContactModal()">Cancelar</button>
+        </div>
     </div>
 
-    <!-- MENU FLUTUANTE DE REAÇÕES -->
+    <!-- MENU REAÇÕES -->
     <div class="reaction-picker" id="reactionPicker" style="display: none;">
         <span class="reaction-item" onclick="reactToMessage('❤️')">❤️</span>
         <span class="reaction-item" onclick="reactToMessage('👍')">👍</span>
         <span class="reaction-item" onclick="reactToMessage('😂')">😂</span>
         <span class="reaction-item" onclick="reactToMessage('🔥')">🔥</span>
-        <span class="reaction-item" onclick="reactToMessage('😮')">😮</span>
     </div>
 
     <script>
@@ -973,43 +924,40 @@
                 db = firebase.firestore();
             }
         } catch(e) {
-            console.warn("Firebase operando em fallback local.", e);
+            console.warn("Fallback local ativado.", e);
         }
 
         let currentUser = null;
         let unsubscribeMessages = null;
         let selectedMessageIndex = null;
 
-        // Base de Dados Local / Cache
+        // Base de Dados Inicial
         let chatsData = [
             {
-                id: "1",
-                name: "Carlos Silva 🚀",
-                pic: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces",
-                status: "Online agora",
+                id: "ai_bot",
+                name: "Assistente IA ✨",
+                pic: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop&crop=faces",
+                status: "Sempre online para conversar",
+                isBot: true,
                 unread: false,
                 messages: [
-                    { id: 'm1', autorId: "system", sender: "received", text: "Fala mestre! Beleza? 👋", time: "10:00", createdAt: 1 },
-                    { id: 'm2', autorId: "me", sender: "sent", text: "Fala Carlos, tudo ótimo por aqui! E com você? 😊", time: "10:02", createdAt: 2 },
-                    { id: 'm3', autorId: "system", sender: "received", text: "Tudo certo! Bora alinhar aquele projeto mais tarde? 📊", time: "10:05", createdAt: 3 }
+                    { id: 'b1', autorId: "bot", sender: "received", text: "Olá! Sou seu assistente de teste! Pode me mandar qualquer mensagem que respondo na hora. 🚀", time: "10:00", createdAt: 1 }
                 ]
             },
             {
-                id: "2",
-                name: "Família Oliveira 🏡❤️",
-                pic: "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=100&h=100&fit=crop&crop=faces",
-                status: "3 membros online",
+                id: "sala_publica",
+                name: "Grupo Público Global 🌎",
+                pic: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&h=100&fit=crop&crop=faces",
+                status: "Todos podem conversar aqui",
                 unread: false,
                 messages: [
-                    { id: 'm4', autorId: "system", sender: "received", text: "Mãe: Pessoal, vai ter almoço no domingo! 🍲", time: "09:15", createdAt: 1 },
-                    { id: 'm5', autorId: "me", sender: "sent", text: "Com certeza estarei lá! 😋", time: "09:20", createdAt: 2 }
+                    { id: 'g1', autorId: "system", sender: "received", text: "Bem-vindo ao canal público! Digite algo para interagir.", time: "10:01", createdAt: 1 }
                 ]
             }
         ];
 
-        let currentChatId = "1";
+        let currentChatId = "ai_bot";
 
-        // Observador Firebase Auth
         if (auth) {
             auth.onAuthStateChanged(user => {
                 if (user) {
@@ -1029,8 +977,6 @@
         }
 
         function switchAuthTab(tab) {
-            document.getElementById('loginError').innerText = '';
-            document.getElementById('regError').innerText = '';
             if (tab === 'login') {
                 document.getElementById('loginForm').classList.add('active');
                 document.getElementById('registerForm').classList.remove('active');
@@ -1046,8 +992,8 @@
 
         function enterDemoMode(email, name) {
             currentUser = {
-                uid: 'demo_' + Date.now(),
-                displayName: name || 'Convidado',
+                uid: 'usr_' + Date.now(),
+                displayName: name || 'Você',
                 email: email || 'demo@chat.com'
             };
             showScreen('listScreen');
@@ -1058,17 +1004,11 @@
         function handleLogin() {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
-            const errEl = document.getElementById('loginError');
-
-            if (!email || !password) {
-                errEl.innerText = "Preencha todos os campos.";
-                return;
-            }
+            if (!email || !password) return;
 
             if (auth) {
-                errEl.innerText = "Entrando...";
-                auth.signInWithEmailAndPassword(email, password).catch(error => {
-                    errEl.innerText = "Erro ao entrar: " + error.message;
+                auth.signInWithEmailAndPassword(email, password).catch(e => {
+                    document.getElementById('loginError').innerText = e.message;
                 });
             } else {
                 enterDemoMode(email);
@@ -1079,20 +1019,12 @@
             const name = document.getElementById('regName').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value.trim();
-            const errEl = document.getElementById('regError');
-
-            if (!name || !email || !password) {
-                errEl.innerText = "Preencha todos os campos.";
-                return;
-            }
+            if (!name || !email || !password) return;
 
             if (auth) {
-                errEl.innerText = "Cadastrando...";
                 auth.createUserWithEmailAndPassword(email, password)
-                    .then(res => res.user.updateProfile({ displayName: name }))
-                    .catch(error => {
-                        errEl.innerText = error.message;
-                    });
+                    .then(r => r.user.updateProfile({ displayName: name }))
+                    .catch(e => document.getElementById('regError').innerText = e.message);
             } else {
                 enterDemoMode(email, name);
             }
@@ -1104,6 +1036,41 @@
             showScreen('authScreen');
         }
 
+        function openAddContactModal() {
+            document.getElementById('addModal').classList.add('active');
+        }
+
+        function closeAddContactModal() {
+            document.getElementById('addModal').classList.remove('active');
+            document.getElementById('newChatInput').value = '';
+        }
+
+        function addNewContactOrRoom() {
+            const val = document.getElementById('newChatInput').value.trim();
+            if (!val) return;
+
+            const chatRoomId = val.toLowerCase().replace(/\s+/g, '_');
+            
+            let existing = chatsData.find(c => c.id === chatRoomId);
+            if (!existing) {
+                existing = {
+                    id: chatRoomId,
+                    name: val,
+                    pic: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces",
+                    status: "Sala/Contato " + val,
+                    unread: false,
+                    messages: [
+                        { id: 'init_1', autorId: 'system', sender: 'received', text: `Conversa criada para "${val}". Compartilhe esse nome para conversarem aqui!`, time: 'Agora', createdAt: Date.now() }
+                    ]
+                };
+                chatsData.unshift(existing);
+            }
+
+            closeAddContactModal();
+            renderChatList();
+            openChat(existing.id);
+        }
+
         function renderChatList(filterTerm = '') {
             const container = document.getElementById('chatListContainer');
             container.innerHTML = '';
@@ -1112,12 +1079,7 @@
 
             filtered.forEach(chat => {
                 const lastMsg = chat.messages[chat.messages.length - 1];
-                let lastText = 'Sem mensagens ainda';
-                if (lastMsg) {
-                    if (lastMsg.text) lastText = lastMsg.text;
-                    else if (lastMsg.isAudio) lastText = '🎙️ Mensagem de voz';
-                    else if (lastMsg.fileUrl) lastText = '📎 Imagem / Arquivo';
-                }
+                let lastText = lastMsg ? (lastMsg.text || 'Anexo / Mídia') : 'Sem mensagens';
 
                 const item = document.createElement('div');
                 item.className = `chat-list-item ${chat.unread ? 'unread' : ''}`;
@@ -1138,8 +1100,7 @@
         }
 
         function filterChats() {
-            const term = document.getElementById('searchInput').value;
-            renderChatList(term);
+            renderChatList(document.getElementById('searchInput').value);
         }
 
         function openChat(id) {
@@ -1155,38 +1116,34 @@
                 unsubscribeMessages = null;
             }
 
+            // Sincronização em tempo real Firestore por sala
             if (db) {
                 try {
                     unsubscribeMessages = db.collection("mensagens")
                         .where("chatId", "==", currentChatId)
                         .onSnapshot(snapshot => {
                             if (snapshot && !snapshot.empty) {
-                                const loadedMsgs = [];
+                                const loaded = [];
                                 snapshot.forEach(doc => {
                                     const data = doc.data();
-                                    const myUid = currentUser ? currentUser.uid : 'anonymous';
-                                    loadedMsgs.push({
+                                    const myUid = currentUser ? currentUser.uid : 'anon';
+                                    loaded.push({
                                         id: doc.id,
                                         autorId: data.autorId,
                                         sender: data.autorId === myUid ? 'sent' : 'received',
                                         text: data.text || '',
-                                        fileUrl: data.fileUrl || null,
-                                        fileName: data.fileName || null,
-                                        isImage: data.isImage || false,
                                         isAudio: data.isAudio || false,
-                                        reaction: data.reaction || null,
+                                        fileUrl: data.fileUrl || null,
                                         time: data.time || '10:00',
                                         createdAt: data.createdAt ? (data.createdAt.toMillis ? data.createdAt.toMillis() : Date.now()) : Date.now()
                                     });
                                 });
-                                loadedMsgs.sort((a, b) => a.createdAt - b.createdAt);
-                                if (chat) chat.messages = loadedMsgs;
+                                loaded.sort((a, b) => a.createdAt - b.createdAt);
+                                if (chat) chat.messages = loaded;
                             }
                             renderActiveChat();
                         }, () => renderActiveChat());
-                } catch(e) {
-                    renderActiveChat();
-                }
+                } catch(e) { renderActiveChat(); }
             } else {
                 renderActiveChat();
             }
@@ -1221,58 +1178,16 @@
 
                 let content = '';
 
-                // Áudio
                 if (msg.isAudio) {
-                    content += `
-                        <div class="audio-player-sim">
-                            <button class="audio-play-btn" onclick="event.stopPropagation(); playAudioSim(this)">▶</button>
-                            <div class="audio-wave">
-                                <span style="height: 10px;"></span>
-                                <span style="height: 16px;"></span>
-                                <span style="height: 8px;"></span>
-                                <span style="height: 14px;"></span>
-                                <span style="height: 18px;"></span>
-                                <span style="height: 10px;"></span>
-                            </div>
-                            <span style="font-size:0.7rem; opacity:0.8;">0:08</span>
-                        </div>
-                    `;
-                }
-                // Imagem / Arquivo
-                else if (msg.fileUrl) {
-                    if (msg.isImage) {
-                        content += `<img src="${msg.fileUrl}" alt="Foto" onclick="event.stopPropagation(); openLightbox('${msg.fileUrl}')">`;
-                    } else {
-                        content += `
-                            <a href="${msg.fileUrl}" target="_blank" style="text-decoration:none; color:inherit;" onclick="event.stopPropagation()">
-                                <div class="file-card">
-                                    <span style="font-size: 1.3rem;">📄</span>
-                                    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.82rem;">
-                                        <strong>${msg.fileName || 'Arquivo'}</strong>
-                                    </div>
-                                </div>
-                            </a>
-                        `;
-                    }
+                    content += `<div class="audio-player-sim"><button class="audio-play-btn" onclick="event.stopPropagation(); playAudioSim(this)">▶</button><div class="audio-wave"><span></span><span></span><span></span><span></span></div><span style="font-size:0.7rem;">0:05</span></div>`;
+                } else if (msg.fileUrl) {
+                    content += `<img src="${msg.fileUrl}">`;
                 }
 
-                // Texto
-                if (msg.text) {
-                    content += `<span>${msg.text}</span>`;
-                }
+                if (msg.text) content += `<span>${msg.text}</span>`;
+                if (msg.reaction) content += `<div class="reaction-badge">${msg.reaction}</div>`;
 
-                // Reaction Badge
-                if (msg.reaction) {
-                    content += `<div class="reaction-badge">${msg.reaction}</div>`;
-                }
-
-                // Footer
-                content += `
-                    <div class="message-footer">
-                        <span class="message-time">${msg.time}</span>
-                        ${msg.sender === 'sent' ? `<span class="read-status">✓✓</span>` : ''}
-                    </div>
-                `;
+                content += `<div class="message-footer"><span class="message-time">${msg.time}</span>${msg.sender === 'sent' ? `<span class="read-status">✓✓</span>` : ''}</div>`;
 
                 msgDiv.innerHTML = content;
                 container.appendChild(msgDiv);
@@ -1281,14 +1196,13 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        // Reações nas mensagens
-        function showReactionMenu(e, msgIndex) {
+        function showReactionMenu(e, index) {
             e.stopPropagation();
-            selectedMessageIndex = msgIndex;
+            selectedMessageIndex = index;
             const picker = document.getElementById('reactionPicker');
             picker.style.display = 'flex';
-            picker.style.top = (e.clientY - 50) + 'px';
-            picker.style.left = Math.min(e.clientX, window.innerWidth - 220) + 'px';
+            picker.style.top = (e.clientY - 40) + 'px';
+            picker.style.left = Math.min(e.clientX, window.innerWidth - 180) + 'px';
         }
 
         function reactToMessage(emoji) {
@@ -1319,9 +1233,8 @@
             const text = input.value.trim();
             if (!text) return;
 
-            const now = new Date();
-            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            const myUid = currentUser ? currentUser.uid : 'anonymous';
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const myUid = currentUser ? currentUser.uid : 'anon';
             const chat = chatsData.find(c => String(c.id) === currentChatId);
 
             const newMsg = {
@@ -1347,25 +1260,65 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 }).catch(() => {});
             }
+
+            // Se for conversa com o BOT IA, ele responde automaticamente
+            if (chat && chat.isBot) {
+                simulateBotResponse(text);
+            }
+        }
+
+        function simulateBotResponse(userMsg) {
+            const container = document.getElementById('chatMessagesContainer');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `Assistente digitando <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
+            container.appendChild(typingDiv);
+            container.scrollTop = container.scrollHeight;
+
+            setTimeout(() => {
+                const el = document.getElementById('typingIndicator');
+                if (el) el.remove();
+
+                let botReply = "Que legal! Como posso te ajudar com o aplicativo hoje?";
+                const lower = userMsg.toLowerCase();
+
+                if (lower.includes('oi') || lower.includes('olá')) botReply = "Olá! Tudo bem com você? 😊";
+                else if (lower.includes('tudo')) botReply = "Tudo ótimo por aqui também! ✨";
+                else if (lower.includes('teste')) botReply = "O teste do chat em tempo real está funcionando perfeitamente!";
+                else if (lower.includes('ajuda')) botReply = "Você pode usar o botão + lá na lista para criar uma nova sala com amigos!";
+
+                const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const chat = chatsData.find(c => c.id === 'ai_bot');
+                if (chat) {
+                    chat.messages.push({
+                        id: 'bot_' + Date.now(),
+                        autorId: 'bot',
+                        sender: 'received',
+                        text: botReply,
+                        time: timeStr,
+                        createdAt: Date.now()
+                    });
+                    renderActiveChat();
+                }
+            }, 1200);
         }
 
         function sendSimulatedVoiceNote() {
-            const now = new Date();
-            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            const myUid = currentUser ? currentUser.uid : 'anonymous';
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const chat = chatsData.find(c => String(c.id) === currentChatId);
 
-            const newMsg = {
-                id: 'loc_' + Date.now(),
-                autorId: myUid,
-                sender: 'sent',
-                isAudio: true,
-                time: timeStr,
-                createdAt: Date.now()
-            };
-
-            if (chat) chat.messages.push(newMsg);
-            renderActiveChat();
+            if (chat) {
+                chat.messages.push({
+                    id: 'loc_' + Date.now(),
+                    autorId: currentUser ? currentUser.uid : 'anon',
+                    sender: 'sent',
+                    isAudio: true,
+                    time: timeStr,
+                    createdAt: Date.now()
+                });
+                renderActiveChat();
+            }
         }
 
         function playAudioSim(btn) {
@@ -1373,47 +1326,31 @@
             setTimeout(() => { btn.innerText = '▶'; }, 3000);
         }
 
-        function sendFile(event) {
-            const file = event.target.files[0];
+        function sendFile(e) {
+            const file = e.target.files[0];
             if (!file) return;
 
-            const myUid = currentUser ? currentUser.uid : 'anonymous';
-            const now = new Date();
-            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            const isImage = file.type.startsWith('image/');
-
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function(evt) {
                 const chat = chatsData.find(c => String(c.id) === currentChatId);
-                const newMsg = {
-                    id: 'loc_' + Date.now(),
-                    autorId: myUid,
-                    sender: 'sent',
-                    fileUrl: e.target.result,
-                    fileName: file.name,
-                    isImage: isImage,
-                    time: timeStr,
-                    createdAt: Date.now()
-                };
-
-                if (chat) chat.messages.push(newMsg);
-                renderActiveChat();
+                if (chat) {
+                    chat.messages.push({
+                        id: 'loc_' + Date.now(),
+                        autorId: currentUser ? currentUser.uid : 'anon',
+                        sender: 'sent',
+                        fileUrl: evt.target.result,
+                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        createdAt: Date.now()
+                    });
+                    renderActiveChat();
+                }
             };
             reader.readAsDataURL(file);
-            event.target.value = '';
+            e.target.value = '';
         }
 
         function handleKeyPress(e) {
             if (e.key === 'Enter') sendMessage();
-        }
-
-        function openLightbox(url) {
-            document.getElementById('lightboxImg').src = url;
-            document.getElementById('lightboxModal').classList.add('active');
-        }
-
-        function closeLightbox() {
-            document.getElementById('lightboxModal').classList.remove('active');
         }
 
         function showNotificationAlert(name, pic, text) {
@@ -1427,56 +1364,7 @@
         }
 
         function simulateNewIncomingMessage() {
-            const randomChat = chatsData[Math.floor(Math.random() * chatsData.length)];
-            const sampleTexts = [
-                "Oi! Tudo bem? Como estão as coisas por aí? ✨",
-                "Dá uma olhada nesse projeto novo que preparei! 🚀",
-                "Vamos marcar aquele café durante a semana? ☕",
-                "Me avisa assim que puder falar! 👍"
-            ];
-            const randomText = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
-            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            // Mostrar animação de "Digitando..." se o chat estiver aberto
-            if (currentChatId === String(randomChat.id) && document.getElementById('chatScreen').classList.contains('active')) {
-                const container = document.getElementById('chatMessagesContainer');
-                const typingDiv = document.createElement('div');
-                typingDiv.className = 'typing-indicator';
-                typingDiv.id = 'typingIndicator';
-                typingDiv.innerHTML = `Digitando <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
-                container.appendChild(typingDiv);
-                container.scrollTop = container.scrollHeight;
-
-                setTimeout(() => {
-                    const el = document.getElementById('typingIndicator');
-                    if (el) el.remove();
-                    
-                    randomChat.messages.push({
-                        id: 'sim_' + Date.now(),
-                        autorId: 'other',
-                        sender: 'received',
-                        text: randomText,
-                        time: timeStr,
-                        createdAt: Date.now()
-                    });
-                    renderActiveChat();
-                    showNotificationAlert(randomChat.name, randomChat.pic, randomText);
-                }, 2000);
-            } else {
-                randomChat.messages.push({
-                    id: 'sim_' + Date.now(),
-                    autorId: 'other',
-                    sender: 'received',
-                    text: randomText,
-                    time: timeStr,
-                    createdAt: Date.now()
-                });
-                randomChat.unread = true;
-                if (document.getElementById('listScreen').classList.contains('active')) {
-                    renderChatList();
-                }
-                showNotificationAlert(randomChat.name, randomChat.pic, randomText);
-            }
+            showNotificationAlert("Família Oliveira", "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=100&h=100&fit=crop&crop=faces", "Chegou mensagem nova no grupo!");
         }
     </script>
 </body>
