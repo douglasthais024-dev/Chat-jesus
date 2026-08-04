@@ -9,8 +9,8 @@
     <style>
         :root {
             --bg-dark: #090d16;
-            --balloon-right: #111111; /* Preto */
-            --balloon-left: #0078ff;  /* Azul */
+            --balloon-right: #111111;
+            --balloon-left: #0078ff;
             --text-right: #ffffff;
             --text-left: #ffffff;
             --text-light: #ffffff;
@@ -20,7 +20,6 @@
             --glass-border: rgba(255, 255, 255, 0.12);
         }
 
-        /* --- TEMAS DE BALÕES DE CONVERSA --- */
         .theme-balloon-default {
             --balloon-right: #111111;
             --balloon-left: #0078ff;
@@ -81,7 +80,7 @@
             overflow: hidden; background-color: var(--bg-dark);
         }
 
-        /* --- Tela de Login / Cadastro Overlay --- */
+        /* Tela de Login / Cadastro Overlay */
         .auth-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(9, 13, 22, 0.96);
@@ -139,7 +138,7 @@
 
         .btn-auth:active { opacity: 0.85; }
 
-        /* --- Cabeçalho --- */
+        /* Cabeçalho */
         .chat-header {
             background: var(--glass-bg); backdrop-filter: blur(16px);
             padding: 12px 16px; display: flex; align-items: center;
@@ -177,7 +176,7 @@
         .header-actions i { cursor: pointer; padding: 6px; border-radius: 50%; transition: all 0.2s; }
         .header-actions i:hover { color: var(--text-light); background: rgba(255, 255, 255, 0.1); }
 
-        /* --- Área de Chat & Papéis de Parede --- */
+        /* Área de Chat & Wallpapers */
         .chat-body {
             flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column;
             gap: 12px; position: relative; transition: background 0.4s ease, background-image 0.4s ease;
@@ -226,7 +225,7 @@
             background-image: radial-gradient(circle at 50% 30%, rgba(30, 41, 59, 0.5) 0%, transparent 70%);
         }
 
-        /* --- Balões de Mensagem & Avatares --- */
+        /* Balões de Mensagem & Avatares */
         .message-row {
             display: flex; align-items: flex-end; gap: 8px; max-width: 86%; position: relative;
             animation: slideUp 0.18s ease-out;
@@ -718,7 +717,7 @@
             signOut, onAuthStateChanged, updateProfile 
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { 
-            getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, query, where, serverTimestamp, getDocs 
+            getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, query, where, getDocs 
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         // Configuração Oficial do Firebase
@@ -744,6 +743,7 @@
         let localMessagesStore = [];
         let localContactsStore = []; 
         let isInitialAuth = true;
+        let typingTimeout = null;
 
         let unsubscribeRealtime = null;
         let unsubscribeTyping = null;
@@ -766,12 +766,8 @@
 
             localChannel.onmessage = (e) => {
                 if (e.data && e.data.type === 'NEW_MSG') {
-                    const exists = localMessagesStore.some(m => (m.clientTime && m.clientTime === e.data.msg.clientTime));
-                    if (!exists) {
-                        localMessagesStore.push(e.data.msg);
-                        saveLocalMessages();
-                        renderMessagesUI();
-                    }
+                    addMessageToLocalStore(e.data.msg);
+                    renderMessagesUI();
                 }
             };
 
@@ -806,6 +802,8 @@
 
             const msgInput = document.getElementById('messageInput');
             msgInput.onkeydown = (e) => { if (e.key === 'Enter') sendMessage(); };
+            msgInput.oninput = handleTyping;
+
             document.getElementById('btnSendMessage').onclick = sendMessage;
 
             document.getElementById('contactSearchInput').oninput = renderContactsList;
@@ -873,15 +871,39 @@
 
         function saveLocalMessages() {
             try {
-                const cleanStore = localMessagesStore.map(m => {
+                const cleanStore = localMessagesStore.slice(-100).map(m => {
                     const copy = { ...m };
                     if (copy.createdAt && typeof copy.createdAt.toDate === 'function') {
                         copy.createdAt = copy.createdAt.toDate().getTime();
                     }
+                    if (copy.fileUrl && copy.fileUrl.length > 50000) {
+                        delete copy.fileUrl;
+                    }
                     return copy;
                 });
                 localStorage.setItem('app_local_messages', JSON.stringify(cleanStore));
-            } catch (e) {}
+            } catch (e) {
+                console.warn("Aviso ao salvar local:", e);
+            }
+        }
+
+        function addMessageToLocalStore(msgObj) {
+            const index = localMessagesStore.findIndex(m => 
+                (msgObj.docId && m.docId === msgObj.docId) || 
+                (msgObj.clientTime && m.clientTime === msgObj.clientTime)
+            );
+
+            if (index >= 0) {
+                localMessagesStore[index] = { ...localMessagesStore[index], ...msgObj };
+            } else {
+                localMessagesStore.push(msgObj);
+            }
+
+            if (localMessagesStore.length > 150) {
+                localMessagesStore = localMessagesStore.slice(-150);
+            }
+
+            saveLocalMessages();
         }
 
         function loadLocalContacts() {
@@ -1035,8 +1057,8 @@
                         <i class="fa-solid fa-user-plus"></i>
                     </div>
                     <div class="contact-info">
-                        <strong style="color: #0078ff;">Abrir conversa com "${escapeHTML(searchVal)}"</strong>
-                        <span>Iniciar bate-papo individual</span>
+                        <strong style="color: #0078ff;">Buscar "${escapeHTML(searchVal)}" no Firestore</strong>
+                        <span>Iniciar bate-papo individual por e-mail</span>
                     </div>
                 `;
                 directItem.onclick = () => handleDirectEmailSearch(searchVal);
@@ -1046,28 +1068,36 @@
 
         async function handleDirectEmailSearch(targetEmail) {
             const cleanEmail = targetEmail.toLowerCase().trim();
-            showToast("Abrindo conversa...");
+            if (!cleanEmail) return;
+            showToast("Buscando usuário...");
 
-            const localUser = cachedUsersList.find(u => (u.email || '').toLowerCase() === cleanEmail) 
+            let targetUser = cachedUsersList.find(u => (u.email || '').toLowerCase() === cleanEmail) 
                 || localContactsStore.find(u => (u.email || '').toLowerCase() === cleanEmail);
 
-            if (localUser && localUser.uid !== currentUser.uid) {
-                const dmChatId = getDmChatId(currentUser.uid, localUser.uid);
-                switchChatRoom(dmChatId, localUser);
-                showToast(`Conversa iniciada com ${localUser.nome}!`);
-                return;
+            if (!targetUser) {
+                try {
+                    const usersRef = collection(db, "users");
+                    const q = query(usersRef, where("email", "==", cleanEmail));
+                    const querySnap = await getDocs(q);
+                    if (!querySnap.empty) {
+                        targetUser = querySnap.docs[0].data();
+                    }
+                } catch (err) {
+                    console.warn("Erro ao buscar usuário no Firestore:", err);
+                }
             }
 
-            const fallbackUser = {
-                uid: 'user_' + cleanEmail.replace(/[^a-zA-Z0-9]/g, '_'),
-                nome: cleanEmail.includes('@') ? cleanEmail.split('@')[0] : targetEmail,
-                email: cleanEmail,
-                foto: defaultAvatar
-            };
-
-            const dmChatId = getDmChatId(currentUser.uid, fallbackUser.uid);
-            switchChatRoom(dmChatId, fallbackUser);
-            showToast(`Conversa individual iniciada!`);
+            if (targetUser) {
+                if (targetUser.uid === currentUser.uid) {
+                    showToast("Você não pode iniciar um chat privado com você mesmo.");
+                    return;
+                }
+                const dmChatId = getDmChatId(currentUser.uid, targetUser.uid);
+                switchChatRoom(dmChatId, targetUser);
+                showToast(`Conversa iniciada com ${targetUser.nome || targetUser.email}!`);
+            } else {
+                showToast("Nenhum usuário cadastrado encontrado com este e-mail.");
+            }
         }
 
         function setupUsersListener() {
@@ -1206,13 +1236,8 @@
                     }
                     const msgObj = { docId: docSnap.id, ...cleanData };
                     currentCloudMessages.push(msgObj);
-
-                    const exists = localMessagesStore.some(m => m.docId === msgObj.docId || (m.clientTime && m.clientTime === msgObj.clientTime));
-                    if (!exists) {
-                        localMessagesStore.push(msgObj);
-                    }
+                    addMessageToLocalStore(msgObj);
                 });
-                saveLocalMessages();
                 renderMessagesUI();
             }, (error) => {
                 console.warn("Erro no Firebase Realtime:", error);
@@ -1228,15 +1253,19 @@
 
             currentCloudMessages.forEach(msg => {
                 if (msg.chatId === String(activeChatId)) {
-                    combinedMap.set(msg.docId || msg.clientTime, msg);
+                    const key = msg.clientTime || msg.docId;
+                    combinedMap.set(key, msg);
                 }
             });
 
             localMessagesStore.forEach(msg => {
                 if (msg.chatId === String(activeChatId)) {
-                    const key = msg.docId || msg.clientTime;
+                    const key = msg.clientTime || msg.docId;
                     if (!combinedMap.has(key)) {
                         combinedMap.set(key, msg);
+                    } else {
+                        const existing = combinedMap.get(key);
+                        combinedMap.set(key, { ...msg, ...existing });
                     }
                 }
             });
@@ -1294,7 +1323,28 @@
             chatBody.scrollTop = chatBody.scrollHeight;
         }
 
-        function handleTyping() {}
+        function handleTyping() {
+            if (!currentUser) return;
+            sendTypingStatus(true);
+            if (typingTimeout) clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                sendTypingStatus(false);
+            }, 2000);
+        }
+
+        async function sendTypingStatus(isTyping) {
+            if (!currentUser || !activeChatId) return;
+            try {
+                const typingDocRef = doc(db, "typing", `${currentUser.uid}_${activeChatId}`);
+                await setDoc(typingDocRef, {
+                    uid: currentUser.uid,
+                    nome: currentUser.displayName || 'Usuário',
+                    chatId: String(activeChatId),
+                    isTyping: isTyping,
+                    updatedAt: Date.now()
+                }, { merge: true });
+            } catch (e) {}
+        }
 
         function setupTypingListener() {
             if (unsubscribeTyping) unsubscribeTyping();
@@ -1307,7 +1357,7 @@
 
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
-                    if (data.uid !== currentUser?.uid && data.isTyping && (now - (data.updatedAt || 0) < 5000)) {
+                    if (data.uid !== currentUser?.uid && data.isTyping && (now - (data.updatedAt || 0) < 4000)) {
                         typers.push(data.nome || 'Alguém');
                     }
                 });
@@ -1324,7 +1374,6 @@
             }, () => {});
         }
 
-        // ENVIO SANITIZADO SEM OBJETOS INCOMPATÍVEIS
         async function sendMessage() {
             if (!currentUser) return showToast("Faça login para enviar!");
             const input = document.getElementById('messageInput');
@@ -1333,6 +1382,8 @@
 
             input.value = '';
             input.focus();
+
+            sendTypingStatus(false);
 
             const myAvatar = getUserAvatar(currentUser.uid) || defaultAvatar;
             const nowMs = Date.now();
@@ -1352,13 +1403,10 @@
 
             if (activeChatTargetUser && activeChatTargetUser.uid) {
                 payload.targetUid = String(activeChatTargetUser.uid);
-            }
-            if (activeChatTargetUser && activeChatTargetUser.email) {
-                payload.targetEmail = String(activeChatTargetUser.email).toLowerCase();
+                payload.targetEmail = String(activeChatTargetUser.email || "").toLowerCase();
             }
 
-            localMessagesStore.push(payload);
-            saveLocalMessages();
+            addMessageToLocalStore(payload);
             localChannel.postMessage({ type: 'NEW_MSG', msg: payload });
             renderMessagesUI();
 
@@ -1398,13 +1446,10 @@
 
                     if (activeChatTargetUser && activeChatTargetUser.uid) {
                         payload.targetUid = String(activeChatTargetUser.uid);
-                    }
-                    if (activeChatTargetUser && activeChatTargetUser.email) {
-                        payload.targetEmail = String(activeChatTargetUser.email).toLowerCase();
+                        payload.targetEmail = String(activeChatTargetUser.email || "").toLowerCase();
                     }
 
-                    localMessagesStore.push(payload);
-                    saveLocalMessages();
+                    addMessageToLocalStore(payload);
                     localChannel.postMessage({ type: 'NEW_MSG', msg: payload });
                     renderMessagesUI();
 
@@ -1436,13 +1481,10 @@
 
                     if (activeChatTargetUser && activeChatTargetUser.uid) {
                         payload.targetUid = String(activeChatTargetUser.uid);
-                    }
-                    if (activeChatTargetUser && activeChatTargetUser.email) {
-                        payload.targetEmail = String(activeChatTargetUser.email).toLowerCase();
+                        payload.targetEmail = String(activeChatTargetUser.email || "").toLowerCase();
                     }
 
-                    localMessagesStore.push(payload);
-                    saveLocalMessages();
+                    addMessageToLocalStore(payload);
                     localChannel.postMessage({ type: 'NEW_MSG', msg: payload });
                     renderMessagesUI();
 
