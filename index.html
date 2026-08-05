@@ -495,6 +495,26 @@
     const changeProfilePhotoBtn = document.getElementById('changeProfilePhotoBtn');
     const profilePhotoInput = document.getElementById('profilePhotoInput');
 
+    const wpCustomBtn = document.getElementById('wpCustomBtn');
+    const wpFileInput = document.getElementById('wpFileInput');
+    const wpThumbs = document.querySelectorAll('.wallpaper-thumb');
+
+    // --- CARREGAMENTO DO PAPEL DE PAREDE SALVO ---
+    function loadSavedWallpaper() {
+      const savedWp = localStorage.getItem('saved_wallpaper');
+      if (savedWp) {
+        document.documentElement.style.setProperty('--chat-bg-image', savedWp);
+        wpThumbs.forEach(t => {
+          if (t.getAttribute('data-wp') === savedWp) {
+            t.classList.add('selected');
+          } else {
+            t.classList.remove('selected');
+          }
+        });
+      }
+    }
+    loadSavedWallpaper();
+
     // Alternar Abas
     tabLoginBtn.addEventListener('click', () => {
       tabLoginBtn.classList.add('active'); tabRegisterBtn.classList.remove('active');
@@ -646,7 +666,7 @@
       });
     }
 
-    // Enviar Mensagem (Apenas os campos originais aceitos pelo Firebase)
+    // Enviar Mensagem
     async function sendMessage() {
       const text = messageInput.value.trim();
       if (!text || !currentUser) return;
@@ -778,7 +798,7 @@
       '❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕','💞','💓','💗','💖','💘','💝','🫀','🔥','✨','🌟','💫','💥','💢','💦','💨','💬','💭','💤',
       '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐻‍❄️','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🐣','🐥','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦟','🦗','🕷️','🦂','🐢','🐍','🦎','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🦭','🐊','🐅','🐆','🦓','🐘','🦏','🦛','🐪','🐫','🦒','🦘','🦙','🦮','🐩','🐈','🦜','🦩','🕊️','🪶',
       '🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶️','🌽','🥕','🧄','🧅','🥔','🍞','🥐','🥖','🫓','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🥪','🥙','🧆','🌮','🌯','🥗','🥘','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','☕','🍵','🧃','🥤','🧋','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🍾','🧊',
-      '⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🎱','🏓','🏸','🏒','🏑','🥍','🏏','🥅','⛳','🪁','🏹','🎣','🤿','🥊','🥋','🎽','🛹','🛼','🏋️','🤸','⛹️','🧘','🏄','🏊','🚣','🧗','🚵','🚴','🎯','🎮','🎰','🎲','🧩','🎨','🎭','🎤','🎧','🎼','🎵','🎶','🎷','🎸','🎹','🎺','🎻','🥁','📱','💻','⌨️','🖥️','🖨️','🖱️','📷','📸','📹','🎥','📽️','📞','☎️','📺','📻','🎙️','⏰','⌛','⏳','📡','🔋','🔌','💡','🔦','🕯️','💸','💵','💰','💳','💎','⚖️','🧰','🔧','🔨','🛠️','💣','🔪','🗡️','⚔️','🛡️','🔮','💈','🪞','🧴','🧼','🪥','🔑','🗝️','🚪','🪑','🛋️','🛏️','🧸','🛍️','🛒','🎁','🎈','🎉','🎊','✉️','📦','🏷️','📅','📆','📌','📍','📎','✂️','🖊️','🖋️','📝','✏️','🔍','🔎','🔒','🔓'
+      '⚽','🏀','🏈','⚾','🥎','tennis','🏐','ラグビー','🎱','🏓','🏸','🏒','🏑','🥍','🏏','🥅','⛳','kite','🏹','🎣','🤿','🥊','🥋','🎽','skateboard','🛼','🏋️','🤸','⛹️','🧘','🏄','🏊','🚣','🧗','🚵','🚴','🎯','🎮','🎰','🎲','🧩','🎨','🎭','🎤','🎧','🎼','🎵','🎶','🎷','🎸','🎹','🎺','🎻','🥁','📱','💻','⌨️','🖥️','🖨️','🖱️','📷','📸','📹','🎥','📽️','📞','☎️','📺','📻','🎙️','⏰','⌛','⏳','📡','🔋','🔌','💡','flashlight','🕯️','💸','💵','💰','💳','💎','⚖️','🧰','🔧','🔨','🛠️','💣','🔪','🗡️','⚔️','🛡️','🔮','💈','🪞','🧴','🧼','🪥','🔑','🗝️','🚪','🪑','🛋️','🛏️','🧸','🛍️','🛒','🎁','🎈','🎉','🎊','✉️','📦','🏷️','📅','📆','📌','📍','📎','✂️','🖊️','🖋️','📝','✏️','🔍','🔎','🔒','🔓'
     ];
 
     fullEmojiList.forEach(emoji => {
@@ -802,11 +822,7 @@
     document.getElementById('leftColorPicker').addEventListener('input', (e) => document.documentElement.style.setProperty('--left-balloon-bg', e.target.value));
     document.getElementById('rightColorPicker').addEventListener('input', (e) => document.documentElement.style.setProperty('--right-balloon-bg', e.target.value));
 
-    // Upload de Foto para Papel de Parede
-    const wpCustomBtn = document.getElementById('wpCustomBtn');
-    const wpFileInput = document.getElementById('wpFileInput');
-    const wpThumbs = document.querySelectorAll('.wallpaper-thumb');
-
+    // Upload e Salvamento Permanente de Papel de Parede Personalizado
     wpCustomBtn.addEventListener('click', () => wpFileInput.click());
 
     wpFileInput.addEventListener('change', (e) => {
@@ -814,20 +830,23 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = (evt) => {
-          document.documentElement.style.setProperty('--chat-bg-image', `url('${evt.target.result}')`);
+          const customWpValue = `url('${evt.target.result}')`;
+          document.documentElement.style.setProperty('--chat-bg-image', customWpValue);
+          localStorage.setItem('saved_wallpaper', customWpValue);
           wpThumbs.forEach(t => t.classList.remove('selected'));
         };
         reader.readAsDataURL(file);
       }
     });
 
-    // Selecionar Temas Pré-definidos
+    // Selecionar Temas Pré-definidos e Salvar Permanentemente
     wpThumbs.forEach(thumb => {
       thumb.addEventListener('click', () => {
         wpThumbs.forEach(t => t.classList.remove('selected'));
         thumb.classList.add('selected');
         const wpValue = thumb.getAttribute('data-wp');
         document.documentElement.style.setProperty('--chat-bg-image', wpValue);
+        localStorage.setItem('saved_wallpaper', wpValue);
       });
     });
 
