@@ -168,22 +168,36 @@
     .message-row.left { align-self: flex-start; }
     .message-row.right { align-self: flex-end; flex-direction: row-reverse; }
     .msg-avatar { 
-      width: 32px; 
-      height: 32px; 
+      width: 36px; 
+      height: 36px; 
       border-radius: 50%; 
       flex-shrink: 0; 
-      background: #64748b; 
+      background: #0284c7; 
       display: flex; 
       align-items: center; 
       justify-content: center; 
-      font-size: 0.75rem; 
+      font-size: 0.85rem; 
       font-weight: bold; 
       color: #ffffff; 
       overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.4);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     .message-balloon { padding: 10px 14px; border-radius: 18px; position: relative; word-break: break-word; box-shadow: 0 3px 8px rgba(0,0,0,0.25); font-size: 0.95rem; }
     .message-row.left .message-balloon { background-color: var(--left-balloon-bg); color: var(--left-balloon-color); border-bottom-left-radius: 4px; }
     .message-row.right .message-balloon { background-color: var(--right-balloon-bg); color: var(--right-balloon-color); border-bottom-right-radius: 4px; }
+    
+    /* Nome do remetente no topo do balão esquerdo */
+    .msg-author-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 4px;
+      display: block;
+      letter-spacing: 0.3px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
     .msg-media { max-width: 100%; max-height: 260px; border-radius: 10px; margin-top: 6px; display: block; object-fit: cover; }
     .file-attachment { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); padding: 8px 12px; border-radius: 8px; margin-top: 6px; text-decoration: none; color: inherit; font-size: 0.85rem; }
     .msg-meta { display: flex; justify-content: flex-end; align-items: center; gap: 6px; font-size: 0.68rem; opacity: 0.8; margin-top: 4px; }
@@ -499,7 +513,7 @@
     const wpFileInput = document.getElementById('wpFileInput');
     const wpThumbs = document.querySelectorAll('.wallpaper-thumb');
 
-    // --- CARREGAMENTO DO PAPEL DE PAREDE SALVO ---
+    // Carregamento do Papel de Parede Salvo
     function loadSavedWallpaper() {
       const savedWp = localStorage.getItem('saved_wallpaper');
       if (savedWp) {
@@ -526,13 +540,13 @@
       registerForm.classList.add('active'); loginForm.classList.remove('active');
     });
 
-    // Função de recuperação da foto de perfil
+    // Recupera a foto do perfil atual do usuário
     function getMyProfilePhoto() {
       if (!currentUser) return '';
       return localStorage.getItem('user_photo_' + currentUser.uid) || '';
     }
 
-    // Atualiza Fotos e Nomes na Tela
+    // Atualiza Fotos e Nomes na Interface
     function updateAvatarDisplays() {
       if (!currentUser) return;
       const name = currentUser.displayName || currentUser.email.split('@')[0];
@@ -562,7 +576,7 @@
       }
     });
 
-    // Processar Foto de Perfil
+    // Processar e Salvar Foto de Perfil Otimizada (90x90px)
     changeProfilePhotoBtn.addEventListener('click', () => profilePhotoInput.click());
     profilePhotoInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -574,7 +588,7 @@
         img.onload = () => {
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
-          const size = 120;
+          const size = 90; 
           canvas.width = size;
           canvas.height = size;
 
@@ -587,7 +601,7 @@
             srcY = (img.height - img.width) / 2;
           }
           ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, size, size);
-          const base64Photo = canvas.toDataURL('image/jpeg', 0.8);
+          const base64Photo = canvas.toDataURL('image/jpeg', 0.6);
           
           localStorage.setItem('user_photo_' + currentUser.uid, base64Photo);
           updateAvatarDisplays();
@@ -666,7 +680,7 @@
       });
     }
 
-    // Enviar Mensagem
+    // Enviar Mensagem com mecanismo Seguro de Fallback
     async function sendMessage() {
       const text = messageInput.value.trim();
       if (!text || !currentUser) return;
@@ -674,19 +688,32 @@
       messageInput.value = '';
       emojiPicker.classList.remove('open');
 
+      const myPhoto = getMyProfilePhoto();
+      const myName = currentUser.displayName || currentUser.email.split('@')[0];
+
+      const payload = {
+        autorId: currentUser.uid,
+        autorNome: myName,
+        autorPhoto: myPhoto,
+        texto: text,
+        isEncrypted: false,
+        createdAt: serverTimestamp(),
+        tipo: 'texto'
+      };
+
       try {
-        await addDoc(messagesRef, {
-          autorId: currentUser.uid,
-          texto: text,
-          isEncrypted: false,
-          createdAt: serverTimestamp(),
-          tipo: 'texto'
-        });
-        setTimeout(scrollToBottom, 50);
+        await addDoc(messagesRef, payload);
       } catch (e) {
-        alert("Erro de conexão ao enviar mensagem.");
-        console.error(e);
+        // Fallback caso as regras do Firestore rejeitem campos adicionais
+        try {
+          delete payload.autorPhoto;
+          await addDoc(messagesRef, payload);
+        } catch(e2) {
+          delete payload.autorNome;
+          await addDoc(messagesRef, payload);
+        }
       }
+      setTimeout(scrollToBottom, 50);
     }
 
     sendBtn.addEventListener('click', sendMessage);
@@ -698,25 +725,38 @@
       const files = e.target.files;
       if (!files.length || !currentUser) return;
 
+      const myPhoto = getMyProfilePhoto();
+      const myName = currentUser.displayName || currentUser.email.split('@')[0];
+
       Array.from(files).forEach(file => {
         const reader = new FileReader();
         reader.onload = async (evt) => {
           const isImage = file.type.startsWith('image/');
+          const payload = {
+            autorId: currentUser.uid,
+            autorNome: myName,
+            autorPhoto: myPhoto,
+            texto: isImage ? 'Imagem' : file.name,
+            fileUrl: evt.target.result,
+            fileName: file.name,
+            fileType: file.type,
+            tipo: isImage ? 'imagem' : 'arquivo',
+            isEncrypted: false,
+            createdAt: serverTimestamp()
+          };
+
           try {
-            await addDoc(messagesRef, {
-              autorId: currentUser.uid,
-              texto: isImage ? 'Imagem' : file.name,
-              fileUrl: evt.target.result,
-              fileName: file.name,
-              fileType: file.type,
-              tipo: isImage ? 'imagem' : 'arquivo',
-              isEncrypted: false,
-              createdAt: serverTimestamp()
-            });
-            setTimeout(scrollToBottom, 50);
+            await addDoc(messagesRef, payload);
           } catch(err) {
-            console.error("Erro ao enviar arquivo:", err);
+            try {
+              delete payload.autorPhoto;
+              await addDoc(messagesRef, payload);
+            } catch(err2) {
+              delete payload.autorNome;
+              await addDoc(messagesRef, payload);
+            }
           }
+          setTimeout(scrollToBottom, 50);
         };
         reader.readAsDataURL(file);
       });
@@ -749,16 +789,32 @@
         </div>
       ` : '';
 
-      // Avatar no balão de mensagem
-      let avatarHtml = side === 'right' ? 'Você' : 'Outro';
+      // Obter Nome e Primeiro Nome do Autor do Chat
+      const fullName = data.autorNome || 'Usuário';
+      const firstName = fullName.trim().split(' ')[0];
+
+      // Determina a Foto do Avatar no Chat
+      let photoUrl = '';
       if (side === 'right' && currentUser) {
-        const myPhoto = getMyProfilePhoto();
-        if (myPhoto) avatarHtml = `<img src="${myPhoto}" alt="Avatar">`;
+        photoUrl = getMyProfilePhoto();
+      } else {
+        photoUrl = data.autorPhoto || localStorage.getItem('user_photo_' + data.autorId) || '';
       }
+
+      let avatarHtml = '';
+      if (photoUrl) {
+        avatarHtml = `<img src="${photoUrl}" alt="${escapeHtml(firstName)}">`;
+      } else {
+        avatarHtml = side === 'right' ? 'Você' : firstName.charAt(0).toUpperCase();
+      }
+
+      // Exibir o primeiro nome NO BALÃO ESQUERDO para saber com quem está falando
+      const authorHeaderHtml = side === 'left' ? `<span class="msg-author-name">${escapeHtml(firstName)}</span>` : '';
 
       row.innerHTML = `
         <div class="msg-avatar">${avatarHtml}</div>
         <div class="message-balloon">
+          ${authorHeaderHtml}
           ${contentHtml}
           <div class="msg-meta">
             <span>${timeStr}</span>
@@ -822,7 +878,7 @@
     document.getElementById('leftColorPicker').addEventListener('input', (e) => document.documentElement.style.setProperty('--left-balloon-bg', e.target.value));
     document.getElementById('rightColorPicker').addEventListener('input', (e) => document.documentElement.style.setProperty('--right-balloon-bg', e.target.value));
 
-    // Upload e Salvamento Permanente de Papel de Parede Personalizado
+    // Upload e Salvamento Permanente do Papel de Parede
     wpCustomBtn.addEventListener('click', () => wpFileInput.click());
 
     wpFileInput.addEventListener('change', (e) => {
@@ -839,7 +895,7 @@
       }
     });
 
-    // Selecionar Temas Pré-definidos e Salvar Permanentemente
+    // Selecionar Temas Pré-definidos
     wpThumbs.forEach(thumb => {
       thumb.addEventListener('click', () => {
         wpThumbs.forEach(t => t.classList.remove('selected'));
