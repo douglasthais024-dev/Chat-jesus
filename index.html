@@ -2,21 +2,26 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>UltraChat Realtime Firebase - Auth</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#2563eb">
+  <title>UltraChat Realtime Firebase</title>
   <style>
     :root {
       --primary-color: #1d4ed8;
       --primary-light: #3b82f6;
       --header-bg: #2563eb;
-      --bg-app: #f0f9ff;
-      --bg-chat-container: #e0f2fe;
+      --bg-app: #0f172a;
+      --bg-chat-container: #0f172a;
+      --chat-bg-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
       --left-balloon-bg: #0284c7;
       --left-balloon-color: #ffffff;
-      --right-balloon-bg: #09090b;
+      --right-balloon-bg: #1e293b;
       --right-balloon-color: #ffffff;
-      --panel-bg: #ffffff;
-      --text-color: #0f172a;
+      --panel-bg: #1e293b;
+      --text-color: #f8fafc;
       --transition-speed: 0.3s;
     }
 
@@ -25,29 +30,44 @@
       --primary-light: #52525b;
       --header-bg: #27272a;
       --bg-app: #18181b;
-      --bg-chat-container: #27272a;
-      --panel-bg: #3f3f46;
+      --bg-chat-container: #18181b;
+      --panel-bg: #27272a;
       --text-color: #f4f4f5;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+      -webkit-tap-highlight-color: transparent;
+    }
     
     html, body {
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       height: 100dvh;
+      position: fixed;
+      top: 0;
+      left: 0;
       overflow: hidden;
+      overscroll-behavior: none;
       background-color: var(--bg-app);
       color: var(--text-color);
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
-    /* Modal de Login Responsivo */
+    /* Modal de Login */
     .auth-overlay {
-      position: fixed; inset: 0; background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-      z-index: 100; display: flex; justify-content: center; align-items: center; padding: 16px;
+      position: fixed; 
+      inset: 0; 
+      background: linear-gradient(135deg, #0f172a, #1d4ed8);
+      z-index: 100; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      padding: 16px;
+      padding-top: max(16px, env(safe-area-inset-top));
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
       transition: opacity 0.3s ease, visibility 0.3s ease;
     }
     .auth-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
@@ -58,7 +78,7 @@
       max-width: 400px; 
       padding: 24px 20px; 
       border-radius: 20px; 
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25); 
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
     }
     .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; }
     .auth-tab { flex: 1; padding: 10px; text-align: center; background: none; border: none; font-size: 0.95rem; font-weight: 600; color: #64748b; cursor: pointer; position: relative; }
@@ -72,11 +92,52 @@
     .btn-auth { background: #1d4ed8; color: white; border: none; padding: 12px; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 6px; }
     .auth-error { color: #dc2626; font-size: 0.85rem; text-align: center; display: none; margin-top: 4px; }
 
-    /* Interface do Chat Responsiva */
-    .app-container { width: 100%; height: 100%; height: 100dvh; background: var(--panel-bg); display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    header { background-color: var(--header-bg); color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.15); z-index: 10; gap: 8px; }
+    /* Container Principal */
+    .app-container { 
+      position: fixed;
+      inset: 0;
+      width: 100%; 
+      height: 100%; 
+      height: 100dvh; 
+      background: var(--panel-bg); 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+    }
+
+    header { 
+      background-color: var(--header-bg); 
+      color: white; 
+      padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px 16px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2); 
+      z-index: 10; 
+      gap: 8px; 
+    }
     .user-info { display: flex; align-items: center; gap: 10px; overflow: hidden; }
-    .avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; background: #cbd5e1; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #1e293b; font-size: 1rem; flex-shrink: 0; }
+    .avatar { 
+      width: 42px; 
+      height: 42px; 
+      border-radius: 50%; 
+      border: 2px solid white; 
+      background: #cbd5e1; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: bold; 
+      color: #1e293b; 
+      font-size: 1rem; 
+      flex-shrink: 0; 
+      overflow: hidden;
+    }
+    .avatar img, .msg-avatar img, .profile-photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
     .status-dot { width: 11px; height: 11px; background-color: #22c55e; border-radius: 50%; position: absolute; bottom: 0; right: 0; border: 2px solid white; }
     .avatar-wrapper { position: relative; flex-shrink: 0; }
     .user-details { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
@@ -85,42 +146,173 @@
     .premium-badge { background: linear-gradient(45deg, #f59e0b, #fbbf24); color: #78350f; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: bold; flex-shrink: 0; }
     .header-actions button { background: rgba(255, 255, 255, 0.2); border: none; color: white; padding: 8px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.8rem; white-space: nowrap; }
 
-    .chat-area { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background-color: var(--bg-chat-container); }
-    .empty-state { text-align: center; margin: auto; opacity: 0.7; font-size: 0.9rem; }
+    /* Área de Chat com Tela Infinita */
+    .chat-area { 
+      flex: 1; 
+      padding: 14px; 
+      overflow-y: auto; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 12px; 
+      background-color: var(--bg-chat-container);
+      background-image: var(--chat-bg-image);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    .empty-state { text-align: center; margin: auto; opacity: 0.9; font-size: 0.9rem; background: rgba(15, 23, 42, 0.75); color: #ffffff; padding: 10px 18px; border-radius: 20px; backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.1); }
 
-    .message-row { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; }
+    .message-row { display: flex; align-items: flex-end; gap: 8px; max-width: 88%; }
     .message-row.left { align-self: flex-start; }
     .message-row.right { align-self: flex-end; flex-direction: row-reverse; }
-    .msg-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; background: #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; color: #ffffff; }
-    .message-balloon { padding: 10px 14px; border-radius: 18px; position: relative; word-break: break-word; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 0.95rem; }
+    .msg-avatar { 
+      width: 32px; 
+      height: 32px; 
+      border-radius: 50%; 
+      flex-shrink: 0; 
+      background: #64748b; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-size: 0.75rem; 
+      font-weight: bold; 
+      color: #ffffff; 
+      overflow: hidden;
+    }
+    .message-balloon { padding: 10px 14px; border-radius: 18px; position: relative; word-break: break-word; box-shadow: 0 3px 8px rgba(0,0,0,0.25); font-size: 0.95rem; }
     .message-row.left .message-balloon { background-color: var(--left-balloon-bg); color: var(--left-balloon-color); border-bottom-left-radius: 4px; }
     .message-row.right .message-balloon { background-color: var(--right-balloon-bg); color: var(--right-balloon-color); border-bottom-right-radius: 4px; }
-    .msg-media { max-width: 100%; max-height: 220px; border-radius: 10px; margin-top: 6px; display: block; object-fit: cover; }
+    .msg-media { max-width: 100%; max-height: 260px; border-radius: 10px; margin-top: 6px; display: block; object-fit: cover; }
     .file-attachment { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); padding: 8px 12px; border-radius: 8px; margin-top: 6px; text-decoration: none; color: inherit; font-size: 0.85rem; }
-    .msg-meta { display: flex; justify-content: flex-end; align-items: center; gap: 6px; font-size: 0.68rem; opacity: 0.75; margin-top: 4px; }
+    .msg-meta { display: flex; justify-content: flex-end; align-items: center; gap: 6px; font-size: 0.68rem; opacity: 0.8; margin-top: 4px; }
     .msg-actions { display: inline-flex; gap: 6px; margin-left: 6px; }
     .action-btn { background: none; border: none; color: inherit; font-size: 0.75rem; cursor: pointer; opacity: 0.85; text-decoration: underline; }
 
-    .input-bar { padding: 10px 12px; background: var(--panel-bg); display: flex; align-items: center; gap: 8px; border-top: 1px solid rgba(0,0,0,0.08); position: relative; }
+    /* Barra de Digitação */
+    .input-bar { 
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)) 12px; 
+      background: var(--panel-bg); 
+      display: flex; 
+      align-items: center; 
+      gap: 8px; 
+      border-top: 1px solid rgba(255,255,255,0.1); 
+      position: relative; 
+    }
     .btn-icon { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--primary-light); padding: 4px; flex-shrink: 0; }
     .input-wrapper { flex: 1; }
-    .input-wrapper input { width: 100%; padding: 10px 14px; border: 1px solid rgba(0,0,0,0.15); border-radius: 24px; outline: none; background: rgba(0,0,0,0.03); color: inherit; font-size: 16px; }
+    .input-wrapper input { width: 100%; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.2); border-radius: 24px; outline: none; background: rgba(0,0,0,0.2); color: inherit; font-size: 16px; }
     .btn-send { background-color: var(--primary-color); color: white; border: none; padding: 10px 18px; border-radius: 24px; cursor: pointer; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
 
-    .emoji-picker { position: absolute; bottom: 65px; left: 12px; right: 12px; background: var(--panel-bg); border: 1px solid rgba(0,0,0,0.15); border-radius: 14px; padding: 10px; display: none; grid-template-columns: repeat(7, 1fr); gap: 6px; max-height: 200px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 20; }
+    /* Painel de Emojis */
+    .emoji-picker { 
+      position: absolute; 
+      bottom: calc(65px + env(safe-area-inset-bottom, 0px)); 
+      left: 10px; 
+      right: 10px; 
+      background: var(--panel-bg); 
+      border: 1px solid rgba(255,255,255,0.15); 
+      border-radius: 16px; 
+      padding: 12px; 
+      display: none; 
+      grid-template-columns: repeat(7, 1fr); 
+      gap: 8px; 
+      max-height: 280px; 
+      overflow-y: auto; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+      z-index: 20; 
+      -webkit-overflow-scrolling: touch;
+    }
     .emoji-picker.open { display: grid; }
-    .emoji-item { font-size: 1.4rem; cursor: pointer; text-align: center; padding: 6px 0; border-radius: 6px; }
+    .emoji-item { font-size: 1.5rem; cursor: pointer; text-align: center; padding: 6px 0; border-radius: 8px; }
+    .emoji-item:active { background: rgba(255,255,255,0.1); }
 
-    .profile-drawer { position: absolute; top: 0; right: -100%; width: 100%; max-width: 320px; height: 100%; background: #27272a; color: #f4f4f5; box-shadow: -10px 0 30px rgba(0,0,0,0.4); transition: right var(--transition-speed); z-index: 30; padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+    /* Gaveta de Ajustes e Perfil */
+    .profile-drawer { 
+      position: absolute; 
+      top: 0; 
+      right: -100%; 
+      width: 100%; 
+      max-width: 320px; 
+      height: 100%; 
+      background: #1e293b; 
+      color: #f8fafc; 
+      box-shadow: -10px 0 30px rgba(0,0,0,0.5); 
+      transition: right var(--transition-speed); 
+      z-index: 30; 
+      padding: calc(20px + env(safe-area-inset-top, 0px)) 20px calc(20px + env(safe-area-inset-bottom, 0px)) 20px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 16px; 
+      overflow-y: auto; 
+    }
     .profile-drawer.open { right: 0; }
-    .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3f3f46; padding-bottom: 12px; }
-    .close-btn { background: none; border: none; color: #f4f4f5; font-size: 1.6rem; cursor: pointer; }
-    .section-title { font-size: 0.85rem; text-transform: uppercase; color: #a1a1aa; margin-bottom: 10px; }
-    .color-option { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem; }
+    .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 12px; }
+    .close-btn { background: none; border: none; color: #f8fafc; font-size: 1.6rem; cursor: pointer; }
+    .section-title { font-size: 0.85rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; margin-top: 6px; font-weight: bold; }
+    
+    .profile-photo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .profile-photo-preview {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      border: 3px solid #3b82f6;
+      background: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #ffffff;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .btn-action-primary {
+      width: 100%;
+      padding: 11px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+    .btn-action-secondary {
+      width: 100%;
+      padding: 10px;
+      background: #334155;
+      border: 1px dashed #64748b;
+      border-radius: 10px;
+      color: #f8fafc;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .color-option { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
     .color-option input[type="color"] { border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; background: none; }
+
+    .wallpaper-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+    .wallpaper-thumb { width: 100%; height: 50px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; background-size: cover; background-position: center; }
+    .wallpaper-thumb.selected { border-color: #3b82f6; }
+
     .btn-logout { background: #ef4444; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: auto; }
 
-    /* Media query para ajustamento extra em telas minúsculas */
     @media (max-width: 380px) {
       .header-actions button { padding: 6px 10px; font-size: 0.75rem; }
       .btn-send { padding: 10px 14px; font-size: 0.85rem; }
@@ -206,21 +398,46 @@
       <button class="btn-send" id="sendBtn">Enviar</button>
     </div>
 
+    <!-- Drawer de Perfil & Papel de Parede -->
     <div class="profile-drawer" id="profileDrawer">
       <div class="drawer-header">
-        <h3>Aba do Perfil</h3>
+        <h3>Ajustes do Perfil</h3>
         <button class="close-btn" id="closeProfileBtn">&times;</button>
       </div>
 
       <div>
-        <div class="section-title">Cores dos Balões</div>
+        <div class="section-title">Foto de Perfil</div>
+        <div class="profile-photo-container">
+          <div class="profile-photo-preview" id="profilePhotoPreview">U</div>
+          <button class="btn-action-primary" id="changeProfilePhotoBtn">
+            👤 Alterar Foto de Perfil
+          </button>
+          <input type="file" id="profilePhotoInput" accept="image/*" style="display:none;">
+        </div>
+
+        <div class="section-title" style="margin-top: 14px;">Papel de Parede do Chat</div>
+        <button class="btn-action-secondary" id="wpCustomBtn">
+          📷 Foto para Papel de Parede
+        </button>
+        <input type="file" id="wpFileInput" accept="image/*" style="display:none;">
+
+        <div class="wallpaper-grid">
+          <div class="wallpaper-thumb selected" style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');" data-wp="url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')"></div>
+          <div class="wallpaper-thumb" style="background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=300');" data-wp="url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=800')"></div>
+          <div class="wallpaper-thumb" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=300');" data-wp="url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800')"></div>
+          <div class="wallpaper-thumb" style="background: #0f172a;" data-wp="none"></div>
+          <div class="wallpaper-thumb" style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=300');" data-wp="url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800')"></div>
+          <div class="wallpaper-thumb" style="background-image: url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=300');" data-wp="url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800')"></div>
+        </div>
+
+        <div class="section-title" style="margin-top: 14px;">Cores dos Balões</div>
         <div class="color-option">
           <span>Balão Esquerdo</span>
           <input type="color" id="leftColorPicker" value="#0284c7">
         </div>
         <div class="color-option">
           <span>Balão Direito</span>
-          <input type="color" id="rightColorPicker" value="#09090b">
+          <input type="color" id="rightColorPicker" value="#1e293b">
         </div>
       </div>
 
@@ -274,6 +491,9 @@
     const logoutBtn = document.getElementById('logoutBtn');
     const myAvatarDisplay = document.getElementById('myAvatarDisplay');
     const currentUserName = document.getElementById('currentUserName');
+    const profilePhotoPreview = document.getElementById('profilePhotoPreview');
+    const changeProfilePhotoBtn = document.getElementById('changeProfilePhotoBtn');
+    const profilePhotoInput = document.getElementById('profilePhotoInput');
 
     // Alternar Abas
     tabLoginBtn.addEventListener('click', () => {
@@ -286,14 +506,35 @@
       registerForm.classList.add('active'); loginForm.classList.remove('active');
     });
 
+    // Função de recuperação da foto de perfil
+    function getMyProfilePhoto() {
+      if (!currentUser) return '';
+      return localStorage.getItem('user_photo_' + currentUser.uid) || '';
+    }
+
+    // Atualiza Fotos e Nomes na Tela
+    function updateAvatarDisplays() {
+      if (!currentUser) return;
+      const name = currentUser.displayName || currentUser.email.split('@')[0];
+      currentUserName.innerHTML = `${escapeHtml(name)} <span class="premium-badge">⭐ PRÊMIO</span>`;
+
+      const userPhoto = getMyProfilePhoto();
+      if (userPhoto) {
+        myAvatarDisplay.innerHTML = `<img src="${userPhoto}" alt="Avatar">`;
+        profilePhotoPreview.innerHTML = `<img src="${userPhoto}" alt="Avatar">`;
+      } else {
+        const initial = name.substring(0, 1).toUpperCase();
+        myAvatarDisplay.innerText = initial;
+        profilePhotoPreview.innerText = initial;
+      }
+    }
+
     // Monitorar Autenticação
     onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
         authOverlay.classList.add('hidden');
-        const name = user.displayName || user.email.split('@')[0];
-        currentUserName.innerHTML = `${escapeHtml(name)} <span class="premium-badge">⭐ PRÊMIO</span>`;
-        myAvatarDisplay.innerText = name.substring(0, 1).toUpperCase();
+        updateAvatarDisplays();
         loadMessages();
       } else {
         currentUser = null;
@@ -301,7 +542,43 @@
       }
     });
 
-    // Cadastrar
+    // Processar Foto de Perfil
+    changeProfilePhotoBtn.addEventListener('click', () => profilePhotoInput.click());
+    profilePhotoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file || !currentUser) return;
+
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const size = 120;
+          canvas.width = size;
+          canvas.height = size;
+
+          let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
+          if (img.width > img.height) {
+            srcW = img.height;
+            srcX = (img.width - img.height) / 2;
+          } else {
+            srcH = img.width;
+            srcY = (img.height - img.width) / 2;
+          }
+          ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, size, size);
+          const base64Photo = canvas.toDataURL('image/jpeg', 0.8);
+          
+          localStorage.setItem('user_photo_' + currentUser.uid, base64Photo);
+          updateAvatarDisplays();
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+      profilePhotoInput.value = '';
+    });
+
+    // Cadastro
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       regError.style.display = 'none';
@@ -333,7 +610,7 @@
       }
     });
 
-    // Sair
+    // Logout
     logoutBtn.addEventListener('click', () => {
       signOut(auth);
       profileDrawer.classList.remove('open');
@@ -342,6 +619,10 @@
 
     // Firestore
     const messagesRef = collection(db, "mensagens");
+
+    function scrollToBottom() {
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
 
     function loadMessages() {
       const q = query(messagesRef, orderBy("createdAt", "asc"));
@@ -359,13 +640,13 @@
           renderMessage(docSnap.id, msg, isMe ? 'right' : 'left');
         });
 
-        chatArea.scrollTop = chatArea.scrollHeight;
+        setTimeout(scrollToBottom, 50);
       }, (error) => {
         console.error("Erro ao carregar mensagens:", error);
       });
     }
 
-    // Enviar Mensagem respeitando as regras estritas de payload
+    // Enviar Mensagem (Apenas os campos originais aceitos pelo Firebase)
     async function sendMessage() {
       const text = messageInput.value.trim();
       if (!text || !currentUser) return;
@@ -381,8 +662,9 @@
           createdAt: serverTimestamp(),
           tipo: 'texto'
         });
+        setTimeout(scrollToBottom, 50);
       } catch (e) {
-        alert("Erro de permissão ou conexão ao enviar mensagem.");
+        alert("Erro de conexão ao enviar mensagem.");
         console.error(e);
       }
     }
@@ -411,6 +693,7 @@
               isEncrypted: false,
               createdAt: serverTimestamp()
             });
+            setTimeout(scrollToBottom, 50);
           } catch(err) {
             console.error("Erro ao enviar arquivo:", err);
           }
@@ -428,7 +711,7 @@
       if (data.tipo === 'texto') {
         contentHtml = `<div class="msg-text">${escapeHtml(data.texto || '')}</div>`;
       } else if (data.tipo === 'imagem') {
-        contentHtml = `<img src="${data.fileUrl}" class="msg-media" alt="Imagem">`;
+        contentHtml = `<img src="${data.fileUrl}" class="msg-media" alt="Imagem" onload="scrollToBottom()">`;
       } else {
         contentHtml = `<a href="${data.fileUrl}" download="${data.fileName}" class="file-attachment">📄 ${escapeHtml(data.fileName || 'Arquivo')}</a>`;
       }
@@ -446,8 +729,15 @@
         </div>
       ` : '';
 
+      // Avatar no balão de mensagem
+      let avatarHtml = side === 'right' ? 'Você' : 'Outro';
+      if (side === 'right' && currentUser) {
+        const myPhoto = getMyProfilePhoto();
+        if (myPhoto) avatarHtml = `<img src="${myPhoto}" alt="Avatar">`;
+      }
+
       row.innerHTML = `
-        <div class="msg-avatar">${side === 'right' ? 'Você' : 'Outro'}</div>
+        <div class="msg-avatar">${avatarHtml}</div>
         <div class="message-balloon">
           ${contentHtml}
           <div class="msg-meta">
@@ -481,22 +771,65 @@
       chatArea.appendChild(row);
     }
 
-    // Emojis
-    const emojis = ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','😉','😍','🥰','😘','😋','😜','😎','🥳','😤','😠','🤯','😱','👍','👏','🔥','⭐','🎉','💖','🚀'];
-    emojis.forEach(emoji => {
+    // Lista Completa de Emojis
+    const fullEmojiList = [
+      '😀','😃','😄','😁','😆','😅','😂','🤣','🥲','🥹','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🥸','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😮‍💨','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🫣','🤗','🫡','🤔','🤭','🤫','🫠','🤥','😶','😐','😑','😬','🫨','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','😵‍💫','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','💀','👽','👾','🤖','🎃',
+      '👋','🤚','🖐️','✋','🖖','🫱','🫲','👌','🤌','🤏','✌️','🤞','🫰','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','🫵','👍','👎','✊','👊','🤛','🤜','👏','🙌','🫶','👐','🤲','🤝','🙏','✍️','💅','🤳','💪',
+      '❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕','💞','💓','💗','💖','💘','💝','🫀','🔥','✨','🌟','💫','💥','💢','💦','💨','💬','💭','💤',
+      '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐻‍❄️','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🐣','🐥','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦟','🦗','🕷️','🦂','🐢','🐍','🦎','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🦭','🐊','🐅','🐆','🦓','🐘','🦏','🦛','🐪','🐫','🦒','🦘','🦙','🦮','🐩','🐈','🦜','🦩','🕊️','🪶',
+      '🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶️','🌽','🥕','🧄','🧅','🥔','🍞','🥐','🥖','🫓','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🥪','🥙','🧆','🌮','🌯','🥗','🥘','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','☕','🍵','🧃','🥤','🧋','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🍾','🧊',
+      '⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🎱','🏓','🏸','🏒','🏑','🥍','🏏','🥅','⛳','🪁','🏹','🎣','🤿','🥊','🥋','🎽','🛹','🛼','🏋️','🤸','⛹️','🧘','🏄','🏊','🚣','🧗','🚵','🚴','🎯','🎮','🎰','🎲','🧩','🎨','🎭','🎤','🎧','🎼','🎵','🎶','🎷','🎸','🎹','🎺','🎻','🥁','📱','💻','⌨️','🖥️','🖨️','🖱️','📷','📸','📹','🎥','📽️','📞','☎️','📺','📻','🎙️','⏰','⌛','⏳','📡','🔋','🔌','💡','🔦','🕯️','💸','💵','💰','💳','💎','⚖️','🧰','🔧','🔨','🛠️','💣','🔪','🗡️','⚔️','🛡️','🔮','💈','🪞','🧴','🧼','🪥','🔑','🗝️','🚪','🪑','🛋️','🛏️','🧸','🛍️','🛒','🎁','🎈','🎉','🎊','✉️','📦','🏷️','📅','📆','📌','📍','📎','✂️','🖊️','🖋️','📝','✏️','🔍','🔎','🔒','🔓'
+    ];
+
+    fullEmojiList.forEach(emoji => {
       const span = document.createElement('span');
       span.classList.add('emoji-item');
       span.innerText = emoji;
-      span.onclick = () => { messageInput.value += emoji; messageInput.focus(); };
+      span.onclick = () => { 
+        messageInput.value += emoji; 
+        messageInput.focus(); 
+      };
       emojiPicker.appendChild(span);
     });
+
     emojiBtn.addEventListener('click', () => emojiPicker.classList.toggle('open'));
 
+    // Drawer de Perfil
     openProfileBtn.addEventListener('click', () => { profileDrawer.classList.add('open'); document.body.classList.add('profile-open'); });
     closeProfileBtn.addEventListener('click', () => { profileDrawer.classList.remove('open'); document.body.classList.remove('profile-open'); });
 
+    // Trocar cores dos balões
     document.getElementById('leftColorPicker').addEventListener('input', (e) => document.documentElement.style.setProperty('--left-balloon-bg', e.target.value));
     document.getElementById('rightColorPicker').addEventListener('input', (e) => document.documentElement.style.setProperty('--right-balloon-bg', e.target.value));
+
+    // Upload de Foto para Papel de Parede
+    const wpCustomBtn = document.getElementById('wpCustomBtn');
+    const wpFileInput = document.getElementById('wpFileInput');
+    const wpThumbs = document.querySelectorAll('.wallpaper-thumb');
+
+    wpCustomBtn.addEventListener('click', () => wpFileInput.click());
+
+    wpFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          document.documentElement.style.setProperty('--chat-bg-image', `url('${evt.target.result}')`);
+          wpThumbs.forEach(t => t.classList.remove('selected'));
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Selecionar Temas Pré-definidos
+    wpThumbs.forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        wpThumbs.forEach(t => t.classList.remove('selected'));
+        thumb.classList.add('selected');
+        const wpValue = thumb.getAttribute('data-wp');
+        document.documentElement.style.setProperty('--chat-bg-image', wpValue);
+      });
+    });
 
     function escapeHtml(text) {
       return text.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
